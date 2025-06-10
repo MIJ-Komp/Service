@@ -1,0 +1,794 @@
+definitions:
+  enum.EProductType:
+    enum:
+    - simple
+    - variant
+    - bundle
+    type: string
+    x-enum-varnames:
+    - ProductTypeSimple
+    - ProductTypeVariant
+    - ProductTypeGroup
+  request.LoginUserPayload:
+    properties:
+      email:
+        maxLength: 500
+        minLength: 5
+        type: string
+      password:
+        maxLength: 500
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  request.ProductCategory:
+    properties:
+      name:
+        type: string
+      parentId:
+        type: integer
+    type: object
+  request.ProductGroupItemPayload:
+    properties:
+      id:
+        type: string
+      productId:
+        type: string
+      productSkuId:
+        type: string
+      qty:
+        type: integer
+    type: object
+  request.ProductPayload:
+    properties:
+      description:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      pictureId:
+        type: string
+      productCategoryId:
+        type: integer
+      productGroupItems:
+        items:
+          $ref: '#/definitions/request.ProductGroupItemPayload'
+        type: array
+      productSkuVariants:
+        items:
+          $ref: '#/definitions/request.ProductSkuVariantPayload'
+        type: array
+      productSkus:
+        items:
+          $ref: '#/definitions/request.ProductSkuPayload'
+        type: array
+      productType:
+        $ref: '#/definitions/enum.EProductType'
+      productVariantOptionValues:
+        items:
+          $ref: '#/definitions/request.ProductVariantOptionValuePayload'
+        type: array
+      productVariantOptions:
+        items:
+          $ref: '#/definitions/request.ProductVariantOptionPayload'
+        type: array
+      sku:
+        type: string
+    type: object
+  request.ProductSkuPayload:
+    properties:
+      id:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      qty:
+        type: integer
+      qtyAlert:
+        type: integer
+      sku:
+        type: string
+    type: object
+  request.ProductSkuVariantPayload:
+    properties:
+      id:
+        type: string
+      productSkuId:
+        type: string
+      productVariantOptionId:
+        type: string
+      productVariantOptionValueId:
+        type: string
+    type: object
+  request.ProductVariantOptionPayload:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  request.ProductVariantOptionValuePayload:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      productVariantOptionId:
+        type: string
+    type: object
+  request.RegisterUserPayload:
+    properties:
+      email:
+        maxLength: 128
+        minLength: 5
+        type: string
+      fullName:
+        maxLength: 128
+        minLength: 1
+        type: string
+      password:
+        maxLength: 64
+        minLength: 1
+        type: string
+      userName:
+        maxLength: 16
+        minLength: 5
+        type: string
+    required:
+    - email
+    - fullName
+    - password
+    - userName
+    type: object
+  request.VariantOptionPayload:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  response.AuditTrail:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+    type: object
+  response.EnumResponse:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
+  response.ProductCategory:
+    properties:
+      createdAt:
+        type: string
+      createdById:
+        $ref: '#/definitions/response.AuditTrail'
+      id:
+        type: integer
+      modifiedAt:
+        type: string
+      modifiedById:
+        $ref: '#/definitions/response.AuditTrail'
+      name:
+        type: string
+      parentId:
+        type: integer
+    type: object
+  response.ProductCategoryResponse:
+    properties:
+      createdAt:
+        type: string
+      createdById:
+        type: integer
+      id:
+        type: integer
+      modifiedAt:
+        type: string
+      modifiedById:
+        type: integer
+      name:
+        type: string
+    type: object
+  response.ProductGroupItemResponse:
+    properties:
+      id:
+        type: string
+      product:
+        $ref: '#/definitions/response.ProductResponse'
+      productId:
+        type: string
+      productSkuId:
+        type: string
+      qty:
+        type: integer
+    type: object
+  response.ProductResponse:
+    properties:
+      createdAt:
+        type: string
+      createdById:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      isPartOfCompositeOnly:
+        type: boolean
+      isPriceSameForAllOutlet:
+        type: boolean
+      isTrackInventory:
+        type: boolean
+      modifiedAt:
+        type: string
+      modifiedById:
+        type: integer
+      name:
+        type: string
+      pictureId:
+        type: string
+      productCategory:
+        $ref: '#/definitions/response.ProductCategoryResponse'
+      productGroupItems:
+        items:
+          $ref: '#/definitions/response.ProductGroupItemResponse'
+        type: array
+      productSkuVariants:
+        items:
+          $ref: '#/definitions/response.ProductSkuVariant'
+        type: array
+      productSkus:
+        items:
+          $ref: '#/definitions/response.ProductSku'
+        type: array
+      productType:
+        $ref: '#/definitions/response.EnumResponse'
+      productVariantOptionValues:
+        items:
+          $ref: '#/definitions/response.ProductVariantOptionValue'
+        type: array
+      productVariantOptions:
+        items:
+          $ref: '#/definitions/response.ProductVariantOption'
+        type: array
+      sku:
+        type: string
+    type: object
+  response.ProductSku:
+    properties:
+      id:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      productId:
+        type: string
+      sequence:
+        type: integer
+      sku:
+        type: string
+    type: object
+  response.ProductSkuVariant:
+    properties:
+      id:
+        type: string
+      productSkuId:
+        type: string
+      productVariantOptionId:
+        type: string
+      productVariantOptionValueId:
+        type: string
+    type: object
+  response.ProductVariantOption:
+    properties:
+      allowDelete:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      productId:
+        type: string
+      sequence:
+        type: integer
+    type: object
+  response.ProductVariantOptionValue:
+    properties:
+      allowDelete:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      productVariantOptionId:
+        type: string
+      sequence:
+        type: integer
+    type: object
+  response.User:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+      username:
+        type: string
+    type: object
+  response.VariantOption:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  response.WebResponse:
+    properties:
+      code:
+        type: integer
+      content: {}
+      message:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Try Out Api
+  version: 1.0.0
+paths:
+  /api/admin/product-categories:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      - description: ' '
+        in: query
+        name: parentId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductCategory'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search category
+      tags:
+      - (Admin) Product Category
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ProductCategory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create category
+      tags:
+      - (Admin) Product Category
+  /api/admin/product-categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete category
+      tags:
+      - (Admin) Product Category
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductCategory'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get category by id
+      tags:
+      - (Admin) Product Category
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ProductCategory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update category
+      tags:
+      - (Admin) Product Category
+  /api/admin/products:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      - description: ' '
+        in: query
+        name: productTypes
+        type: string
+      - description: ' '
+        in: query
+        name: productCategoryId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.ProductResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search products
+      tags:
+      - (Admin) Product
+  /api/admin/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete product
+      tags:
+      - (Admin) Product
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get product by id
+      tags:
+      - (Admin) Product
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Id (UUID format)
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ProductPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Product
+      tags:
+      - (Admin) Product
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ProductPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Product
+      tags:
+      - (Admin) Product
+  /api/admin/products/variant-options:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.VariantOption'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Variant Options
+      tags:
+      - (Admin) Product Variant Option
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.VariantOptionPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Variant Option
+      tags:
+      - (Admin) Product Variant Option
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginUserPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Login
+      tags:
+      - Auth
+  /api/user/getByEmail:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.User'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get user by email
+      tags:
+      - User
+  /api/user/me:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.User'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get my profile
+      tags:
+      - User
+  /api/user/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RegisterUserPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Register user
+      tags:
+      - User
+securityDefinitions:
+  ApiKeyAuth:
+    description: |-
+      Api documentation Try Out App
+      Description for what is this security definition being used
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

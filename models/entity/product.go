@@ -1,0 +1,94 @@
+package entity
+
+import (
+	"time"
+
+	"api.mijkomp.com/models/enum"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
+
+type Product struct {
+	Id                uuid.UUID         `gorm:"primaryKey;type:uuid;"`
+	ProductType       enum.EProductType `gorm:"type:varchar(8); not null;"`
+	SKU               string            `json:"type:varchar(256)"`
+	Name              string            `gorm:"type:varchar(256); not null;"`
+	IsActive          bool              `gorm:"not null;"`
+	PictureId         *uuid.UUID        `gorm:"type:varchar(1024);null;"`
+	ProductCategoryId *uint             `gorm:"type:bigint; foreignKey; null;"`
+	Description       string            `gorm:"type:varchar(1024);null;"`
+	CreatedById       uint              `gorm:"type:bigint; not null;"`
+	CreatedAt         time.Time         `gorm:"type:timestamptz; not null;"`
+	ModifiedById      uint              `gorm:"type:bigint; not null;"`
+	ModifiedAt        time.Time         `gorm:"type:timestamptz; not null;"`
+	DeletedAt         gorm.DeletedAt    `gorm:"index"`
+
+	ProductCategory *ProductCategory
+
+	ProductSkus []ProductSku `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+
+	ProductVariantOptions      []ProductVariantOption      `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ProductVariantOptionValues []ProductVariantOptionValue `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ProductSkuVariants         []ProductSkuVariant         `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+
+	ProductGroupItems []ProductGroupItem `gorm:"foreignKey:ParentId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+type ProductSku struct {
+	Id         uuid.UUID `gorm:"primaryKey; type:uuid;"`
+	ProductId  uuid.UUID `gorm:"foreignKey; type:uuid; not null;"`
+	SKU        string    `gorm:"type:varchar(256); not null;"`
+	Name       string    `gorm:"type: varchar(128); null"`
+	Price      float64   `gorm:"type:decimal(17,5); not null;"`
+	Stock      *int      `gorm:"type:integer; null"`
+	StockAlert *int      `gorm:"type:integer; null"`
+	IsActive   bool      `gorm:"not null;"`
+	Sequence   int       `gorm:"type:int; not null"`
+
+	// ProductSkuDetails []ProductSkuDetail `gorm:"foreignKey:ProductSkuId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+// type ProductSkuDetail struct {
+// 	Id           uint    `gorm:"primaryKey; type:bigint;"`
+// 	ProductSkuId uint    `gorm:"foreignKey; type:bigint; not null"`
+
+// }
+
+type ProductVariantOption struct {
+	Id        uuid.UUID `gorm:"primaryKey; type:uuid;"`
+	ProductId uuid.UUID `gorm:"foreignKey; type:uuid; not null"`
+	Name      string    `gorm:"type:varchar(64);not null"`
+	Sequence  int       `gorm:"type:integer; not null"`
+}
+
+type ProductVariantOptionValue struct {
+	Id                     uuid.UUID `gorm:"primaryKey; type:uuid;"`
+	ProductId              uuid.UUID `gorm:"foreignKey; type:uuid; not null"`
+	ProductVariantOptionId uuid.UUID `gorm:"type:uuid; not null"`
+	Name                   string    `gorm:"type:varchar(64); not null"`
+	Sequence               int       `gorm:"type:integer; not null"`
+}
+
+type ProductSkuVariant struct {
+	Id                          uuid.UUID `gorm:"primaryKey; type:uuid;"`
+	ProductId                   uuid.UUID `gorm:"foreignKey; type:uuid; not null"`
+	ProductSkuId                uuid.UUID `gorm:"type:uuid; not null"`
+	ProductVariantOptionId      uuid.UUID `gorm:"type:uuid; not null"`
+	ProductVariantOptionValueId uuid.UUID `gorm:"type:uuid; not null"`
+	Sequence                    int       `gorm:"type:integer; not null"`
+}
+
+type ProductGroupItem struct {
+	Id           uuid.UUID `gorm:"primaryKey; type:uuid;"`
+	ParentId     uuid.UUID `gorm:"foreignKey:ParentId; type:uuid; not null"`
+	ProductId    uuid.UUID `gorm:"foreignKey; type:uuid; not null"`
+	ProductSkuId uuid.UUID `gorm:"foreignKey:ProductSkuId; type:uuid; not null"`
+	Qty          int       `gorm:"type:integer; null"`
+
+	Product Product `gorm:"foreignKey:ProductId;references:Id;"`
+}
+
+type VariantOption struct { // Master Data
+	Id   uint   `gorm:"type:bigint; primaryKey;"`
+	Name string `gorm:"type:varchar(64); not null"`
+}

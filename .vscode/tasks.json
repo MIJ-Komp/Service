@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Prelaunch Command",
+      "type": "shell",
+      "command": "swag init",
+      "problemMatcher": [],
+      "group": "none"
+    }
+  ]
+}

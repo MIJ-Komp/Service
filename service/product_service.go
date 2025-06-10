@@ -1,0 +1,20 @@
+package service
+
+import (
+	"api.mijkomp.com/models/request"
+	"api.mijkomp.com/models/response"
+	"github.com/google/uuid"
+)
+
+type ProductService interface {
+	Create(currentUserId uint, productId uuid.UUID, req request.ProductPayload) response.ProductResponse
+	Update(currentUserId uint, productId uuid.UUID, req request.ProductPayload) response.ProductResponse
+	Delete(currentUserId uint, productId uuid.UUID) string
+	Search(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) response.PageResult
+	// SearchProductSku(currentUserId uint, outletId *uint, query *string, productTypes *[]string, isInventoryOnly *bool, productCategoryId *uint, brandId *uint, page, pageSize *int) response.PageResult
+	GetById(currentUserId uint, productId uuid.UUID) response.ProductResponse
+
+	// Variant Option
+	CreateVariantOptions(currentUserId uint, payload request.VariantOptionPayload) response.VariantOption
+	GetVariantOptions(currentUserId uint) []response.VariantOption
+}
