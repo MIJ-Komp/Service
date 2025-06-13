@@ -483,7 +483,6 @@ func (service *ProductServiceImpl) CreateVariantOptions(currentUserId uint, payl
 	defer helpers.CommitOrRollback(tx)
 
 	variantOption := entity.VariantOption{
-		Id:   payload.Id,
 		Name: payload.Name,
 	}
 

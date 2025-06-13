@@ -5,6 +5,7 @@ import (
 
 	"api.mijkomp.com/exception"
 	"api.mijkomp.com/helpers"
+	"api.mijkomp.com/helpers/data_mapper"
 	"api.mijkomp.com/models/entity"
 	"api.mijkomp.com/models/request"
 	"api.mijkomp.com/models/response"
@@ -109,20 +110,12 @@ func (service *ProductCategoryServiceImpl) GenerateSearchResult(categorys []enti
 
 func (service *ProductCategoryServiceImpl) GenerateGetResult(category entity.ProductCategory) response.ProductCategory {
 	res := response.ProductCategory{
-		Id:       category.Id,
-		Name:     category.Name,
-		ParentId: category.ParentId,
-		CreatedBy: response.AuditTrail{
-			Id:       category.CreatedById,
-			FullName: category.CreatedBy.FullName,
-			Email:    category.CreatedBy.Email,
-		},
-		CreatedAt: category.CreatedAt,
-		ModifiedBy: response.AuditTrail{
-			Id:       category.ModifiedById,
-			FullName: category.ModifiedBy.FullName,
-			Email:    category.ModifiedBy.Email,
-		},
+		Id:         category.Id,
+		Name:       category.Name,
+		ParentId:   category.ParentId,
+		CreatedBy:  data_mapper.MapAuditTrail(category.CreatedBy),
+		CreatedAt:  category.CreatedAt,
+		ModifiedBy: data_mapper.MapAuditTrail(category.ModifiedBy),
 		ModifiedAt: category.ModifiedAt,
 	}
 

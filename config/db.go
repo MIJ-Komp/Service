@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"api.mijkomp.com/exception"
+	"api.mijkomp.com/helpers"
 	"api.mijkomp.com/models/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -34,5 +35,25 @@ func NewDB() *gorm.DB {
 		&entity.VariantOption{},
 	)
 
+	seedData(db)
 	return db
+}
+
+func seedData(db *gorm.DB) {
+
+	// seed admin
+	var userCount int64 = 0
+	db.Find(&entity.User{}).Count(&userCount)
+
+	if userCount == 0 {
+
+		pass, err := helpers.PasswordHash("Admin123!@#")
+		exception.PanicIfNeeded(err)
+		db.Save(&entity.User{
+			UserName: "SuperAdmin",
+			FullName: "Admin",
+			Email:    "admin@mail.com",
+			Password: &pass,
+		})
+	}
 }

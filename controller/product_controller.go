@@ -31,7 +31,7 @@ func (controller *ProductController) Route(app *fiber.App) {
 	// product.Get("/browse", middleware.AuthMiddleware(controller.UserService), controller.BrowseProductSku)
 	product.Get("/:id", middleware.AuthMiddleware(controller.UserService), controller.GetById)
 
-	variantOption := app.Group("/api/variant-options")
+	variantOption := app.Group("/api/admin/variant-options")
 	variantOption.Post("/", middleware.AuthMiddleware(controller.UserService), controller.CreateVariantOptions)
 	variantOption.Get("/", middleware.AuthMiddleware(controller.UserService), controller.GetVariantOptions)
 }
@@ -204,7 +204,7 @@ func (controller *ProductController) GetById(ctx *fiber.Ctx) error {
 // @Security		ApiKeyAuth
 // @in 					header
 // @name 				Authorization
-// @Router       /api/admin/products/variant-options [post]
+// @Router       /api/admin/variant-options [post]
 func (controller *ProductController) CreateVariantOptions(ctx *fiber.Ctx) error {
 
 	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
@@ -227,7 +227,7 @@ func (controller *ProductController) CreateVariantOptions(ctx *fiber.Ctx) error 
 // @Security		ApiKeyAuth
 // @in 					header
 // @name 				Authorization
-// @Router       /api/admin/products/variant-options [get]
+// @Router       /api/admin/variant-options [get]
 func (controller *ProductController) GetVariantOptions(ctx *fiber.Ctx) error {
 
 	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))

@@ -148,19 +148,15 @@ definitions:
     type: object
   request.VariantOptionPayload:
     properties:
-      id:
-        type: integer
       name:
         type: string
     type: object
   response.AuditTrail:
     properties:
-      email:
-        type: string
-      fullName:
-        type: string
       id:
         type: integer
+      userName:
+        type: string
     type: object
   response.EnumResponse:
     properties:
@@ -635,7 +631,7 @@ paths:
       summary: Update Product
       tags:
       - (Admin) Product
-  /api/admin/products/variant-options:
+  /api/admin/variant-options:
     get:
       consumes:
       - application/json

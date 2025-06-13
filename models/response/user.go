@@ -9,6 +9,5 @@ type User struct {
 
 type AuditTrail struct {
 	Id       uint   `json:"id"`
-	FullName string `json:"fullName"`
-	Email    string `json:"email"`
+	UserName string `json:"userName"`
 }

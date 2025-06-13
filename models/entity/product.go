@@ -89,6 +89,6 @@ type ProductGroupItem struct {
 }
 
 type VariantOption struct { // Master Data
-	Id   uint   `gorm:"type:bigint; primaryKey;"`
+	Id   uint   `gorm:"type:bigint; primaryKey; autoincrement;"`
 	Name string `gorm:"type:varchar(64); not null"`
 }
