@@ -15,6 +15,434 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/admin/compatibility-rules": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Compatibility Rules"
+                ],
+                "summary": "Search compatibility rules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "query",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CompatibilityRule"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Compatibility Rules"
+                ],
+                "summary": "Create compatibility rules",
+                "parameters": [
+                    {
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CompatibilityRule"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/compatibility-rules/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Compatibility Rules"
+                ],
+                "summary": "Get compatibility rules by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CompatibilityRule"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Compatibility Rules"
+                ],
+                "summary": "Update compatibility rules",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CompatibilityRule"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Compatibility Rules"
+                ],
+                "summary": "Delete compatibility rules",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/component-types": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Component Type"
+                ],
+                "summary": "Search component type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "query",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ComponentType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Component Type"
+                ],
+                "summary": "Create Component ype",
+                "parameters": [
+                    {
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ComponentType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/component-types/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Component Type"
+                ],
+                "summary": "Get component type by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ComponentType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Component Type"
+                ],
+                "summary": "Update component type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ComponentType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Component Type"
+                ],
+                "summary": "Delete component type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/product-categories": {
             "get": {
                 "security": [
@@ -270,6 +698,74 @@ const docTemplate = `{
                         "description": " ",
                         "name": "productCategoryId",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.ProductResponse"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/products/browse-product-sku": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "(Admin) Product"
+                ],
+                "summary": "Browse products sku",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "productTypes",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "productCategoryId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -310,7 +806,7 @@ const docTemplate = `{
                 "summary": "Get product by id",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": " ",
                         "name": "id",
                         "in": "path",
@@ -349,6 +845,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Product",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": " ",
                         "name": "request",
@@ -442,7 +945,7 @@ const docTemplate = `{
                 "summary": "Delete product",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": " ",
                         "name": "id",
                         "in": "path",
@@ -717,6 +1220,49 @@ const docTemplate = `{
                 "ProductTypeGroup"
             ]
         },
+        "request.CompatibilityRule": {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "type": "string"
+                },
+                "errorMessage": {
+                    "type": "string"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "sourceComponentTypeCode": {
+                    "type": "string"
+                },
+                "sourceKey": {
+                    "type": "string"
+                },
+                "targetComponentTypeCode": {
+                    "type": "string"
+                },
+                "targetKey": {
+                    "type": "string"
+                },
+                "valueType": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ComponentType": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "request.LoginUserPayload": {
             "type": "object",
             "required": [
@@ -770,13 +1316,16 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "imageIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "isActive": {
                     "type": "boolean"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "pictureId": {
                     "type": "string"
                 },
                 "productCategoryId": {
@@ -835,14 +1384,20 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
-                "qty": {
-                    "type": "integer"
-                },
-                "qtyAlert": {
-                    "type": "integer"
+                "productSpecs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.ProductSpec"
+                    }
                 },
                 "sku": {
                     "type": "string"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "stockAlert": {
+                    "type": "integer"
                 }
             }
         },
@@ -859,6 +1414,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "productVariantOptionValueId": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ProductSpec": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "productSkuId": {
+                    "type": "string"
+                },
+                "sequence": {
+                    "type": "integer"
+                },
+                "specKey": {
+                    "type": "string"
+                },
+                "specValue": {
                     "type": "string"
                 }
             }
@@ -938,6 +1513,79 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CompatibilityRule": {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "errorMessage": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "modifiedAt": {
+                    "type": "string"
+                },
+                "modifiedById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "sourceComponentTypeCode": {
+                    "type": "string"
+                },
+                "sourceKey": {
+                    "type": "string"
+                },
+                "targetComponentTypeCode": {
+                    "type": "string"
+                },
+                "targetKey": {
+                    "type": "string"
+                },
+                "valueType": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ComponentType": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "modifiedAt": {
+                    "type": "string"
+                },
+                "modifiedById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "response.EnumResponse": {
             "type": "object",
             "properties": {
@@ -972,29 +1620,6 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "integer"
-                }
-            }
-        },
-        "response.ProductCategoryResponse": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "createdById": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "modifiedAt": {
-                    "type": "string"
-                },
-                "modifiedById": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         },
@@ -1033,16 +1658,13 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "imageIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "isActive": {
-                    "type": "boolean"
-                },
-                "isPartOfCompositeOnly": {
-                    "type": "boolean"
-                },
-                "isPriceSameForAllOutlet": {
-                    "type": "boolean"
-                },
-                "isTrackInventory": {
                     "type": "boolean"
                 },
                 "modifiedAt": {
@@ -1054,11 +1676,8 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "pictureId": {
-                    "type": "string"
-                },
                 "productCategory": {
-                    "$ref": "#/definitions/response.ProductCategoryResponse"
+                    "$ref": "#/definitions/response.ProductCategory"
                 },
                 "productGroupItems": {
                     "type": "array",
@@ -1101,6 +1720,12 @@ const docTemplate = `{
         "response.ProductSku": {
             "type": "object",
             "properties": {
+                "ProductSpecs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ProductSpec"
+                    }
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1110,6 +1735,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "price": {
+                    "type": "number"
+                },
                 "productId": {
                     "type": "string"
                 },
@@ -1118,6 +1746,12 @@ const docTemplate = `{
                 },
                 "sku": {
                     "type": "string"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "stockAlert": {
+                    "type": "integer"
                 }
             }
         },
@@ -1134,6 +1768,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "productVariantOptionValueId": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ProductSpec": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "productSkuId": {
+                    "type": "string"
+                },
+                "specKey": {
+                    "type": "string"
+                },
+                "specValue": {
                     "type": "string"
                 }
             }

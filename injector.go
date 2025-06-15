@@ -6,6 +6,7 @@ package main
 import (
 	"api.mijkomp.com/app"
 	"api.mijkomp.com/config"
+	"api.mijkomp.com/database"
 	"api.mijkomp.com/repository"
 	"api.mijkomp.com/repository/repository_impl"
 	"api.mijkomp.com/service"
@@ -37,12 +38,28 @@ var productSet = wire.NewSet(
 	wire.Bind(new(service.ProductService), new(*service_impl.ProductServiceImpl)),
 )
 
+var componentTypeSet = wire.NewSet(
+	repository_impl.NewComponentTypeRepository,
+	wire.Bind(new(repository.ComponentTypeRepository), new(*repository_impl.ComponentTypeRepositoryImpl)),
+	service_impl.NewComponentTypeService,
+	wire.Bind(new(service.ComponentTypeService), new(*service_impl.ComponentTypeServiceImpl)),
+)
+
+var compatibilityRuleSet = wire.NewSet(
+	repository_impl.NewCompatibilityRuleRepository,
+	wire.Bind(new(repository.CompatibilityRuleRepository), new(*repository_impl.CompatibilityRuleRepositoryImpl)),
+	service_impl.NewCompatibilityRuleService,
+	wire.Bind(new(service.CompatibilityRuleService), new(*service_impl.CompatibilityRuleServiceImpl)),
+)
+
 func InitializedServer() *fiber.App {
 	wire.Build(
-		config.NewDB,
+		database.NewDB,
 		userSet,
 		productCategorySet,
 		productSet,
+		componentTypeSet,
+		compatibilityRuleSet,
 		validatorSet,
 		app.CreateServer,
 	)

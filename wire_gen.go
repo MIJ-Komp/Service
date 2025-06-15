@@ -9,6 +9,7 @@ package main
 import (
 	"api.mijkomp.com/app"
 	"api.mijkomp.com/config"
+	"api.mijkomp.com/database"
 	"api.mijkomp.com/repository"
 	"api.mijkomp.com/repository/repository_impl"
 	"api.mijkomp.com/service"
@@ -22,13 +23,17 @@ import (
 func InitializedServer() *fiber.App {
 	userRepositoryImpl := repository_impl.NewUserRepository()
 	validate := config.NewValidator()
-	db := config.NewDB()
+	db := database.NewDB()
 	userServiceImpl := service_impl.NewUserService(userRepositoryImpl, validate, db)
 	productCategoryRepositoryImpl := repository_impl.NewProductCategoryRepository()
 	productCategoryServiceImpl := service_impl.NewProductCategoryService(productCategoryRepositoryImpl, validate, db)
 	productRepositoryImpl := repository_impl.NewProductRepository()
 	productServiceImpl := service_impl.NewProductService(productRepositoryImpl, db)
-	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, productServiceImpl, db)
+	componentTypeRepositoryImpl := repository_impl.NewComponentTypeRepository()
+	componentTypeServiceImpl := service_impl.NewComponentTypeService(componentTypeRepositoryImpl, validate, db)
+	compatibilityRuleRepositoryImpl := repository_impl.NewCompatibilityRuleRepository()
+	compatibilityRuleServiceImpl := service_impl.NewCompatibilityRuleService(compatibilityRuleRepositoryImpl, validate, db)
+	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, db)
 	return fiberApp
 }
 
@@ -41,3 +46,7 @@ var userSet = wire.NewSet(repository_impl.NewUserRepository, wire.Bind(new(repos
 var productCategorySet = wire.NewSet(repository_impl.NewProductCategoryRepository, wire.Bind(new(repository.ProductCategoryRepository), new(*repository_impl.ProductCategoryRepositoryImpl)), service_impl.NewProductCategoryService, wire.Bind(new(service.ProductCategoryService), new(*service_impl.ProductCategoryServiceImpl)))
 
 var productSet = wire.NewSet(repository_impl.NewProductRepository, wire.Bind(new(repository.ProductRepository), new(*repository_impl.ProductRepositoryImpl)), service_impl.NewProductService, wire.Bind(new(service.ProductService), new(*service_impl.ProductServiceImpl)))
+
+var componentTypeSet = wire.NewSet(repository_impl.NewComponentTypeRepository, wire.Bind(new(repository.ComponentTypeRepository), new(*repository_impl.ComponentTypeRepositoryImpl)), service_impl.NewComponentTypeService, wire.Bind(new(service.ComponentTypeService), new(*service_impl.ComponentTypeServiceImpl)))
+
+var compatibilityRuleSet = wire.NewSet(repository_impl.NewCompatibilityRuleRepository, wire.Bind(new(repository.CompatibilityRuleRepository), new(*repository_impl.CompatibilityRuleRepositoryImpl)), service_impl.NewCompatibilityRuleService, wire.Bind(new(service.CompatibilityRuleService), new(*service_impl.CompatibilityRuleServiceImpl)))

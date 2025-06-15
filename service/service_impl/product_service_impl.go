@@ -41,7 +41,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 		SKU:               payload.SKU,
 		Name:              payload.Name,
 		IsActive:          payload.IsActive,
-		PictureId:         payload.PictureId,
+		ImageIds:          helpers.JoinImageIds(payload.ImageIds),
 		ProductCategoryId: payload.ProductCategoryId,
 		Description:       payload.Description,
 		CreatedById:       currentUserId,
@@ -55,47 +55,38 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 
 	// Product SKU
 	productSkus := []entity.ProductSku{}
-	// productSkuDetails := []entity.ProductSkuDetail{}
+	productSpecs := []entity.ProductSpec{}
 
 	for i, productSku := range payload.ProductSkus {
 		productSkus = append(productSkus, entity.ProductSku{
-			Id:        productSku.Id,
-			ProductId: productId,
-			SKU:       productSku.SKU,
-			Sequence:  i + 1,
-			IsActive:  true,
+			Id:         productSku.Id,
+			ProductId:  productId,
+			SKU:        productSku.SKU,
+			Price:      productSku.Price,
+			Stock:      productSku.Stock,
+			StockAlert: productSku.StockAlert,
+			Sequence:   i + 1,
+			IsActive:   true,
 		})
 
-		// for _, skuDetail := range productSku.ProductSkuDetails {
-		// 	productSkuDetail := entity.ProductSkuDetail{
-		// 		Id:           skuDetail.Id,
-		// 		ProductSkuId: productSku.Id,
-		// 		OutletId:     skuDetail.OutletId,
-		// 		Fee:          skuDetail.Fee,
-		// 		CostPrice:    skuDetail.CostPrice,
-		// 		SellingPrice: skuDetail.SellingPrice,
-		// 		Qty:          skuDetail.Qty,
-		// 		QtyAlert:     skuDetail.QtyAlert,
-		// 		CreatedById:  currentUserId,
-		// 		CreatedAt:    time.Now().UTC(),
-		// 		ModifiedById: currentUserId,
-		// 		ModifiedAt:   time.Now().UTC(),
-		// 	}
+		for i, productSpec := range productSku.ProductSpecs {
+			productSpec := entity.ProductSpec{
+				Id:           productSpec.Id,
+				ProductSkuId: productSku.Id,
+				SpecKey:      productSpec.SpecKey,
+				SpecValue:    productSpec.SpecValue,
+				Sequence:     i + 1,
+			}
 
-		// 	if !product.IsTrackInventory {
-		// 		productSkuDetail.Qty = nil
-		// 		productSkuDetail.QtyAlert = nil
-		// 	}
-
-		// 	productSkuDetails = append(productSkuDetails, productSkuDetail)
-		// }
+			productSpecs = append(productSpecs, productSpec)
+		}
 	}
 
 	err = service.ProductRepository.SaveProductSkus(tx, productSkus)
 	exception.PanicIfNeeded(err)
 
-	// err = service.ProductRepository.SaveProductSkuDetails(tx, productSkuDetails)
-	// exception.PanicIfNeeded(err)
+	err = service.ProductRepository.SaveProductSpecs(tx, productSpecs)
+	exception.PanicIfNeeded(err)
 
 	// Product Variant
 	if payload.ProductType == enum.ProductTypeVariant {
@@ -111,7 +102,6 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 				Name:      variantOption.Name,
 				Sequence:  i + 1,
 			})
-
 		}
 
 		for i, variantOptionValue := range payload.ProductVariantOptionValues {
@@ -191,7 +181,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	product.Name = payload.Name
 	product.SKU = payload.SKU
 	product.IsActive = payload.IsActive
-	product.PictureId = payload.PictureId
+	product.ImageIds = helpers.JoinImageIds(payload.ImageIds)
 	product.ProductCategoryId = payload.ProductCategoryId
 	product.Description = payload.Description
 	product.ModifiedById = currentUserId
@@ -458,6 +448,15 @@ func (service *ProductServiceImpl) Search(currentUserId uint, query *string, pro
 	}
 }
 
+func (service *ProductServiceImpl) BrowseProductSku(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) response.PageResult {
+	res, count, totalPage := service.ProductRepository.BrowseProductSku(service.db, query, productTypes, productCategoryId, page, pageSize)
+	return response.PageResult{
+		Items:      res,
+		TotalCount: count,
+		PageSize:   totalPage,
+	}
+}
+
 // func (service *ProductServiceImpl) SearchProductSku(currentUserId uint, outletId *uuid.UUID, query *string, productTypes *[]string, isInventoryOnly *bool, productCategoryId *uuid.UUID, brandId *uuid.UUID, page, pageSize *int) response.PageResult {
 
 // 	res, totalCount, totalPage := service.ProductRepository.SearchProductSku(service.db, outletId, query, productTypes, isInventoryOnly, productCategoryId, brandId, page, pageSize)
@@ -517,7 +516,7 @@ func (service *ProductServiceImpl) mapProduct(product entity.Product) response.P
 		SKU:          product.SKU,
 		Name:         product.Name,
 		IsActive:     product.IsActive,
-		PictureId:    product.PictureId,
+		ImageIds:     helpers.SplitImageIds(product.ImageIds),
 		Description:  product.Description,
 		CreatedById:  product.CreatedById,
 		CreatedAt:    product.CreatedAt,
@@ -536,7 +535,7 @@ func (service *ProductServiceImpl) mapProduct(product entity.Product) response.P
 	}
 
 	if product.ProductCategory != nil {
-		productCategoryRes := response.ProductCategoryResponse{
+		productCategoryRes := response.ProductCategory{
 			Id:   product.ProductCategory.Id,
 			Name: product.ProductCategory.Name,
 		}
@@ -545,13 +544,13 @@ func (service *ProductServiceImpl) mapProduct(product entity.Product) response.P
 
 	for _, productSku := range product.ProductSkus {
 		productSkuRes := response.ProductSku{
-			Id:        productSku.Id,
-			ProductId: productSku.ProductId,
-			SKU:       productSku.SKU,
-			Name:      productSku.Name,
-			IsActive:  productSku.IsActive,
-			Sequence:  productSku.Sequence,
-			// ProductSkuDetails: service.mapProductSkuDetails(productSku.ProductSkuDetails),
+			Id:           productSku.Id,
+			ProductId:    productSku.ProductId,
+			SKU:          productSku.SKU,
+			Name:         productSku.Name,
+			IsActive:     productSku.IsActive,
+			Sequence:     productSku.Sequence,
+			ProductSpecs: service.mapProductSpecs(productSku.ProductSpecs),
 		}
 
 		productRes.ProductSkus = append(productRes.ProductSkus, productSkuRes)
@@ -600,67 +599,6 @@ func (service *ProductServiceImpl) mapProduct(product entity.Product) response.P
 				Product:      service.mapProduct(item.Product),
 			})
 
-			// if item.Product.ProductType == enum.ProductTypeSimple {
-
-			// 	productRes.ProductGroupItems = append(productRes.ProductGroupItems, response.ProductGroupItemResponse{
-			// 		Id:           item.Id,
-			// 		ProductId:    item.Product.Id,
-			// 		ProductSkuId: item.ProductSkuId,
-			// 		Qty:          item.Qty,
-			// 		Product:      service.mapProduct(item.Product),
-			// 	})
-
-			// } else if item.Product.ProductType == enum.ProductTypeVariant {
-			// 	productSku := entity.ProductSku{}
-			// 	skuVariants := []entity.ProductSkuVariant{}
-			// 	optionValues := []entity.ProductVariantOptionValue{}
-
-			// 	for _, sku := range item.Product.ProductSkus {
-			// 		if sku.Id == item.ProductSkuId {
-			// 			productSku = sku
-			// 		}
-			// 	}
-
-			// 	for _, skuVariant := range item.Product.ProductSkuVariants {
-			// 		if skuVariant.ProductId == item.ProductId {
-			// 			skuVariants = append(skuVariants, skuVariant)
-
-			// 			// for _, optValue := range item.Product.ProductVariantOptionValues {
-			// 			// 	if skuVariant.ProductVariantOptionValueId == optValue.Id {
-			// 			// 		optionValues = append(optionValues, optValue)
-			// 			// 	}
-			// 			// }
-			// 		}
-			// 	}
-
-			// 	newGroupItem := response.ProductGroupItemResponse{
-			// 		Id:           item.Id,
-			// 		ProductId:    item.Product.Id,
-			// 		ProductSkuId: item.ProductSkuId,
-			// 		ProductType:  item.Product.ProductType,
-			// 		ProductSKU:   productSku.SKU,
-			// 		ProductName:  item.Product.Name,
-			// 		// ProductCostPrice:    productSku.CostPrice,
-			// 		// ProductSellingPrice: productSku.SellingPrice,
-			// 		Qty: item.Qty,
-
-			// 		Product: service.mapProduct(item.Product),
-			// 	}
-
-			// 	for _, skuVariant := range skuVariants {
-			// 		optionValueIdx := slices.IndexFunc(optionValues, func(model entity.ProductVariantOptionValue) bool {
-			// 			return model.Id == skuVariant.ProductVariantOptionValueId
-			// 		})
-
-			// 		if optionValueIdx != -1 {
-			// 			newGroupItem.ProductName += fmt.Sprintf(" %s / %s ", newGroupItem.ProductName, optionValues[optionValueIdx].Name)
-			// 		}
-			// 	}
-
-			// 	productRes.ProductGroupItems = append(productRes.ProductGroupItems, newGroupItem)
-
-			// }
-
 		}
 
 	}
@@ -670,23 +608,20 @@ func (service *ProductServiceImpl) mapProduct(product entity.Product) response.P
 
 // Variant Options Map Helpers
 
-// func (service *ProductServiceImpl) mapProductSkuDetails(skuDetails []entity.ProductSkuDetail) []response.ProductSkuDetail {
+func (service *ProductServiceImpl) mapProductSpecs(productSpecs []entity.ProductSpec) []response.ProductSpec {
 
-// 	productSkuDetailRes := []response.ProductSkuDetail{}
-// 	for _, skuDetail := range skuDetails {
-// 		productSkuDetailRes = append(productSkuDetailRes, response.ProductSkuDetail{
-// 			Id:           skuDetail.Id,
-// 			ProductSkuId: skuDetail.ProductSkuId,
-// 			OutletId:     skuDetail.OutletId,
-// 			Fee:          skuDetail.Fee,
-// 			CostPrice:    skuDetail.CostPrice,
-// 			SellingPrice: skuDetail.SellingPrice,
-// 			Qty:          skuDetail.Qty,
-// 			QtyAlert:     skuDetail.QtyAlert,
-// 		})
-// 	}
-// 	return productSkuDetailRes
-// }
+	productSpecRes := []response.ProductSpec{}
+	for _, productSpec := range productSpecs {
+		productSpecRes = append(productSpecRes, response.ProductSpec{
+			Id:           productSpec.Id,
+			ProductSkuId: productSpec.ProductSkuId,
+			SpecKey:      productSpec.SpecKey,
+			SpecValue:    productSpec.SpecValue,
+		})
+	}
+
+	return productSpecRes
+}
 
 func (service *ProductServiceImpl) mapVariantOptions(opts []entity.VariantOption) []response.VariantOption {
 	result := []response.VariantOption{}

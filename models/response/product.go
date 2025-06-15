@@ -7,22 +7,19 @@ import (
 )
 
 type ProductResponse struct {
-	Id                      uuid.UUID    `json:"id"`
-	ProductType             EnumResponse `json:"productType"`
-	Name                    string       `json:"name"`
-	SKU                     string       `json:"sku"`
-	IsActive                bool         `json:"isActive"`
-	IsPartOfCompositeOnly   bool         `json:"isPartOfCompositeOnly"`
-	IsTrackInventory        bool         `json:"isTrackInventory"`
-	IsPriceSameForAllOutlet bool         `json:"isPriceSameForAllOutlet"`
-	PictureId               *uuid.UUID   `json:"pictureId"`
-	Description             string       `json:"description"`
-	CreatedById             uint         `json:"createdById"`
-	CreatedAt               time.Time    `json:"createdAt"`
-	ModifiedById            uint         `json:"modifiedById"`
-	ModifiedAt              time.Time    `json:"modifiedAt"`
+	Id           uuid.UUID    `json:"id"`
+	ProductType  EnumResponse `json:"productType"`
+	Name         string       `json:"name"`
+	SKU          string       `json:"sku"`
+	IsActive     bool         `json:"isActive"`
+	ImageIds     []uuid.UUID  `json:"imageIds"`
+	Description  string       `json:"description"`
+	CreatedById  uint         `json:"createdById"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	ModifiedById uint         `json:"modifiedById"`
+	ModifiedAt   time.Time    `json:"modifiedAt"`
 
-	ProductCategory *ProductCategoryResponse `json:"productCategory"`
+	ProductCategory *ProductCategory `json:"productCategory"`
 
 	ProductSkus []ProductSku `json:"productSkus"`
 
@@ -35,25 +32,25 @@ type ProductResponse struct {
 }
 
 type ProductSku struct {
-	Id        uuid.UUID `json:"id"`
-	ProductId uuid.UUID `json:"productId"`
-	SKU       string    `json:"sku"`
-	Name      string    `json:"name"`
-	Sequence  int       `json:"sequence"`
-	IsActive  bool      `json:"isActive"`
-	// ProductSkuDetails []ProductSkuDetail `json:"productSkuDetails"`
+	Id         uuid.UUID `json:"id"`
+	ProductId  uuid.UUID `json:"productId"`
+	SKU        string    `json:"sku"`
+	Name       string    `json:"name"`
+	Price      float64   `json:"price"`
+	Stock      *int      `json:"stock"`
+	StockAlert *int      `json:"stockAlert"`
+	Sequence   int       `json:"sequence"`
+	IsActive   bool      `json:"isActive"`
+
+	ProductSpecs []ProductSpec `json:"ProductSpecs"`
 }
 
-// type ProductSkuDetail struct {
-// 	Id           uint     `json:"id"`
-// 	ProductSkuId uint     `json:"productSkuId"`
-// 	OutletId     uint     `json:"outletId"`
-// 	Fee          *float64 `json:"fee"`
-// 	CostPrice    *float64 `json:"costPrice"`
-// 	SellingPrice float64  `json:"sellingPrice"`
-// 	Qty          *int     `json:"qty"`
-// 	QtyAlert     *int     `json:"qtyAlert"`
-// }
+type ProductSpec struct {
+	Id           uuid.UUID `json:"id"`
+	ProductSkuId uuid.UUID `json:"productSkuId"`
+	SpecKey      string    `json:"specKey"`
+	SpecValue    string    `json:"specValue"`
+}
 
 type ProductVariantOption struct {
 	Id          uuid.UUID `json:"id"`
@@ -89,4 +86,22 @@ type ProductGroupItemResponse struct {
 type VariantOption struct {
 	Id   uint   `json:"id"`
 	Name string `json:"name"`
+}
+
+type BrowseProductSku struct {
+	Id           uuid.UUID    `json:"id"`
+	ProductId    uuid.UUID    `json:"productId"`
+	SKU          string       `json:"sku"`
+	Name         string       `json:"name"`
+	IsActive     bool         `json:"isActive"`
+	ProductType  EnumResponse `json:"productType"`
+	PictureId    *uuid.UUID   `json:"pictureId"`
+	Description  string       `json:"description"`
+	CreatedById  uint         `json:"createdById"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	ModifiedById uint         `json:"modifiedById"`
+	ModifiedAt   time.Time    `json:"modifiedAt"`
+
+	ProductCategory   *ProductCategory           `json:"productCategory"`
+	ProductGroupItems []ProductGroupItemResponse `json:"productGroupItems"`
 }

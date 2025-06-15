@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"api.mijkomp.com/models/entity"
+	"api.mijkomp.com/models/response"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -45,7 +46,7 @@ func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, prod
 
 	queries := db.Model(&products).
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		// Preload("ProductSkus.ProductSkuDetails").
+		Preload("ProductSkus.ProductSpecs").
 		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkuVariants")
@@ -76,6 +77,44 @@ func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, prod
 	} else {
 		queries.Order("products.modified_at desc").Find(&products)
 	}
+	return products, totalCount, totalPage
+}
+
+func (repository *ProductRepositoryImpl) BrowseProductSku(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) ([]response.BrowseProductSku, int64, int64) {
+	var products []response.BrowseProductSku
+	var totalCount int64 = 0
+	var totalPage int64 = 0
+	// var offset int = 0
+
+	// queries := db.Model(&products).
+	// 	Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+	// 	// Preload("ProductSkus.ProductSkuDetails").
+	// 	Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+	// 	Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+	// 	Preload("ProductSkuVariants")
+
+	db.Raw(`
+		Select 
+			ps.id,
+			ps.product_id,
+			ps.sku,
+			p.name || ps.name as name,
+			ps.stock,
+			ps.stock_alert,
+			ps.price,
+			p.is_active,
+			p.product_type,
+			p.picture_id,
+			p.description,
+			p.created_at,
+			p.modified_at
+		from products p
+		INNER JOIN product_skus ps
+				ON p.id = ps.product_id
+
+		ORDER BY p.created_at, sequence
+	`).Find(&products)
+
 	return products, totalCount, totalPage
 }
 
@@ -177,11 +216,11 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 	err := db.
 		Preload("ProductCategory").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		// Preload("ProductSkus.ProductSkuDetails").
+		Preload("ProductSkus.ProductSPecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductGroupItems").
 		Preload("ProductGroupItems.Product").
 		Preload("ProductGroupItems.Product.ProductSkus").
-		// Preload("ProductGroupItems.Product.ProductSkus.ProductSkuDetails").
+		Preload("ProductGroupItems.Product.ProductSkus.ProductSpecs").
 		Preload("ProductGroupItems.Product.ProductSkuVariants").
 		Preload("ProductGroupItems.Product.ProductVariantOptions").
 		Preload("ProductGroupItems.Product.ProductVariantOptionValues").
@@ -203,16 +242,17 @@ func (repository *ProductRepositoryImpl) DeleteProductSkus(db *gorm.DB, productI
 	return err
 }
 
-// // Product SKU Details
-// func (repository *ProductRepositoryImpl) SaveProductSkuDetails(db *gorm.DB, skuDetails []entity.ProductSkuDetail) error {
-// 	err := db.Save(&skuDetails).Error
-// 	return err
-// }
+// Product SKU Details
 
-// func (repository *ProductRepositoryImpl) DeleteProductSkuDetails(db *gorm.DB, productSkuId uuid.UUID, skuDetails []entity.ProductSkuDetail) error {
-// 	err := db.Where("ProductSkuId = ?", productSkuId).Delete(skuDetails).Error
-// 	return err
-// }
+func (repository *ProductRepositoryImpl) SaveProductSpecs(db *gorm.DB, productSpecs []entity.ProductSpec) error {
+	err := db.Save(&productSpecs).Error
+	return err
+}
+
+func (repository *ProductRepositoryImpl) DeleteProductSpecs(db *gorm.DB, productSkuId uuid.UUID, productSpecs []entity.ProductSpec) error {
+	err := db.Where("ProductSkuId = ?", productSkuId).Delete(productSpecs).Error
+	return err
+}
 
 // Group Items
 func (repository *ProductRepositoryImpl) SaveProductGroupItems(db *gorm.DB, groupItems []entity.ProductGroupItem) error {

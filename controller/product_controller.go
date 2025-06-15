@@ -66,7 +66,7 @@ func (controller *ProductController) Create(ctx *fiber.Ctx) error {
 // @Tags        (Admin) Product
 // @Accept      json
 // @Produce     json
-// @Param       id path uuid.UUID  true " "
+// @Param       id path string  true " "
 // @Param       request body request.ProductPayload true " "
 // @Success     200  {object}  response.WebResponse
 // @Failure     400  {object}  response.WebResponse
@@ -93,7 +93,7 @@ func (controller *ProductController) Update(ctx *fiber.Ctx) error {
 // @Tags         (Admin) Product
 // @Accept       json
 // @Produce      json
-// @Param        id path int  true " "
+// @Param        id path string  true " "
 // @Success      200  {object}  response.WebResponse
 // @Failure      400  {object}  response.WebResponse
 // @Security	ApiKeyAuth
@@ -118,6 +118,8 @@ func (controller *ProductController) Delete(ctx *fiber.Ctx) error {
 // @Param			query query string false " "
 // @Param			productTypes query string false " "
 // @Param			productCategoryId query int false " "
+// @Param			page query int false " "
+// @Param			pageSize query int false " "
 // @Success		200	{object}	[]response.ProductResponse
 // @Failure		404	{object}	response.WebResponse
 // @Security	ApiKeyAuth
@@ -143,6 +145,42 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
 	result := controller.ProductService.Search(currentUserId, query, productTypes, productCategoryId, page, pageSize)
+
+	return ctx.JSON(response.NewWebResponse(result))
+}
+
+// @Summary		Browse products sku
+// @Tags			(Admin) Product
+// @Accept		json
+// @Produce		json
+// @Param			query query string false " "
+// @Param			productTypes query string false " "
+// @Param			productCategoryId query int false " "
+// @Success		200	{object}	[]response.ProductResponse
+// @Failure		404	{object}	response.WebResponse
+// @Security	ApiKeyAuth
+// @in header
+// @name Authorization
+// @Router		/api/admin/products/browse-product-sku [get]
+func (controller *ProductController) BrowseProductSku(ctx *fiber.Ctx) error {
+
+	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
+
+	query := helpers.ParseNullableString(ctx.Query("query"))
+
+	var productTypes *[]string = nil
+	productTypeQuery := ctx.Queries()["productTypes"]
+	if productTypeQuery != "" {
+		productTypesQueries := strings.Split(productTypeQuery, ",")
+		productTypes = &productTypesQueries
+	}
+
+	productCategoryId := helpers.ParseNullableUint(ctx.Query("productCategoryId"))
+
+	page := helpers.ParseNullableInt(ctx.Query("page"))
+	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
+
+	result := controller.ProductService.BrowseProductSku(currentUserId, query, productTypes, productCategoryId, page, pageSize)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }
@@ -176,7 +214,7 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 // @Tags			(Admin) Product
 // @Accept		json
 // @Produce		json
-// @Param			id path int true " "
+// @Param			id path string true " "
 // @Success		200	{object}	response.ProductResponse
 // @Failure		404	{object}	response.WebResponse
 // @Security	ApiKeyAuth

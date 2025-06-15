@@ -3,7 +3,10 @@ package helpers
 import (
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func NewRandom(length int) string {
@@ -29,4 +32,32 @@ func SetDefaultPageRequest(page *int, pageSize *int) {
 	if *pageSize == 0 {
 		*pageSize = 10
 	}
+}
+
+func SplitImageIds(imageIds string) []uuid.UUID {
+	images := strings.Split(imageIds, ";")
+
+	imgIds := []uuid.UUID{}
+	if imageIds == "" {
+		return imgIds
+	}
+	for _, img := range images {
+		imgIds = append(imgIds, ParseUUID(img))
+	}
+
+	return imgIds
+}
+
+func JoinImageIds(imageIds []uuid.UUID) string {
+	imgIds := ""
+
+	for i, img := range imageIds {
+		if i != len(imageIds) {
+			imgIds += img.String() + ";"
+		} else {
+			imgIds += img.String()
+		}
+	}
+
+	return imgIds
 }

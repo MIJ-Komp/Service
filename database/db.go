@@ -1,10 +1,9 @@
-package config
+package database
 
 import (
 	"os"
 
 	"api.mijkomp.com/exception"
-	"api.mijkomp.com/helpers"
 	"api.mijkomp.com/models/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,33 +26,16 @@ func NewDB() *gorm.DB {
 		&entity.ProductCategory{},
 		&entity.Product{},
 		&entity.ProductSku{},
-		// &entity.ProductSkuDetail{},
+		&entity.ProductSpec{},
 		&entity.ProductGroupItem{},
 		&entity.ProductVariantOption{},
 		&entity.ProductVariantOptionValue{},
 		&entity.ProductSkuVariant{},
 		&entity.VariantOption{},
+		&entity.ComponentType{},
+		&entity.CompatibilityRule{},
 	)
 
-	seedData(db)
+	SeedData(db)
 	return db
-}
-
-func seedData(db *gorm.DB) {
-
-	// seed admin
-	var userCount int64 = 0
-	db.Find(&entity.User{}).Count(&userCount)
-
-	if userCount == 0 {
-
-		pass, err := helpers.PasswordHash("Admin123!@#")
-		exception.PanicIfNeeded(err)
-		db.Save(&entity.User{
-			UserName: "SuperAdmin",
-			FullName: "Admin",
-			Email:    "admin@mail.com",
-			Password: &pass,
-		})
-	}
 }

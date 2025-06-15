@@ -10,7 +10,7 @@ type ProductPayload struct {
 	SKU               string            `json:"sku"`
 	Name              string            `json:"name"`
 	IsActive          bool              `json:"isActive"`
-	PictureId         *uuid.UUID        `json:"pictureId"`
+	ImageIds          []uuid.UUID       `json:"imageIds"`
 	ProductCategoryId *uint             `json:"productCategoryId"`
 	Description       string            `json:"description"`
 
@@ -35,21 +35,21 @@ type ProductVariantOptionValuePayload struct {
 }
 
 type ProductSkuPayload struct {
-	Id       uuid.UUID `json:"id"`
-	SKU      string    `json:"sku"`
-	Name     string    `json:"name"`
-	Price    float64   `json:"price"`
-	Qty      *int      `json:"qty"`
-	QtyAlert *int      `json:"qtyAlert"`
-	IsActive bool      `json:"isActive"`
-	// ProductSkuDetails []ProductSkuDetailPayload `json:"productSkuDetails"`
+	Id           uuid.UUID     `json:"id"`
+	SKU          string        `json:"sku"`
+	Name         string        `json:"name"`
+	Price        float64       `json:"price"`
+	Stock        *int          `json:"stock"`
+	StockAlert   *int          `json:"stockAlert"`
+	IsActive     bool          `json:"isActive"`
+	ProductSpecs []ProductSpec `json:"productSpecs"`
 }
 
-// type ProductSkuDetailPayload struct {
-// 	Id           uint     `json:"id"`
-// 	ProductSkuId uint     `json:"productSkuId"`
-
-// }
+type ProductSpec struct {
+	Id        uuid.UUID `json:"id"`
+	SpecKey   string    `json:"specKey"`
+	SpecValue string    `json:"specValue"`
+}
 
 type ProductSkuVariantPayload struct {
 	Id                          uuid.UUID `json:"id"`

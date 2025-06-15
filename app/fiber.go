@@ -24,6 +24,8 @@ func CreateServer(
 	userService service.UserService,
 	productCategoryService service.ProductCategoryService,
 	productService service.ProductService,
+	componentTypeService service.ComponentTypeService,
+	compatibilityRuleService service.CompatibilityRuleService,
 	db *gorm.DB,
 ) *fiber.App {
 
@@ -47,6 +49,8 @@ func CreateServer(
 	controller.NewAuthController(&userService).Route(app)
 	controller.NewProductCategoryController(&userService, &productCategoryService).Route(app)
 	controller.NewProductController(&userService, &productService).Route(app)
+	controller.NewComponentTypeController(&userService, &componentTypeService).Route(app)
+	controller.NewCompatibilityRuleController(&userService, &compatibilityRuleService).Route(app)
 
 	return app
 }

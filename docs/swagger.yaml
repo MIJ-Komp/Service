@@ -9,6 +9,34 @@ definitions:
     - ProductTypeSimple
     - ProductTypeVariant
     - ProductTypeGroup
+  request.CompatibilityRule:
+    properties:
+      condition:
+        type: string
+      errorMessage:
+        type: string
+      isActive:
+        type: boolean
+      sourceComponentTypeCode:
+        type: string
+      sourceKey:
+        type: string
+      targetComponentTypeCode:
+        type: string
+      targetKey:
+        type: string
+      valueType:
+        type: string
+    type: object
+  request.ComponentType:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+    type: object
   request.LoginUserPayload:
     properties:
       email:
@@ -45,11 +73,13 @@ definitions:
     properties:
       description:
         type: string
+      imageIds:
+        items:
+          type: string
+        type: array
       isActive:
         type: boolean
       name:
-        type: string
-      pictureId:
         type: string
       productCategoryId:
         type: integer
@@ -88,12 +118,16 @@ definitions:
         type: string
       price:
         type: number
-      qty:
-        type: integer
-      qtyAlert:
-        type: integer
+      productSpecs:
+        items:
+          $ref: '#/definitions/request.ProductSpec'
+        type: array
       sku:
         type: string
+      stock:
+        type: integer
+      stockAlert:
+        type: integer
     type: object
   request.ProductSkuVariantPayload:
     properties:
@@ -104,6 +138,19 @@ definitions:
       productVariantOptionId:
         type: string
       productVariantOptionValueId:
+        type: string
+    type: object
+  request.ProductSpec:
+    properties:
+      id:
+        type: string
+      productSkuId:
+        type: string
+      sequence:
+        type: integer
+      specKey:
+        type: string
+      specValue:
         type: string
     type: object
   request.ProductVariantOptionPayload:
@@ -158,6 +205,54 @@ definitions:
       userName:
         type: string
     type: object
+  response.CompatibilityRule:
+    properties:
+      condition:
+        type: string
+      createdAt:
+        type: string
+      createdById:
+        $ref: '#/definitions/response.AuditTrail'
+      errorMessage:
+        type: string
+      id:
+        type: integer
+      isActive:
+        type: boolean
+      modifiedAt:
+        type: string
+      modifiedById:
+        $ref: '#/definitions/response.AuditTrail'
+      sourceComponentTypeCode:
+        type: string
+      sourceKey:
+        type: string
+      targetComponentTypeCode:
+        type: string
+      targetKey:
+        type: string
+      valueType:
+        type: string
+    type: object
+  response.ComponentType:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      createdById:
+        $ref: '#/definitions/response.AuditTrail'
+      description:
+        type: string
+      id:
+        type: integer
+      modifiedAt:
+        type: string
+      modifiedById:
+        $ref: '#/definitions/response.AuditTrail'
+      name:
+        type: string
+    type: object
   response.EnumResponse:
     properties:
       code:
@@ -182,21 +277,6 @@ definitions:
       parentId:
         type: integer
     type: object
-  response.ProductCategoryResponse:
-    properties:
-      createdAt:
-        type: string
-      createdById:
-        type: integer
-      id:
-        type: integer
-      modifiedAt:
-        type: string
-      modifiedById:
-        type: integer
-      name:
-        type: string
-    type: object
   response.ProductGroupItemResponse:
     properties:
       id:
@@ -220,13 +300,11 @@ definitions:
         type: string
       id:
         type: string
+      imageIds:
+        items:
+          type: string
+        type: array
       isActive:
-        type: boolean
-      isPartOfCompositeOnly:
-        type: boolean
-      isPriceSameForAllOutlet:
-        type: boolean
-      isTrackInventory:
         type: boolean
       modifiedAt:
         type: string
@@ -234,10 +312,8 @@ definitions:
         type: integer
       name:
         type: string
-      pictureId:
-        type: string
       productCategory:
-        $ref: '#/definitions/response.ProductCategoryResponse'
+        $ref: '#/definitions/response.ProductCategory'
       productGroupItems:
         items:
           $ref: '#/definitions/response.ProductGroupItemResponse'
@@ -265,18 +341,28 @@ definitions:
     type: object
   response.ProductSku:
     properties:
+      ProductSpecs:
+        items:
+          $ref: '#/definitions/response.ProductSpec'
+        type: array
       id:
         type: string
       isActive:
         type: boolean
       name:
         type: string
+      price:
+        type: number
       productId:
         type: string
       sequence:
         type: integer
       sku:
         type: string
+      stock:
+        type: integer
+      stockAlert:
+        type: integer
     type: object
   response.ProductSkuVariant:
     properties:
@@ -287,6 +373,17 @@ definitions:
       productVariantOptionId:
         type: string
       productVariantOptionValueId:
+        type: string
+    type: object
+  response.ProductSpec:
+    properties:
+      id:
+        type: string
+      productSkuId:
+        type: string
+      specKey:
+        type: string
+      specValue:
         type: string
     type: object
   response.ProductVariantOption:
@@ -350,6 +447,272 @@ info:
   title: Try Out Api
   version: 1.0.0
 paths:
+  /api/admin/compatibility-rules:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CompatibilityRule'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search compatibility rules
+      tags:
+      - (Admin) Compatibility Rules
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CompatibilityRule'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create compatibility rules
+      tags:
+      - (Admin) Compatibility Rules
+  /api/admin/compatibility-rules/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete compatibility rules
+      tags:
+      - (Admin) Compatibility Rules
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CompatibilityRule'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get compatibility rules by id
+      tags:
+      - (Admin) Compatibility Rules
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CompatibilityRule'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update compatibility rules
+      tags:
+      - (Admin) Compatibility Rules
+  /api/admin/component-types:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ComponentType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search component type
+      tags:
+      - (Admin) Component Type
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ComponentType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Component ype
+      tags:
+      - (Admin) Component Type
+  /api/admin/component-types/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete component type
+      tags:
+      - (Admin) Component Type
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ComponentType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get component type by id
+      tags:
+      - (Admin) Component Type
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ComponentType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update component type
+      tags:
+      - (Admin) Component Type
   /api/admin/product-categories:
     get:
       consumes:
@@ -504,6 +867,14 @@ paths:
         in: query
         name: productCategoryId
         type: integer
+      - description: ' '
+        in: query
+        name: page
+        type: integer
+      - description: ' '
+        in: query
+        name: pageSize
+        type: integer
       produces:
       - application/json
       responses:
@@ -531,7 +902,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -556,7 +927,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -610,6 +981,11 @@ paths:
       - application/json
       parameters:
       - description: ' '
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ' '
         in: body
         name: request
         required: true
@@ -629,6 +1005,41 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update Product
+      tags:
+      - (Admin) Product
+  /api/admin/products/browse-product-sku:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      - description: ' '
+        in: query
+        name: productTypes
+        type: string
+      - description: ' '
+        in: query
+        name: productCategoryId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.ProductResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Browse products sku
       tags:
       - (Admin) Product
   /api/admin/variant-options:
