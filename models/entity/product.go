@@ -9,19 +9,20 @@ import (
 )
 
 type Product struct {
-	Id                uuid.UUID         `gorm:"primaryKey;type:uuid;"`
-	ProductType       enum.EProductType `gorm:"type:varchar(8); not null;"`
-	SKU               string            `json:"type:varchar(256)"`
-	Name              string            `gorm:"type:varchar(256); not null;"`
-	IsActive          bool              `gorm:"not null;"`
-	ImageIds          string            `gorm:"type:varchar(2048); not null;"`
-	ProductCategoryId *uint             `gorm:"type:bigint; foreignKey; null;"`
-	Description       string            `gorm:"type:varchar(1024);null;"`
-	CreatedById       uint              `gorm:"type:bigint; not null;"`
-	CreatedAt         time.Time         `gorm:"type:timestamptz; not null;"`
-	ModifiedById      uint              `gorm:"type:bigint; not null;"`
-	ModifiedAt        time.Time         `gorm:"type:timestamptz; not null;"`
-	DeletedAt         gorm.DeletedAt    `gorm:"index"`
+	Id                      uuid.UUID         `gorm:"primaryKey;type:uuid;"`
+	ProductType             enum.EProductType `gorm:"type:varchar(8); not null;"`
+	SKU                     string            `json:"type:varchar(256)"`
+	Name                    string            `gorm:"type:varchar(256); not null;"`
+	IsActive                bool              `gorm:"not null;"`
+	IsShowOnlyInMarketPlace bool              `gorm:"not null;"`
+	ImageIds                string            `gorm:"type:varchar(2048); not null;"`
+	ProductCategoryId       *uint             `gorm:"type:bigint; foreignKey; null;"`
+	Description             string            `gorm:"type:varchar(1024);null;"`
+	CreatedById             uint              `gorm:"type:bigint; not null;"`
+	CreatedAt               time.Time         `gorm:"type:timestamptz; not null;"`
+	ModifiedById            uint              `gorm:"type:bigint; not null;"`
+	ModifiedAt              time.Time         `gorm:"type:timestamptz; not null;"`
+	DeletedAt               gorm.DeletedAt    `gorm:"index"`
 
 	ProductCategory *ProductCategory
 	ProductSkus     []ProductSku `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

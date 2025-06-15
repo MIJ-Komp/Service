@@ -79,6 +79,8 @@ definitions:
         type: array
       isActive:
         type: boolean
+      isShowOnlyInMarketPlace:
+        type: boolean
       name:
         type: string
       productCategoryId:
@@ -144,10 +146,6 @@ definitions:
     properties:
       id:
         type: string
-      productSkuId:
-        type: string
-      sequence:
-        type: integer
       specKey:
         type: string
       specValue:
@@ -305,6 +303,8 @@ definitions:
           type: string
         type: array
       isActive:
+        type: boolean
+      isShowOnlyInMarketPlace:
         type: boolean
       modifiedAt:
         type: string
@@ -867,6 +867,14 @@ paths:
         in: query
         name: productCategoryId
         type: integer
+      - description: ' '
+        in: query
+        name: isActive
+        type: boolean
+      - description: ' '
+        in: query
+        name: isShowOnlyInMarketplace
+        type: boolean
       - description: ' '
         in: query
         name: page

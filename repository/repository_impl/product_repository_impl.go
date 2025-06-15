@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"api.mijkomp.com/exception"
 	"api.mijkomp.com/models/entity"
 	"api.mijkomp.com/models/response"
 	"github.com/google/uuid"
@@ -38,7 +39,7 @@ func (repository *ProductRepositoryImpl) Delete(db *gorm.DB, product entity.Prod
 	return err
 }
 
-func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) ([]entity.Product, int64, int64) {
+func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) ([]entity.Product, int64, int64) {
 	var products []entity.Product
 	var totalCount int64 = 0
 	var totalPage int64 = 0
@@ -68,6 +69,14 @@ func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, prod
 		queries.Where("product_category_id = ?", productCategoryId)
 	}
 
+	if isActive != nil {
+		queries.Where("is_active = ?", isActive)
+	}
+
+	if isShowOnlyInMarketPlace != nil {
+		queries.Where("is_show_only_in_market_place = ?", isShowOnlyInMarketPlace)
+	}
+
 	queries.Count(&totalCount)
 	if page != nil && pageSize != nil {
 		offset = (*page - 1) * *pageSize
@@ -81,41 +90,76 @@ func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, prod
 }
 
 func (repository *ProductRepositoryImpl) BrowseProductSku(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) ([]response.BrowseProductSku, int64, int64) {
-	var products []response.BrowseProductSku
+	var productSkus []response.BrowseProductSku
 	var totalCount int64 = 0
 	var totalPage int64 = 0
-	// var offset int = 0
 
-	// queries := db.Model(&products).
-	// 	Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-	// 	// Preload("ProductSkus.ProductSkuDetails").
-	// 	Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-	// 	Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-	// 	Preload("ProductSkuVariants")
+	baseQuery := `
+		FROM products p
+		INNER JOIN product_skus ps ON p.id = ps.product_id
+		WHERE p.is_active = true AND ps.is_active = true
+	`
+	var filters []string
+	var params []interface{}
 
-	db.Raw(`
-		Select 
+	if productCategoryId != nil {
+		filters = append(filters, "p.product_category_id = ?")
+		params = append(params, productCategoryId)
+	}
+
+	if query != nil && *query != "" {
+		filters = append(filters, "p.name ILIKE ?")
+		params = append(params, "%"+*query+"%")
+	}
+
+	if len(filters) > 0 {
+		baseQuery += " AND " + strings.Join(filters, " AND ")
+	}
+
+	countQuery := "SELECT COUNT(*) " + baseQuery
+	err := db.Raw(countQuery, params...).Scan(&totalCount).Error
+
+	exception.PanicIfNeeded(err)
+
+	dataQuery := `
+		SELECT 
 			ps.id,
 			ps.product_id,
 			ps.sku,
-			p.name || ps.name as name,
+			p.name || ps.name AS name,
 			ps.stock,
 			ps.stock_alert,
 			ps.price,
 			p.is_active,
-			p.product_type,
+			--p.product_type,
+			p.product_category_id,
 			p.picture_id,
 			p.description,
 			p.created_at,
 			p.modified_at
-		from products p
-		INNER JOIN product_skus ps
-				ON p.id = ps.product_id
+	` + baseQuery + `
+		ORDER BY p.created_at, ps.sequence
+	`
 
-		ORDER BY p.created_at, sequence
-	`).Find(&products)
+	if page == nil || pageSize == nil {
+		err = db.Raw(dataQuery, params...).Scan(&productSkus).Error
+		exception.PanicIfNeeded(err)
 
-	return products, totalCount, totalPage
+		return productSkus, totalCount, 1
+	} else {
+
+		dataQuery += " LIMIT ? OFFSET ?"
+
+		offset := (*page - 1) * *pageSize
+		paramsWithPagination := append(params, pageSize, offset)
+
+		err = db.Raw(dataQuery, paramsWithPagination...).Scan(&productSkus).Error
+		exception.PanicIfNeeded(err)
+
+		totalPage = (totalCount + int64(*pageSize) - 1) / int64(*pageSize)
+
+		return productSkus, totalCount, totalPage
+	}
 }
 
 // func (repository *ProductRepositoryImpl) SearchProductSku(
@@ -216,11 +260,11 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 	err := db.
 		Preload("ProductCategory").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductSkus.ProductSPecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+		Preload("ProductSkus.ProductSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductGroupItems").
 		Preload("ProductGroupItems.Product").
 		Preload("ProductGroupItems.Product.ProductSkus").
-		Preload("ProductGroupItems.Product.ProductSkus.ProductSpecs").
+		// Preload("ProductGroupItems.Product.ProductSkus.ProductSpecs").
 		Preload("ProductGroupItems.Product.ProductSkuVariants").
 		Preload("ProductGroupItems.Product.ProductVariantOptions").
 		Preload("ProductGroupItems.Product.ProductVariantOptionValues").

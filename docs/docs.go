@@ -700,6 +700,18 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": " ",
+                        "name": "isActive",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": " ",
+                        "name": "isShowOnlyInMarketplace",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": " ",
                         "name": "page",
@@ -1325,6 +1337,9 @@ const docTemplate = `{
                 "isActive": {
                     "type": "boolean"
                 },
+                "isShowOnlyInMarketPlace": {
+                    "type": "boolean"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1423,12 +1438,6 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string"
-                },
-                "productSkuId": {
-                    "type": "string"
-                },
-                "sequence": {
-                    "type": "integer"
                 },
                 "specKey": {
                     "type": "string"
@@ -1665,6 +1674,9 @@ const docTemplate = `{
                     }
                 },
                 "isActive": {
+                    "type": "boolean"
+                },
+                "isShowOnlyInMarketPlace": {
                     "type": "boolean"
                 },
                 "modifiedAt": {

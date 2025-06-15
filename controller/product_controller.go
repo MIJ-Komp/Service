@@ -28,7 +28,7 @@ func (controller *ProductController) Route(app *fiber.App) {
 	product.Put("/:id", middleware.AuthMiddleware(controller.UserService), controller.Update)
 	product.Delete("/:id", middleware.AuthMiddleware(controller.UserService), controller.Delete)
 	product.Get("/", middleware.AuthMiddleware(controller.UserService), controller.Search)
-	// product.Get("/browse", middleware.AuthMiddleware(controller.UserService), controller.BrowseProductSku)
+	product.Get("/browse-product-sku", middleware.AuthMiddleware(controller.UserService), controller.BrowseProductSku)
 	product.Get("/:id", middleware.AuthMiddleware(controller.UserService), controller.GetById)
 
 	variantOption := app.Group("/api/admin/variant-options")
@@ -118,6 +118,8 @@ func (controller *ProductController) Delete(ctx *fiber.Ctx) error {
 // @Param			query query string false " "
 // @Param			productTypes query string false " "
 // @Param			productCategoryId query int false " "
+// @Param			isActive query bool false " "
+// @Param			isShowOnlyInMarketplace query bool false " "
 // @Param			page query int false " "
 // @Param			pageSize query int false " "
 // @Success		200	{object}	[]response.ProductResponse
@@ -140,11 +142,13 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 	}
 
 	productCategoryId := helpers.ParseNullableUint(ctx.Query("productCategoryId"))
+	isActive := helpers.ParseNullableBool(ctx.Query("isActive"))
+	isShowOnlyInMarketPlace := helpers.ParseNullableBool(ctx.Query("isShowOnlyInMarketPlace"))
 
 	page := helpers.ParseNullableInt(ctx.Query("page"))
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
-	result := controller.ProductService.Search(currentUserId, query, productTypes, productCategoryId, page, pageSize)
+	result := controller.ProductService.Search(currentUserId, query, productTypes, productCategoryId, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }
@@ -176,7 +180,6 @@ func (controller *ProductController) BrowseProductSku(ctx *fiber.Ctx) error {
 	}
 
 	productCategoryId := helpers.ParseNullableUint(ctx.Query("productCategoryId"))
-
 	page := helpers.ParseNullableInt(ctx.Query("page"))
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 

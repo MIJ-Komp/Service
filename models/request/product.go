@@ -6,13 +6,14 @@ import (
 )
 
 type ProductPayload struct {
-	ProductType       enum.EProductType `json:"productType"`
-	SKU               string            `json:"sku"`
-	Name              string            `json:"name"`
-	IsActive          bool              `json:"isActive"`
-	ImageIds          []uuid.UUID       `json:"imageIds"`
-	ProductCategoryId *uint             `json:"productCategoryId"`
-	Description       string            `json:"description"`
+	ProductType             enum.EProductType `json:"productType"`
+	SKU                     string            `json:"sku"`
+	Name                    string            `json:"name"`
+	IsActive                bool              `json:"isActive"`
+	IsShowOnlyInMarketPlace bool              `json:"isShowOnlyInMarketPlace"`
+	ImageIds                []uuid.UUID       `json:"imageIds"`
+	ProductCategoryId       *uint             `json:"productCategoryId"`
+	Description             string            `json:"description"`
 
 	ProductSkus        []ProductSkuPayload        `json:"productSkus"`
 	ProductSkuVariants []ProductSkuVariantPayload `json:"productSkuVariants"`

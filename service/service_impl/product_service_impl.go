@@ -36,18 +36,19 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 	defer helpers.CommitOrRollback(tx)
 
 	product := entity.Product{
-		Id:                productId,
-		ProductType:       payload.ProductType,
-		SKU:               payload.SKU,
-		Name:              payload.Name,
-		IsActive:          payload.IsActive,
-		ImageIds:          helpers.JoinImageIds(payload.ImageIds),
-		ProductCategoryId: payload.ProductCategoryId,
-		Description:       payload.Description,
-		CreatedById:       currentUserId,
-		CreatedAt:         time.Now().UTC(),
-		ModifiedById:      currentUserId,
-		ModifiedAt:        time.Now().UTC(),
+		Id:                      productId,
+		ProductType:             payload.ProductType,
+		SKU:                     payload.SKU,
+		Name:                    payload.Name,
+		IsActive:                payload.IsActive,
+		IsShowOnlyInMarketPlace: payload.IsShowOnlyInMarketPlace,
+		ImageIds:                helpers.JoinImageIds(payload.ImageIds),
+		ProductCategoryId:       payload.ProductCategoryId,
+		Description:             payload.Description,
+		CreatedById:             currentUserId,
+		CreatedAt:               time.Now().UTC(),
+		ModifiedById:            currentUserId,
+		ModifiedAt:              time.Now().UTC(),
 	}
 
 	productRes, err := service.ProductRepository.Save(tx, product)
@@ -181,6 +182,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	product.Name = payload.Name
 	product.SKU = payload.SKU
 	product.IsActive = payload.IsActive
+	product.IsShowOnlyInMarketPlace = payload.IsShowOnlyInMarketPlace
 	product.ImageIds = helpers.JoinImageIds(payload.ImageIds)
 	product.ProductCategoryId = payload.ProductCategoryId
 	product.Description = payload.Description
@@ -437,9 +439,9 @@ func (service *ProductServiceImpl) Delete(currentUserId uint, productId uuid.UUI
 	return fmt.Sprintf("Produk %s berhasil di hapus", product.Name)
 }
 
-func (service *ProductServiceImpl) Search(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) response.PageResult {
+func (service *ProductServiceImpl) Search(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult {
 
-	res, totalCount, totalPage := service.ProductRepository.Search(service.db, query, productTypes, productCategoryId, page, pageSize)
+	res, totalCount, totalPage := service.ProductRepository.Search(service.db, query, productTypes, productCategoryId, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
 	return response.PageResult{
 		Items:      service.mapProducts(res),
@@ -512,16 +514,17 @@ func (service *ProductServiceImpl) mapProducts(products []entity.Product) []resp
 
 func (service *ProductServiceImpl) mapProduct(product entity.Product) response.ProductResponse {
 	productRes := response.ProductResponse{
-		Id:           product.Id,
-		SKU:          product.SKU,
-		Name:         product.Name,
-		IsActive:     product.IsActive,
-		ImageIds:     helpers.SplitImageIds(product.ImageIds),
-		Description:  product.Description,
-		CreatedById:  product.CreatedById,
-		CreatedAt:    product.CreatedAt,
-		ModifiedById: product.ModifiedById,
-		ModifiedAt:   product.ModifiedAt,
+		Id:                      product.Id,
+		SKU:                     product.SKU,
+		Name:                    product.Name,
+		IsActive:                product.IsActive,
+		IsShowOnlyInMarketPlace: product.IsShowOnlyInMarketPlace,
+		ImageIds:                helpers.SplitImageIds(product.ImageIds),
+		Description:             product.Description,
+		CreatedById:             product.CreatedById,
+		CreatedAt:               product.CreatedAt,
+		ModifiedById:            product.ModifiedById,
+		ModifiedAt:              product.ModifiedAt,
 
 		ProductSkus:                []response.ProductSku{},
 		ProductGroupItems:          []response.ProductGroupItemResponse{},

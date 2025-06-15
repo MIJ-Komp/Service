@@ -101,3 +101,11 @@ func ParseNullableBool(str string) *bool {
 
 	return &boolean
 }
+
+func ParseBool(str string) bool {
+
+	boolean, err := strconv.ParseBool(str)
+	exception.PanicIfNeeded(err)
+
+	return boolean
+}

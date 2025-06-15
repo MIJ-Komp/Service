@@ -7,17 +7,18 @@ import (
 )
 
 type ProductResponse struct {
-	Id           uuid.UUID    `json:"id"`
-	ProductType  EnumResponse `json:"productType"`
-	Name         string       `json:"name"`
-	SKU          string       `json:"sku"`
-	IsActive     bool         `json:"isActive"`
-	ImageIds     []uuid.UUID  `json:"imageIds"`
-	Description  string       `json:"description"`
-	CreatedById  uint         `json:"createdById"`
-	CreatedAt    time.Time    `json:"createdAt"`
-	ModifiedById uint         `json:"modifiedById"`
-	ModifiedAt   time.Time    `json:"modifiedAt"`
+	Id                      uuid.UUID    `json:"id"`
+	ProductType             EnumResponse `json:"productType"`
+	Name                    string       `json:"name"`
+	SKU                     string       `json:"sku"`
+	IsActive                bool         `json:"isActive"`
+	IsShowOnlyInMarketPlace bool         `json:"isShowOnlyInMarketPlace"`
+	ImageIds                []uuid.UUID  `json:"imageIds"`
+	Description             string       `json:"description"`
+	CreatedById             uint         `json:"createdById"`
+	CreatedAt               time.Time    `json:"createdAt"`
+	ModifiedById            uint         `json:"modifiedById"`
+	ModifiedAt              time.Time    `json:"modifiedAt"`
 
 	ProductCategory *ProductCategory `json:"productCategory"`
 
@@ -89,19 +90,19 @@ type VariantOption struct {
 }
 
 type BrowseProductSku struct {
-	Id           uuid.UUID    `json:"id"`
-	ProductId    uuid.UUID    `json:"productId"`
-	SKU          string       `json:"sku"`
-	Name         string       `json:"name"`
-	IsActive     bool         `json:"isActive"`
-	ProductType  EnumResponse `json:"productType"`
-	PictureId    *uuid.UUID   `json:"pictureId"`
-	Description  string       `json:"description"`
-	CreatedById  uint         `json:"createdById"`
-	CreatedAt    time.Time    `json:"createdAt"`
-	ModifiedById uint         `json:"modifiedById"`
-	ModifiedAt   time.Time    `json:"modifiedAt"`
+	Id           uuid.UUID  `json:"id"`
+	ProductId    uuid.UUID  `json:"productId"`
+	SKU          string     `json:"sku"`
+	Name         string     `json:"name"`
+	IsActive     bool       `json:"isActive"`
+	ProductType  string     `json:"productType"`
+	PictureId    *uuid.UUID `json:"pictureId"`
+	Description  string     `json:"description"`
+	CreatedById  uint       `json:"createdById"`
+	CreatedAt    time.Time  `json:"createdAt"`
+	ModifiedById uint       `json:"modifiedById"`
+	ModifiedAt   time.Time  `json:"modifiedAt"`
 
-	ProductCategory   *ProductCategory           `json:"productCategory"`
-	ProductGroupItems []ProductGroupItemResponse `json:"productGroupItems"`
+	// ProductCategory   *ProductCategory           `json:"productCategory"`
+	// ProductGroupItems []ProductGroupItemResponse `json:"productGroupItems"`
 }

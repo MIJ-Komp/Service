@@ -10,7 +10,7 @@ type ProductService interface {
 	Create(currentUserId uint, productId uuid.UUID, req request.ProductPayload) response.ProductResponse
 	Update(currentUserId uint, productId uuid.UUID, req request.ProductPayload) response.ProductResponse
 	Delete(currentUserId uint, productId uuid.UUID) string
-	Search(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) response.PageResult
+	Search(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult
 	BrowseProductSku(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) response.PageResult
 	// SearchProductSku(currentUserId uint, outletId *uint, query *string, productTypes *[]string, isInventoryOnly *bool, productCategoryId *uint, brandId *uint, page, pageSize *int) response.PageResult
 	GetById(currentUserId uint, productId uuid.UUID) response.ProductResponse
