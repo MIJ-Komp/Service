@@ -1,9 +1,10 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Try Out Api",
+        "description": "Swagger documentation for admin",
+        "title": "Admin API",
         "contact": {},
-        "version": "1.0.0"
+        "version": "1.0"
     },
     "paths": {
         "/api/admin/compatibility-rules": {
@@ -20,7 +21,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Compatibility Rules"
+                    "Compatibility Rules"
                 ],
                 "summary": "Search compatibility rules",
                 "parameters": [
@@ -59,7 +60,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Compatibility Rules"
+                    "Compatibility Rules"
                 ],
                 "summary": "Create compatibility rules",
                 "parameters": [
@@ -103,7 +104,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Compatibility Rules"
+                    "Compatibility Rules"
                 ],
                 "summary": "Get compatibility rules by id",
                 "parameters": [
@@ -143,7 +144,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Compatibility Rules"
+                    "Compatibility Rules"
                 ],
                 "summary": "Update compatibility rules",
                 "parameters": [
@@ -192,7 +193,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Compatibility Rules"
+                    "Compatibility Rules"
                 ],
                 "summary": "Delete compatibility rules",
                 "parameters": [
@@ -234,7 +235,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Component Type"
+                    "Component Type"
                 ],
                 "summary": "Search component type",
                 "parameters": [
@@ -273,7 +274,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Component Type"
+                    "Component Type"
                 ],
                 "summary": "Create Component ype",
                 "parameters": [
@@ -317,7 +318,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Component Type"
+                    "Component Type"
                 ],
                 "summary": "Get component type by id",
                 "parameters": [
@@ -357,7 +358,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Component Type"
+                    "Component Type"
                 ],
                 "summary": "Update component type",
                 "parameters": [
@@ -406,7 +407,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Component Type"
+                    "Component Type"
                 ],
                 "summary": "Delete component type",
                 "parameters": [
@@ -448,7 +449,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product Category"
+                    "Product Category"
                 ],
                 "summary": "Search category",
                 "parameters": [
@@ -493,7 +494,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product Category"
+                    "Product Category"
                 ],
                 "summary": "Create category",
                 "parameters": [
@@ -537,7 +538,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product Category"
+                    "Product Category"
                 ],
                 "summary": "Get category by id",
                 "parameters": [
@@ -577,7 +578,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product Category"
+                    "Product Category"
                 ],
                 "summary": "Update category",
                 "parameters": [
@@ -626,7 +627,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product Category"
+                    "Product Category"
                 ],
                 "summary": "Delete category",
                 "parameters": [
@@ -668,7 +669,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product"
+                    "Product"
                 ],
                 "summary": "Search products",
                 "parameters": [
@@ -748,7 +749,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product"
+                    "Product"
                 ],
                 "summary": "Browse products sku",
                 "parameters": [
@@ -804,7 +805,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product"
+                    "Product"
                 ],
                 "summary": "Get product by id",
                 "parameters": [
@@ -844,7 +845,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product"
+                    "Product"
                 ],
                 "summary": "Update Product",
                 "parameters": [
@@ -893,7 +894,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product"
+                    "Product"
                 ],
                 "summary": "Create Product",
                 "parameters": [
@@ -943,7 +944,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product"
+                    "Product"
                 ],
                 "summary": "Delete product",
                 "parameters": [
@@ -985,7 +986,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product Variant Option"
+                    "Product Variant Option"
                 ],
                 "summary": "Get Variant Options",
                 "responses": {
@@ -1019,7 +1020,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "(Admin) Product Variant Option"
+                    "Product Variant Option"
                 ],
                 "summary": "Create Variant Option",
                 "parameters": [
@@ -1061,17 +1062,6 @@
                     "Auth"
                 ],
                 "summary": "Login",
-                "parameters": [
-                    {
-                        "description": " ",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.LoginUserPayload"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1215,12 +1205,16 @@
             "enum": [
                 "simple",
                 "variant",
-                "bundle"
+                "bundle",
+                "admin",
+                "customer"
             ],
             "x-enum-varnames": [
                 "ProductTypeSimple",
                 "ProductTypeVariant",
-                "ProductTypeGroup"
+                "ProductTypeGroup",
+                "Admin",
+                "Customer"
             ]
         },
         "request.CompatibilityRule": {
@@ -1263,25 +1257,6 @@
                 },
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "request.LoginUserPayload": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "maxLength": 500,
-                    "minLength": 5
-                },
-                "password": {
-                    "type": "string",
-                    "maxLength": 500,
-                    "minLength": 3
                 }
             }
         },
@@ -1877,14 +1852,6 @@
                     "type": "string"
                 }
             }
-        }
-    },
-    "securityDefinitions": {
-        "ApiKeyAuth": {
-            "description": "Api documentation Try Out App\nDescription for what is this security definition being used",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }

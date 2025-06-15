@@ -1,4 +1,4 @@
-package controller
+package admin
 
 import (
 	"api.mijkomp.com/exception"
@@ -29,7 +29,7 @@ func (controller *ComponentTypeController) Route(app *fiber.App) {
 }
 
 // @Summary      Create Component ype
-// @Tags         (Admin) Component Type
+// @Tags         Component Type
 // @Accept       json
 // @Produce      json
 // @Param        request body request.ComponentType  true " "
@@ -52,7 +52,7 @@ func (controller *ComponentTypeController) Create(ctx *fiber.Ctx) error {
 }
 
 // @Summary      Update component type
-// @Tags         (Admin) Component Type
+// @Tags         Component Type
 // @Accept       json
 // @Produce      json
 // @Param        id path int  true " "
@@ -77,7 +77,7 @@ func (controller *ComponentTypeController) Update(ctx *fiber.Ctx) error {
 }
 
 // @Summary      Delete component type
-// @Tags         (Admin) Component Type
+// @Tags         Component Type
 // @Accept       json
 // @Produce      json
 // @Param        id path int  true " "
@@ -97,7 +97,7 @@ func (controller *ComponentTypeController) Delete(ctx *fiber.Ctx) error {
 }
 
 // @Summary		Search component type
-// @Tags			(Admin) Component Type
+// @Tags			Component Type
 // @Accept		json
 // @Produce		json
 // @Param			query query string false " "
@@ -118,7 +118,7 @@ func (controller *ComponentTypeController) Search(ctx *fiber.Ctx) error {
 }
 
 // @Summary		Get component type by id
-// @Tags			(Admin) Component Type
+// @Tags			Component Type
 // @Accept		json
 // @Produce		json
 // @Param			id path int true " "

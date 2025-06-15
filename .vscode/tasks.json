@@ -2,11 +2,37 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run Prelaunch Command",
+      "label": "Generate Swagger Admin",
       "type": "shell",
-      "command": "swag init",
+      "command": "swag init -g main_admin.go -o ./docs/admin --dir ./swagger,./controller/admin,./models",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": [],
-      "group": "none"
+      "group": "build"
+    },
+    {
+      "label": "Generate Swagger Customer",
+      "type": "shell",
+      "command": "swag init -g main_customer.go -o ./docs/customer --dir ./swagger,./controller/customer,./models",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Generate Swagger All",
+      "dependsOn": [
+        "Generate Swagger Admin",
+        "Generate Swagger Customer"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }

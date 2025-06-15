@@ -7,7 +7,7 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceRoot}",
-      "preLaunchTask": "Run Prelaunch Command"  // This should match the label from tasks.json
+      "preLaunchTask": "Generate Swagger All" 
     }
   ]
 }

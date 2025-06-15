@@ -4,11 +4,15 @@ definitions:
     - simple
     - variant
     - bundle
+    - admin
+    - customer
     type: string
     x-enum-varnames:
     - ProductTypeSimple
     - ProductTypeVariant
     - ProductTypeGroup
+    - Admin
+    - Customer
   request.CompatibilityRule:
     properties:
       condition:
@@ -36,20 +40,6 @@ definitions:
         type: string
       name:
         type: string
-    type: object
-  request.LoginUserPayload:
-    properties:
-      email:
-        maxLength: 500
-        minLength: 5
-        type: string
-      password:
-        maxLength: 500
-        minLength: 3
-        type: string
-    required:
-    - email
-    - password
     type: object
   request.ProductCategory:
     properties:
@@ -444,8 +434,9 @@ definitions:
     type: object
 info:
   contact: {}
-  title: Try Out Api
-  version: 1.0.0
+  description: Swagger documentation for admin
+  title: Admin API
+  version: "1.0"
 paths:
   /api/admin/compatibility-rules:
     get:
@@ -471,7 +462,7 @@ paths:
       - ApiKeyAuth: []
       summary: Search compatibility rules
       tags:
-      - (Admin) Compatibility Rules
+      - Compatibility Rules
     post:
       consumes:
       - application/json
@@ -497,7 +488,7 @@ paths:
       - ApiKeyAuth: []
       summary: Create compatibility rules
       tags:
-      - (Admin) Compatibility Rules
+      - Compatibility Rules
   /api/admin/compatibility-rules/{id}:
     delete:
       consumes:
@@ -523,7 +514,7 @@ paths:
       - ApiKeyAuth: []
       summary: Delete compatibility rules
       tags:
-      - (Admin) Compatibility Rules
+      - Compatibility Rules
     get:
       consumes:
       - application/json
@@ -548,7 +539,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get compatibility rules by id
       tags:
-      - (Admin) Compatibility Rules
+      - Compatibility Rules
     put:
       consumes:
       - application/json
@@ -579,7 +570,7 @@ paths:
       - ApiKeyAuth: []
       summary: Update compatibility rules
       tags:
-      - (Admin) Compatibility Rules
+      - Compatibility Rules
   /api/admin/component-types:
     get:
       consumes:
@@ -604,7 +595,7 @@ paths:
       - ApiKeyAuth: []
       summary: Search component type
       tags:
-      - (Admin) Component Type
+      - Component Type
     post:
       consumes:
       - application/json
@@ -630,7 +621,7 @@ paths:
       - ApiKeyAuth: []
       summary: Create Component ype
       tags:
-      - (Admin) Component Type
+      - Component Type
   /api/admin/component-types/{id}:
     delete:
       consumes:
@@ -656,7 +647,7 @@ paths:
       - ApiKeyAuth: []
       summary: Delete component type
       tags:
-      - (Admin) Component Type
+      - Component Type
     get:
       consumes:
       - application/json
@@ -681,7 +672,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get component type by id
       tags:
-      - (Admin) Component Type
+      - Component Type
     put:
       consumes:
       - application/json
@@ -712,7 +703,7 @@ paths:
       - ApiKeyAuth: []
       summary: Update component type
       tags:
-      - (Admin) Component Type
+      - Component Type
   /api/admin/product-categories:
     get:
       consumes:
@@ -741,7 +732,7 @@ paths:
       - ApiKeyAuth: []
       summary: Search category
       tags:
-      - (Admin) Product Category
+      - Product Category
     post:
       consumes:
       - application/json
@@ -767,7 +758,7 @@ paths:
       - ApiKeyAuth: []
       summary: Create category
       tags:
-      - (Admin) Product Category
+      - Product Category
   /api/admin/product-categories/{id}:
     delete:
       consumes:
@@ -793,7 +784,7 @@ paths:
       - ApiKeyAuth: []
       summary: Delete category
       tags:
-      - (Admin) Product Category
+      - Product Category
     get:
       consumes:
       - application/json
@@ -818,7 +809,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get category by id
       tags:
-      - (Admin) Product Category
+      - Product Category
     put:
       consumes:
       - application/json
@@ -849,7 +840,7 @@ paths:
       - ApiKeyAuth: []
       summary: Update category
       tags:
-      - (Admin) Product Category
+      - Product Category
   /api/admin/products:
     get:
       consumes:
@@ -900,7 +891,7 @@ paths:
       - ApiKeyAuth: []
       summary: Search products
       tags:
-      - (Admin) Product
+      - Product
   /api/admin/products/{id}:
     delete:
       consumes:
@@ -926,7 +917,7 @@ paths:
       - ApiKeyAuth: []
       summary: Delete product
       tags:
-      - (Admin) Product
+      - Product
     get:
       consumes:
       - application/json
@@ -951,7 +942,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get product by id
       tags:
-      - (Admin) Product
+      - Product
     post:
       consumes:
       - application/json
@@ -983,7 +974,7 @@ paths:
       - ApiKeyAuth: []
       summary: Create Product
       tags:
-      - (Admin) Product
+      - Product
     put:
       consumes:
       - application/json
@@ -1014,7 +1005,7 @@ paths:
       - ApiKeyAuth: []
       summary: Update Product
       tags:
-      - (Admin) Product
+      - Product
   /api/admin/products/browse-product-sku:
     get:
       consumes:
@@ -1049,7 +1040,7 @@ paths:
       - ApiKeyAuth: []
       summary: Browse products sku
       tags:
-      - (Admin) Product
+      - Product
   /api/admin/variant-options:
     get:
       consumes:
@@ -1071,7 +1062,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get Variant Options
       tags:
-      - (Admin) Product Variant Option
+      - Product Variant Option
     post:
       consumes:
       - application/json
@@ -1097,18 +1088,11 @@ paths:
       - ApiKeyAuth: []
       summary: Create Variant Option
       tags:
-      - (Admin) Product Variant Option
+      - Product Variant Option
   /api/auth/login:
     post:
       consumes:
       - application/json
-      parameters:
-      - description: ' '
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/request.LoginUserPayload'
       produces:
       - application/json
       responses:
@@ -1198,12 +1182,4 @@ paths:
       summary: Register user
       tags:
       - User
-securityDefinitions:
-  ApiKeyAuth:
-    description: |-
-      Api documentation Try Out App
-      Description for what is this security definition being used
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

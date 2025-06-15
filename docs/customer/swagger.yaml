@@ -1,0 +1,304 @@
+definitions:
+  response.AuditTrail:
+    properties:
+      id:
+        type: integer
+      userName:
+        type: string
+    type: object
+  response.EnumResponse:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
+  response.ProductCategory:
+    properties:
+      createdAt:
+        type: string
+      createdById:
+        $ref: '#/definitions/response.AuditTrail'
+      id:
+        type: integer
+      modifiedAt:
+        type: string
+      modifiedById:
+        $ref: '#/definitions/response.AuditTrail'
+      name:
+        type: string
+      parentId:
+        type: integer
+    type: object
+  response.ProductGroupItemResponse:
+    properties:
+      id:
+        type: string
+      product:
+        $ref: '#/definitions/response.ProductResponse'
+      productId:
+        type: string
+      productSkuId:
+        type: string
+      qty:
+        type: integer
+    type: object
+  response.ProductResponse:
+    properties:
+      createdAt:
+        type: string
+      createdById:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      imageIds:
+        items:
+          type: string
+        type: array
+      isActive:
+        type: boolean
+      isShowOnlyInMarketPlace:
+        type: boolean
+      modifiedAt:
+        type: string
+      modifiedById:
+        type: integer
+      name:
+        type: string
+      productCategory:
+        $ref: '#/definitions/response.ProductCategory'
+      productGroupItems:
+        items:
+          $ref: '#/definitions/response.ProductGroupItemResponse'
+        type: array
+      productSkuVariants:
+        items:
+          $ref: '#/definitions/response.ProductSkuVariant'
+        type: array
+      productSkus:
+        items:
+          $ref: '#/definitions/response.ProductSku'
+        type: array
+      productType:
+        $ref: '#/definitions/response.EnumResponse'
+      productVariantOptionValues:
+        items:
+          $ref: '#/definitions/response.ProductVariantOptionValue'
+        type: array
+      productVariantOptions:
+        items:
+          $ref: '#/definitions/response.ProductVariantOption'
+        type: array
+      sku:
+        type: string
+    type: object
+  response.ProductSku:
+    properties:
+      ProductSpecs:
+        items:
+          $ref: '#/definitions/response.ProductSpec'
+        type: array
+      id:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      productId:
+        type: string
+      sequence:
+        type: integer
+      sku:
+        type: string
+      stock:
+        type: integer
+      stockAlert:
+        type: integer
+    type: object
+  response.ProductSkuVariant:
+    properties:
+      id:
+        type: string
+      productSkuId:
+        type: string
+      productVariantOptionId:
+        type: string
+      productVariantOptionValueId:
+        type: string
+    type: object
+  response.ProductSpec:
+    properties:
+      id:
+        type: string
+      productSkuId:
+        type: string
+      specKey:
+        type: string
+      specValue:
+        type: string
+    type: object
+  response.ProductVariantOption:
+    properties:
+      allowDelete:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      productId:
+        type: string
+      sequence:
+        type: integer
+    type: object
+  response.ProductVariantOptionValue:
+    properties:
+      allowDelete:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      productVariantOptionId:
+        type: string
+      sequence:
+        type: integer
+    type: object
+  response.WebResponse:
+    properties:
+      code:
+        type: integer
+      content: {}
+      message:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Swagger documentation for customer
+  title: Customer API
+  version: "1.0"
+paths:
+  /api/product-categories:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      - description: ' '
+        in: query
+        name: parentId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductCategory'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Search product categories
+      tags:
+      - Product Category
+  /api/product-categories/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductCategory'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Get category by id
+      tags:
+      - Product Category
+  /api/products:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      - description: ' '
+        in: query
+        name: productTypes
+        type: string
+      - description: ' '
+        in: query
+        name: productCategoryId
+        type: integer
+      - description: ' '
+        in: query
+        name: page
+        type: integer
+      - description: ' '
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.ProductResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Search products
+      tags:
+      - Product
+  /api/products/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Get product by id
+      tags:
+      - Product
+swagger: "2.0"

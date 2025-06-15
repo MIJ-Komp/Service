@@ -1,4 +1,4 @@
-package controller
+package admin
 
 import (
 	"strings"
@@ -37,7 +37,7 @@ func (controller *ProductController) Route(app *fiber.App) {
 }
 
 // @Summary     Create Product
-// @Tags        (Admin) Product
+// @Tags        Product
 // @Accept      json
 // @Produce     json
 // @Param       id path string true "Id (UUID format)" format(uuid)
@@ -63,7 +63,7 @@ func (controller *ProductController) Create(ctx *fiber.Ctx) error {
 }
 
 // @Summary     Update Product
-// @Tags        (Admin) Product
+// @Tags        Product
 // @Accept      json
 // @Produce     json
 // @Param       id path string  true " "
@@ -90,7 +90,7 @@ func (controller *ProductController) Update(ctx *fiber.Ctx) error {
 }
 
 // @Summary      Delete product
-// @Tags         (Admin) Product
+// @Tags         Product
 // @Accept       json
 // @Produce      json
 // @Param        id path string  true " "
@@ -112,7 +112,7 @@ func (controller *ProductController) Delete(ctx *fiber.Ctx) error {
 }
 
 // @Summary		Search products
-// @Tags			(Admin) Product
+// @Tags			Product
 // @Accept		json
 // @Produce		json
 // @Param			query query string false " "
@@ -154,7 +154,7 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 }
 
 // @Summary		Browse products sku
-// @Tags			(Admin) Product
+// @Tags			Product
 // @Accept		json
 // @Produce		json
 // @Param			query query string false " "
@@ -214,7 +214,7 @@ func (controller *ProductController) BrowseProductSku(ctx *fiber.Ctx) error {
 // }
 
 // @Summary		Get product by id
-// @Tags			(Admin) Product
+// @Tags			Product
 // @Accept		json
 // @Produce		json
 // @Param			id path string true " "
@@ -236,7 +236,7 @@ func (controller *ProductController) GetById(ctx *fiber.Ctx) error {
 }
 
 // @Summary     Create Variant Option
-// @Tags        (Admin) Product Variant Option
+// @Tags        Product Variant Option
 // @Accept      json
 // @Produce     json
 // @Param       request body request.VariantOptionPayload true " "
@@ -260,7 +260,7 @@ func (controller *ProductController) CreateVariantOptions(ctx *fiber.Ctx) error 
 }
 
 // @Summary     Get Variant Options
-// @Tags        (Admin) Product Variant Option
+// @Tags        Product Variant Option
 // @Accept      json
 // @Produce     json
 // @Success     200  {object}  []response.VariantOption

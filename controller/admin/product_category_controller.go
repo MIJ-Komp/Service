@@ -1,4 +1,4 @@
-package controller
+package admin
 
 import (
 	"api.mijkomp.com/exception"
@@ -29,7 +29,7 @@ func (controller *ProductCategoryController) Route(app *fiber.App) {
 }
 
 // @Summary      Create category
-// @Tags         (Admin) Product Category
+// @Tags         Product Category
 // @Accept       json
 // @Produce      json
 // @Param        request body request.ProductCategory  true " "
@@ -52,7 +52,7 @@ func (controller *ProductCategoryController) Create(ctx *fiber.Ctx) error {
 }
 
 // @Summary      Update category
-// @Tags         (Admin) Product Category
+// @Tags         Product Category
 // @Accept       json
 // @Produce      json
 // @Param        id path int  true " "
@@ -77,7 +77,7 @@ func (controller *ProductCategoryController) Update(ctx *fiber.Ctx) error {
 }
 
 // @Summary      Delete category
-// @Tags         (Admin) Product Category
+// @Tags         Product Category
 // @Accept       json
 // @Produce      json
 // @Param        id path int  true " "
@@ -97,7 +97,7 @@ func (controller *ProductCategoryController) Delete(ctx *fiber.Ctx) error {
 }
 
 // @Summary		Search category
-// @Tags			(Admin) Product Category
+// @Tags			Product Category
 // @Accept		json
 // @Produce		json
 // @Param			query query string false " "
@@ -120,7 +120,7 @@ func (controller *ProductCategoryController) Search(ctx *fiber.Ctx) error {
 }
 
 // @Summary		Get category by id
-// @Tags			(Admin) Product Category
+// @Tags			Product Category
 // @Accept		json
 // @Produce		json
 // @Param			id path int true " "

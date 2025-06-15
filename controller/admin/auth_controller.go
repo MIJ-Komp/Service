@@ -1,4 +1,4 @@
-package controller
+package admin
 
 import (
 	"api.mijkomp.com/exception"
@@ -26,7 +26,6 @@ func (controller *AuthController) Route(app *fiber.App) {
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
-// @Param        request body request.LoginUserPayload  true " "
 // @Success      200  {object}  response.WebResponse
 // @Failure      404  {object}  response.WebResponse
 // @Failure      500  {object}  response.WebResponse

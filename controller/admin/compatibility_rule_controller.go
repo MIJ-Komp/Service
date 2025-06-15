@@ -1,4 +1,4 @@
-package controller
+package admin
 
 import (
 	"api.mijkomp.com/exception"
@@ -29,7 +29,7 @@ func (controller *CompatibilityRuleController) Route(app *fiber.App) {
 }
 
 // @Summary      Create compatibility rules
-// @Tags         (Admin) Compatibility Rules
+// @Tags         Compatibility Rules
 // @Accept       json
 // @Produce      json
 // @Param        request body request.CompatibilityRule  true " "
@@ -52,7 +52,7 @@ func (controller *CompatibilityRuleController) Create(ctx *fiber.Ctx) error {
 }
 
 // @Summary      Update compatibility rules
-// @Tags         (Admin) Compatibility Rules
+// @Tags         Compatibility Rules
 // @Accept       json
 // @Produce      json
 // @Param        id path int  true " "
@@ -77,7 +77,7 @@ func (controller *CompatibilityRuleController) Update(ctx *fiber.Ctx) error {
 }
 
 // @Summary      Delete compatibility rules
-// @Tags         (Admin) Compatibility Rules
+// @Tags         Compatibility Rules
 // @Accept       json
 // @Produce      json
 // @Param        id path int  true " "
@@ -97,7 +97,7 @@ func (controller *CompatibilityRuleController) Delete(ctx *fiber.Ctx) error {
 }
 
 // @Summary		Search compatibility rules
-// @Tags			(Admin) Compatibility Rules
+// @Tags			Compatibility Rules
 // @Accept		json
 // @Produce		json
 // @Param			query query string false " "
@@ -118,7 +118,7 @@ func (controller *CompatibilityRuleController) Search(ctx *fiber.Ctx) error {
 }
 
 // @Summary		Get compatibility rules by id
-// @Tags			(Admin) Compatibility Rules
+// @Tags			Compatibility Rules
 // @Accept		json
 // @Produce		json
 // @Param			id path int true " "
