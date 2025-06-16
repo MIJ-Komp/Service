@@ -13,6 +13,36 @@ definitions:
       name:
         type: string
     type: object
+  response.Menu:
+    properties:
+      createdAt:
+        type: string
+      createdById:
+        $ref: '#/definitions/response.AuditTrail'
+      id:
+        type: integer
+      menuItems:
+        items:
+          $ref: '#/definitions/response.MenuItem'
+        type: array
+      modifiedAt:
+        type: string
+      modifiedById:
+        $ref: '#/definitions/response.AuditTrail'
+      name:
+        type: string
+      parentId:
+        type: integer
+    type: object
+  response.MenuItem:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      productCategoryId:
+        type: integer
+    type: object
   response.ProductCategory:
     properties:
       createdAt:
@@ -185,6 +215,24 @@ info:
   title: Customer API
   version: "1.0"
 paths:
+  /api/menus:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Menu'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Search menu
+      tags:
+      - Menu
   /api/product-categories:
     get:
       consumes:

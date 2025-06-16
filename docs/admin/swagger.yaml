@@ -1,18 +1,18 @@
 definitions:
   enum.EProductType:
     enum:
-    - admin
-    - customer
     - simple
     - variant
     - bundle
+    - admin
+    - customer
     type: string
     x-enum-varnames:
-    - Admin
-    - Customer
     - ProductTypeSimple
     - ProductTypeVariant
     - ProductTypeGroup
+    - Admin
+    - Customer
   request.CompatibilityRule:
     properties:
       condition:

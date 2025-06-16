@@ -182,7 +182,6 @@ func (controller *MenuController) CreateItem(ctx *fiber.Ctx) error {
 func (controller *MenuController) DeleteItem(ctx *fiber.Ctx) error {
 	currentUserId := helpers.ParseUserId(ctx.Locals("userId"))
 
-	// id := helpers.ParseUint(ctx.Params("id"))
 	id := helpers.ParseUint(ctx.Params("id"))
 
 	result := controller.MenuService.DeleteItem(currentUserId, id)

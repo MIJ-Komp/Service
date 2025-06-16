@@ -1495,18 +1495,18 @@ const docTemplate = `{
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "admin",
-                "customer",
                 "simple",
                 "variant",
-                "bundle"
+                "bundle",
+                "admin",
+                "customer"
             ],
             "x-enum-varnames": [
-                "Admin",
-                "Customer",
                 "ProductTypeSimple",
                 "ProductTypeVariant",
-                "ProductTypeGroup"
+                "ProductTypeGroup",
+                "Admin",
+                "Customer"
             ]
         },
         "request.CompatibilityRule": {

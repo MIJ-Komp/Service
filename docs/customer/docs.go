@@ -15,6 +15,34 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/menus": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Search menu",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Menu"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/product-categories": {
             "get": {
                 "consumes": [
@@ -215,6 +243,52 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "response.Menu": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "menuItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.MenuItem"
+                    }
+                },
+                "modifiedAt": {
+                    "type": "string"
+                },
+                "modifiedById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.MenuItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "productCategoryId": {
+                    "type": "integer"
                 }
             }
         },

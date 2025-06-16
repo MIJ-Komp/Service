@@ -13,20 +13,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// pastikan kamu pakai fiber-swagger adapter
-
-// import (
-// 	"api.mijkomp.com/controller/admin"
-// 	_ "api.mijkomp.com/docs"
-// 	"api.mijkomp.com/exception"
-// 	"api.mijkomp.com/service"
-// 	"github.com/gofiber/adaptor/v2"
-// 	"github.com/gofiber/fiber/v2"
-// 	"github.com/gofiber/fiber/v2/middleware/cors"
-// 	httpSwagger "github.com/swaggo/http-swagger"
-// 	"gorm.io/gorm"
-// )
-
 func NewFiberConfig() fiber.Config {
 	return fiber.Config{
 		BodyLimit:    10 * 1024 * 1024,
@@ -76,6 +62,7 @@ func CreateServer(
 
 	customer.NewProductCategoryController(&userService, &productCategoryService).Route(app)
 	customer.NewProductController(&userService, &productService).Route(app)
+	customer.NewMenuController(&userService, &menuService).Route(app)
 
 	return app
 }
