@@ -52,6 +52,13 @@ var compatibilityRuleSet = wire.NewSet(
 	wire.Bind(new(service.CompatibilityRuleService), new(*service_impl.CompatibilityRuleServiceImpl)),
 )
 
+var menuSet = wire.NewSet(
+	repository_impl.NewMenuRepository,
+	wire.Bind(new(repository.MenuRepository), new(*repository_impl.MenuRepositoryImpl)),
+	service_impl.NewMenuService,
+	wire.Bind(new(service.MenuService), new(*service_impl.MenuServiceImpl)),
+)
+
 func InitializedServer() *fiber.App {
 	wire.Build(
 		database.NewDB,
@@ -60,6 +67,7 @@ func InitializedServer() *fiber.App {
 		productSet,
 		componentTypeSet,
 		compatibilityRuleSet,
+		menuSet,
 		validatorSet,
 		app.CreateServer,
 	)

@@ -33,7 +33,9 @@ func InitializedServer() *fiber.App {
 	componentTypeServiceImpl := service_impl.NewComponentTypeService(componentTypeRepositoryImpl, validate, db)
 	compatibilityRuleRepositoryImpl := repository_impl.NewCompatibilityRuleRepository()
 	compatibilityRuleServiceImpl := service_impl.NewCompatibilityRuleService(compatibilityRuleRepositoryImpl, validate, db)
-	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, db)
+	menuRepositoryImpl := repository_impl.NewMenuRepository()
+	menuServiceImpl := service_impl.NewMenuService(menuRepositoryImpl, validate, db)
+	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, menuServiceImpl, db)
 	return fiberApp
 }
 
@@ -50,3 +52,5 @@ var productSet = wire.NewSet(repository_impl.NewProductRepository, wire.Bind(new
 var componentTypeSet = wire.NewSet(repository_impl.NewComponentTypeRepository, wire.Bind(new(repository.ComponentTypeRepository), new(*repository_impl.ComponentTypeRepositoryImpl)), service_impl.NewComponentTypeService, wire.Bind(new(service.ComponentTypeService), new(*service_impl.ComponentTypeServiceImpl)))
 
 var compatibilityRuleSet = wire.NewSet(repository_impl.NewCompatibilityRuleRepository, wire.Bind(new(repository.CompatibilityRuleRepository), new(*repository_impl.CompatibilityRuleRepositoryImpl)), service_impl.NewCompatibilityRuleService, wire.Bind(new(service.CompatibilityRuleService), new(*service_impl.CompatibilityRuleServiceImpl)))
+
+var menuSet = wire.NewSet(repository_impl.NewMenuRepository, wire.Bind(new(repository.MenuRepository), new(*repository_impl.MenuRepositoryImpl)), service_impl.NewMenuService, wire.Bind(new(service.MenuService), new(*service_impl.MenuServiceImpl)))

@@ -40,6 +40,7 @@ func CreateServer(
 	productService service.ProductService,
 	componentTypeService service.ComponentTypeService,
 	compatibilityRuleService service.CompatibilityRuleService,
+	menuService service.MenuService,
 	db *gorm.DB,
 ) *fiber.App {
 
@@ -54,10 +55,6 @@ func CreateServer(
 
 	// cors
 	app.Use(cors.New())
-
-	// swagger
-	// app.Get("/swagger/admin/*", swagger.HandlerDefault)
-	// app.Get("/swagger/customer/*", swagger.HandlerDefault)
 
 	app.Get("/swagger/admin/*", swagger.New(swagger.Config{
 		URL: "/docs/admin/swagger.json",
@@ -75,35 +72,10 @@ func CreateServer(
 	admin.NewProductController(&userService, &productService).Route(app)
 	admin.NewComponentTypeController(&userService, &componentTypeService).Route(app)
 	admin.NewCompatibilityRuleController(&userService, &compatibilityRuleService).Route(app)
+	admin.NewMenuController(&userService, &menuService).Route(app)
 
 	customer.NewProductCategoryController(&userService, &productCategoryService).Route(app)
 	customer.NewProductController(&userService, &productService).Route(app)
 
 	return app
 }
-
-// func swaggerHandler(urlPrefix string) fiber.Handler {
-// 	return func(c *fiber.Ctx) error {
-
-// 		path := strings.TrimPrefix(c.OriginalURL(), urlPrefix)
-// 		url := "http://localhost:5000" + urlPrefix + "/swagger.json" // sesuaikan port dan base path
-// 		if path == "/" || path == "" {
-// 			return c.Redirect(urlPrefix+"/index.html?url="+url, http.StatusMovedPermanently)
-// 		}
-// 		return httpSwagger.Handler(
-// 			httpSwagger.URL(url),
-// 		)(c.Context())
-// 	}
-// }
-
-// func swaggerHandler(urlPrefix string) fiber.Handler {
-// 	return adaptor.HTTPHandler(httpSwagger.Handler(
-// 		httpSwagger.URL("http://localhost:5000/swagger/" + urlPrefix + "/swagger.json"),
-// 	))
-// }
-
-// func swaggerHandler(jsonPath string) fiber.Handler {
-// 	return httpSwagger.Handler(
-// 		httpSwagger.URL(jsonPath),
-// 	)
-// }

@@ -34,6 +34,8 @@ func NewDB() *gorm.DB {
 		&entity.VariantOption{},
 		&entity.ComponentType{},
 		&entity.CompatibilityRule{},
+		&entity.Menu{},
+		&entity.MenuItem{},
 	)
 
 	SeedData(db)

@@ -98,10 +98,10 @@ func (service *ProductCategoryServiceImpl) GetById(currentUserId uint, categoryI
 
 // map helpers
 
-func (service *ProductCategoryServiceImpl) GenerateSearchResult(categorys []entity.ProductCategory) []response.ProductCategory {
+func (service *ProductCategoryServiceImpl) GenerateSearchResult(categories []entity.ProductCategory) []response.ProductCategory {
 
 	res := []response.ProductCategory{}
-	for _, category := range categorys {
+	for _, category := range categories {
 		res = append(res, service.GenerateGetResult(category))
 	}
 
