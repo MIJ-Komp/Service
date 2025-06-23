@@ -59,6 +59,20 @@ var menuSet = wire.NewSet(
 	wire.Bind(new(service.MenuService), new(*service_impl.MenuServiceImpl)),
 )
 
+var orderSet = wire.NewSet(
+	repository_impl.NewOrderRepository,
+	wire.Bind(new(repository.OrderRepository), new(*repository_impl.OrderRepositoryImpl)),
+	service_impl.NewOrderService,
+	wire.Bind(new(service.OrderService), new(*service_impl.OrderServiceImpl)),
+)
+
+var paymentSet = wire.NewSet(
+	repository_impl.NewPaymentRepository,
+	wire.Bind(new(repository.PaymentRepository), new(*repository_impl.PaymentRepositoryImpl)),
+	service_impl.NewPaymentService,
+	wire.Bind(new(service.PaymentService), new(*service_impl.PaymentServiceImpl)),
+)
+
 func InitializedServer() *fiber.App {
 	wire.Build(
 		database.NewDB,
@@ -68,6 +82,8 @@ func InitializedServer() *fiber.App {
 		componentTypeSet,
 		compatibilityRuleSet,
 		menuSet,
+		orderSet,
+		paymentSet,
 		validatorSet,
 		app.CreateServer,
 	)

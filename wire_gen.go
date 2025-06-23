@@ -35,7 +35,11 @@ func InitializedServer() *fiber.App {
 	compatibilityRuleServiceImpl := service_impl.NewCompatibilityRuleService(compatibilityRuleRepositoryImpl, validate, db)
 	menuRepositoryImpl := repository_impl.NewMenuRepository()
 	menuServiceImpl := service_impl.NewMenuService(menuRepositoryImpl, validate, db)
-	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, menuServiceImpl, db)
+	orderRepositoryImpl := repository_impl.NewOrderRepository()
+	paymentRepositoryImpl := repository_impl.NewPaymentRepository()
+	paymentServiceImpl := service_impl.NewPaymentService(paymentRepositoryImpl, orderRepositoryImpl, db)
+	orderServiceImpl := service_impl.NewOrderService(orderRepositoryImpl, productServiceImpl, paymentServiceImpl, db)
+	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, menuServiceImpl, orderServiceImpl, db)
 	return fiberApp
 }
 
@@ -54,3 +58,7 @@ var componentTypeSet = wire.NewSet(repository_impl.NewComponentTypeRepository, w
 var compatibilityRuleSet = wire.NewSet(repository_impl.NewCompatibilityRuleRepository, wire.Bind(new(repository.CompatibilityRuleRepository), new(*repository_impl.CompatibilityRuleRepositoryImpl)), service_impl.NewCompatibilityRuleService, wire.Bind(new(service.CompatibilityRuleService), new(*service_impl.CompatibilityRuleServiceImpl)))
 
 var menuSet = wire.NewSet(repository_impl.NewMenuRepository, wire.Bind(new(repository.MenuRepository), new(*repository_impl.MenuRepositoryImpl)), service_impl.NewMenuService, wire.Bind(new(service.MenuService), new(*service_impl.MenuServiceImpl)))
+
+var orderSet = wire.NewSet(repository_impl.NewOrderRepository, wire.Bind(new(repository.OrderRepository), new(*repository_impl.OrderRepositoryImpl)), service_impl.NewOrderService, wire.Bind(new(service.OrderService), new(*service_impl.OrderServiceImpl)))
+
+var paymentSet = wire.NewSet(repository_impl.NewPaymentRepository, wire.Bind(new(repository.PaymentRepository), new(*repository_impl.PaymentRepositoryImpl)), service_impl.NewPaymentService, wire.Bind(new(service.PaymentService), new(*service_impl.PaymentServiceImpl)))

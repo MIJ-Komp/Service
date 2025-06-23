@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"api.mijkomp.com/exception"
 	"github.com/google/uuid"
@@ -79,6 +80,7 @@ func ParseUUID(str string) uuid.UUID {
 
 	uuid, err := uuid.Parse(str)
 	exception.PanicIfNeeded(err)
+
 	return uuid
 }
 
@@ -108,4 +110,18 @@ func ParseBool(str string) bool {
 	exception.PanicIfNeeded(err)
 
 	return boolean
+}
+
+func ParseNullableTime(str string) *time.Time {
+
+	if str == "" {
+		return nil
+	}
+
+	layout := "2006-01-02 15:04:05"
+	parsedTime, err := time.Parse(layout, str)
+
+	exception.PanicIfNeeded(err)
+
+	return &parsedTime
 }

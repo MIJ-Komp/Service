@@ -1,18 +1,18 @@
 definitions:
   enum.EProductType:
     enum:
+    - admin
+    - customer
     - simple
     - variant
     - bundle
-    - admin
-    - customer
     type: string
     x-enum-varnames:
+    - Admin
+    - Customer
     - ProductTypeSimple
     - ProductTypeVariant
     - ProductTypeGroup
-    - Admin
-    - Customer
   request.CompatibilityRule:
     properties:
       condition:
@@ -267,6 +267,17 @@ definitions:
       name:
         type: string
     type: object
+  response.CustomerInfo:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phoneNumber:
+        type: string
+    type: object
   response.EnumResponse:
     properties:
       code:
@@ -302,6 +313,90 @@ definitions:
       name:
         type: string
       productCategoryId:
+        type: integer
+    type: object
+  response.Order:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      customerId:
+        type: integer
+      customerInfo:
+        $ref: '#/definitions/response.CustomerInfo'
+      id:
+        type: string
+      isPaid:
+        type: boolean
+      modifiedAt:
+        type: string
+      notes:
+        type: string
+      orderDate:
+        type: string
+      orderItems:
+        items:
+          $ref: '#/definitions/response.OrderItem'
+        type: array
+      paidAt:
+        type: string
+      paymentUrl:
+        type: string
+      shippingInfo:
+        $ref: '#/definitions/response.ShippingInfo'
+      status:
+        $ref: '#/definitions/response.EnumResponse'
+      totalPaid:
+        type: number
+    type: object
+  response.OrderItem:
+    properties:
+      id:
+        type: string
+      orderId:
+        type: string
+      price:
+        type: number
+      product:
+        $ref: '#/definitions/response.OrderItemProduct'
+      productId:
+        type: string
+      productSkuId:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  response.OrderItemProduct:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      imageIds:
+        items:
+          type: string
+        type: array
+      isActive:
+        type: boolean
+      name:
+        type: string
+      productSku:
+        $ref: '#/definitions/response.OrderItemProductSku'
+      sku:
+        type: string
+    type: object
+  response.OrderItemProductSku:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      sku:
+        type: string
+      stock:
         type: integer
     type: object
   response.ProductCategory:
@@ -457,6 +552,39 @@ definitions:
         type: string
       sequence:
         type: integer
+    type: object
+  response.ShippingInfo:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      createdAt:
+        type: string
+      deliveredAt:
+        type: string
+      estimatedDelivery:
+        type: string
+      id:
+        type: string
+      notes:
+        type: string
+      orderId:
+        type: string
+      postalCode:
+        type: string
+      province:
+        type: string
+      recipientName:
+        type: string
+      shippedAt:
+        type: string
+      shippingMethod:
+        type: string
+      trackingNumber:
+        type: string
+      updatedAt:
+        type: string
     type: object
   response.User:
     properties:
@@ -930,6 +1058,75 @@ paths:
       summary: Delete menu item
       tags:
       - Menu
+  /api/admin/orders:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      - description: ' '
+        in: query
+        name: status
+        type: string
+      - description: ' '
+        in: query
+        name: fromDate
+        type: string
+      - description: ' '
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: ' '
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Order'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search order
+      tags:
+      - Order
+  /api/admin/orders/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Order'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get order by id
+      tags:
+      - Order
   /api/admin/product-categories:
     get:
       consumes:

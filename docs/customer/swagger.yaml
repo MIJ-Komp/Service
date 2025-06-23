@@ -1,9 +1,66 @@
 definitions:
+  request.CustomerInfo:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      phoneNumber:
+        type: string
+    type: object
+  request.Order:
+    properties:
+      customerInfo:
+        $ref: '#/definitions/request.CustomerInfo'
+      notes:
+        type: string
+      orderItems:
+        items:
+          $ref: '#/definitions/request.OrderItem'
+        type: array
+      shippingInfo:
+        $ref: '#/definitions/request.ShippingInfo'
+    type: object
+  request.OrderItem:
+    properties:
+      productId:
+        type: string
+      productSkuId:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  request.ShippingInfo:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      notes:
+        type: string
+      postalCode:
+        type: string
+      province:
+        type: string
+      recipientName:
+        type: string
+    type: object
   response.AuditTrail:
     properties:
       id:
         type: integer
       userName:
+        type: string
+    type: object
+  response.CustomerInfo:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phoneNumber:
         type: string
     type: object
   response.EnumResponse:
@@ -41,6 +98,90 @@ definitions:
       name:
         type: string
       productCategoryId:
+        type: integer
+    type: object
+  response.Order:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      customerId:
+        type: integer
+      customerInfo:
+        $ref: '#/definitions/response.CustomerInfo'
+      id:
+        type: string
+      isPaid:
+        type: boolean
+      modifiedAt:
+        type: string
+      notes:
+        type: string
+      orderDate:
+        type: string
+      orderItems:
+        items:
+          $ref: '#/definitions/response.OrderItem'
+        type: array
+      paidAt:
+        type: string
+      paymentUrl:
+        type: string
+      shippingInfo:
+        $ref: '#/definitions/response.ShippingInfo'
+      status:
+        $ref: '#/definitions/response.EnumResponse'
+      totalPaid:
+        type: number
+    type: object
+  response.OrderItem:
+    properties:
+      id:
+        type: string
+      orderId:
+        type: string
+      price:
+        type: number
+      product:
+        $ref: '#/definitions/response.OrderItemProduct'
+      productId:
+        type: string
+      productSkuId:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  response.OrderItemProduct:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      imageIds:
+        items:
+          type: string
+        type: array
+      isActive:
+        type: boolean
+      name:
+        type: string
+      productSku:
+        $ref: '#/definitions/response.OrderItemProductSku'
+      sku:
+        type: string
+    type: object
+  response.OrderItemProductSku:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      sku:
+        type: string
+      stock:
         type: integer
     type: object
   response.ProductCategory:
@@ -197,6 +338,39 @@ definitions:
       sequence:
         type: integer
     type: object
+  response.ShippingInfo:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      createdAt:
+        type: string
+      deliveredAt:
+        type: string
+      estimatedDelivery:
+        type: string
+      id:
+        type: string
+      notes:
+        type: string
+      orderId:
+        type: string
+      postalCode:
+        type: string
+      province:
+        type: string
+      recipientName:
+        type: string
+      shippedAt:
+        type: string
+      shippingMethod:
+        type: string
+      trackingNumber:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   response.WebResponse:
     properties:
       code:
@@ -233,6 +407,59 @@ paths:
       summary: Search menu
       tags:
       - Menu
+  /api/orders:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create order
+      tags:
+      - Order
+  /api/orders/{code}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Order'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get order by code
+      tags:
+      - Order
   /api/product-categories:
     get:
       consumes:

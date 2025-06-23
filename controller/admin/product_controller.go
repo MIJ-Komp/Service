@@ -188,31 +188,6 @@ func (controller *ProductController) BrowseProductSku(ctx *fiber.Ctx) error {
 	return ctx.JSON(response.NewWebResponse(result))
 }
 
-// func (controller *ProductController) BrowseProductSku(ctx *fiber.Ctx) error {
-
-// 	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
-
-// 	query := helpers.ParseNullableString(ctx.Query("query"))
-
-// 	var productTypes *[]string = nil
-// 	productTypeQuery := ctx.Queries()["productTypes"]
-// 	if productTypeQuery != "" {
-// 		productTypesQueries := strings.Split(productTypeQuery, ",")
-// 		productTypes = &productTypesQueries
-// 	}
-
-// 	isInventoryOnly := helpers.ParseNullableBool(ctx.Query("isInventoryOnly"))
-
-// 	// productCategoryId := helpers.ParseNullableUniqueidentifier(ctx.Query("productCategoryId"))
-
-// 	page := helpers.ParseNullableInt(ctx.Query("page"))
-// 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
-
-// 	result := controller.ProductService.SearchProductSku(currentUserId, outletId, query, productTypes, isInventoryOnly, productCategoryId, brandId, page, pageSize)
-
-// 	return ctx.JSON(response.NewWebResponse(result))
-// }
-
 // @Summary		Get product by id
 // @Tags			Product
 // @Accept		json

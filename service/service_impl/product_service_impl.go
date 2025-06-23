@@ -167,7 +167,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 	res, err := service.ProductRepository.GetById(tx, productRes.Id)
 	exception.PanicIfNeeded(err)
 
-	return service.mapProduct(res)
+	return service.MapProduct(res)
 }
 
 func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUID, payload request.ProductPayload) response.ProductResponse {
@@ -422,7 +422,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	res, err := service.ProductRepository.GetById(tx, productId)
 	exception.PanicIfNeeded(err)
 
-	return service.mapProduct(res)
+	return service.MapProduct(res)
 }
 
 func (service *ProductServiceImpl) Delete(currentUserId uint, productId uuid.UUID) string {
@@ -459,22 +459,11 @@ func (service *ProductServiceImpl) BrowseProductSku(currentUserId uint, query *s
 	}
 }
 
-// func (service *ProductServiceImpl) SearchProductSku(currentUserId uint, outletId *uuid.UUID, query *string, productTypes *[]string, isInventoryOnly *bool, productCategoryId *uuid.UUID, brandId *uuid.UUID, page, pageSize *int) response.PageResult {
-
-// 	res, totalCount, totalPage := service.ProductRepository.SearchProductSku(service.db, outletId, query, productTypes, isInventoryOnly, productCategoryId, brandId, page, pageSize)
-
-// 	return response.PageResult{
-// 		Items:      service.mapBrowseProductSku(res),
-// 		TotalCount: totalCount,
-// 		PageSize:   totalPage,
-// 	}
-// }
-
 func (service *ProductServiceImpl) GetById(currentUserId uint, productId uuid.UUID) response.ProductResponse {
 	res, err := service.ProductRepository.GetById(service.db, productId)
 	exception.PanicIfNeeded(err)
 
-	return service.mapProduct(res)
+	return service.MapProduct(res)
 }
 
 // Variant Options
@@ -506,13 +495,13 @@ func (service *ProductServiceImpl) mapProducts(products []entity.Product) []resp
 	productRes := []response.ProductResponse{}
 
 	for _, el := range products {
-		productRes = append(productRes, service.mapProduct(el))
+		productRes = append(productRes, service.MapProduct(el))
 	}
 
 	return productRes
 }
 
-func (service *ProductServiceImpl) mapProduct(product entity.Product) response.ProductResponse {
+func (service *ProductServiceImpl) MapProduct(product entity.Product) response.ProductResponse {
 	productRes := response.ProductResponse{
 		Id:                      product.Id,
 		SKU:                     product.SKU,
@@ -599,7 +588,7 @@ func (service *ProductServiceImpl) mapProduct(product entity.Product) response.P
 				ProductId:    item.Product.Id,
 				ProductSkuId: item.ProductSkuId,
 				Qty:          item.Qty,
-				Product:      service.mapProduct(item.Product),
+				Product:      service.MapProduct(item.Product),
 			})
 
 		}

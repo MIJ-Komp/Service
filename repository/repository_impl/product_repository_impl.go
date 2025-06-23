@@ -8,6 +8,7 @@ import (
 	"api.mijkomp.com/exception"
 	"api.mijkomp.com/models/entity"
 	"api.mijkomp.com/models/response"
+	"api.mijkomp.com/repository/helpers"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -21,15 +22,17 @@ func NewProductRepository() *ProductRepositoryImpl {
 
 // Product
 func (repository *ProductRepositoryImpl) Save(db *gorm.DB, product entity.Product) (entity.Product, error) {
-	err := db.Omit(
+	var productOmitFields = []string{
 		"ProductCategory",
 		"Brand",
 		"ProductSkus",
-		// "ProductSkuDetails",
 		"ProductVariantOptions",
 		"ProductVariantOptionValues",
 		"ProductSkuVariants",
 		"ProductGroupItems",
+	}
+	err := db.Omit(
+		productOmitFields...,
 	).Save(&product).Error
 	return product, err
 }
@@ -62,7 +65,7 @@ func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, prod
 			placeholders[i] = "?"
 		}
 		inClause := strings.Join(placeholders, ",")
-		queries.Where(fmt.Sprintf("product_type in (%s)", inClause), repository.interfaceSlice(*productTypes)...)
+		queries.Where(fmt.Sprintf("product_type in (%s)", inClause), helpers.InterfaceSlice(*productTypes)...)
 	}
 
 	if productCategoryId != nil {
@@ -162,99 +165,6 @@ func (repository *ProductRepositoryImpl) BrowseProductSku(db *gorm.DB, query *st
 	}
 }
 
-// func (repository *ProductRepositoryImpl) SearchProductSku(
-// 	db *gorm.DB,
-// 	companyId uuid.UUID,
-// 	outletId *uuid.UUID,
-// 	query *string,
-// 	productTypes *[]string,
-// 	isInventoryOnly *bool,
-// 	productCategoryId *uuid.UUID,
-// 	brandId *uuid.UUID,
-// 	page, pageSize *int,
-// ) ([]db_view.ProductSkuView, int64, int64) {
-// 	var result []db_view.ProductSkuView
-
-// 	rows, err := repository.sqlDb.Query(
-// 		"EXEC ProductSku_Get @CompanyId = @CompanyId, @OutletId = @OutletId",
-// 		sql.Named("CompanyId", companyId),
-// 		sql.Named("OutletId", outletId),
-// 	)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	defer rows.Close()
-
-// 	// Map product skus
-// 	productSkuMap := make(map[string]*db_view.ProductSkuView)
-
-// 	for rows.Next() {
-// 		var sku db_view.ProductSkuView
-
-// 		err := rows.Scan(
-// 			&sku.Id,
-// 			&sku.ProductId,
-// 			&sku.ProductType,
-// 			&sku.SKU,
-// 			&sku.ParentSKU,
-// 			&sku.Name,
-// 			&sku.IsPartOfCompositeOnly,
-// 			&sku.IsTrackInventory,
-// 			&sku.PictureId,
-// 			&sku.ModifiedAt,
-// 		)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-
-// 		// Use string representation of GUID as map key
-// 		key := sku.Id.String()
-// 		productSkuMap[key] = &sku
-// 	}
-
-// 	// Move to next result set (ProductSkuDetails)
-// 	if !rows.NextResultSet() {
-// 		return result, 0, 0 // No second result set
-// 	}
-
-// 	for rows.Next() {
-// 		var detail entity.ProductSkuDetail
-// 		var productSkuId uuid.UUID
-
-// 		err := rows.Scan(
-// 			&detail.Id,
-// 			&productSkuId,
-// 			&detail.OutletId,
-// 			&detail.Fee,
-// 			&detail.CostPrice,
-// 			&detail.SellingPrice,
-// 			&detail.Qty,
-// 			&detail.QtyAlert,
-// 		)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-
-// 		key := productSkuId.String()
-// 		if sku, ok := productSkuMap[key]; ok {
-// 			sku.ProductSkuDetails = append(sku.ProductSkuDetails, detail)
-// 		}
-// 	}
-
-// 	// Flatten the map into a slice
-// 	for _, sku := range productSkuMap {
-// 		result = append(result, *sku)
-// 	}
-
-// 	totalData := int64(len(result))
-// 	totalPages := int64(1)
-// 	if pageSize != nil && *pageSize > 0 {
-// 		totalPages = (totalData + int64(*pageSize) - 1) / int64(*pageSize)
-// 	}
-
-// 	return result, totalData, totalPages
-// }
-
 func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUID) (entity.Product, error) {
 	var product entity.Product
 	err := db.
@@ -264,7 +174,7 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 		Preload("ProductGroupItems").
 		Preload("ProductGroupItems.Product").
 		Preload("ProductGroupItems.Product.ProductSkus").
-		// Preload("ProductGroupItems.Product.ProductSkus.ProductSpecs").
+		Preload("ProductGroupItems.Product.ProductSkus.ProductSpecs").
 		Preload("ProductGroupItems.Product.ProductSkuVariants").
 		Preload("ProductGroupItems.Product.ProductVariantOptions").
 		Preload("ProductGroupItems.Product.ProductVariantOptionValues").
@@ -369,13 +279,4 @@ func (repository *ProductRepositoryImpl) GetVariantOptions(db *gorm.DB) ([]entit
 	var opt []entity.VariantOption
 	err := db.Find(&opt).Error
 	return opt, err
-}
-
-// Helpers
-func (repository *ProductRepositoryImpl) interfaceSlice(slice []string) []interface{} {
-	result := make([]interface{}, len(slice))
-	for i, v := range slice {
-		result[i] = v
-	}
-	return result
 }

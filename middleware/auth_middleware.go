@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"os"
 	"strconv"
 
 	"api.mijkomp.com/helpers"
@@ -41,6 +42,25 @@ func AuthMiddleware(userService service.UserService) func(*fiber.Ctx) error {
 		}
 
 		c.Locals("userId", strconv.FormatUint(uint64(userId), 10))
+
+		return c.Next()
+	}
+}
+
+func PaymentMiddlewareXendit() func(*fiber.Ctx) error {
+
+	return func(c *fiber.Ctx) error {
+
+		callbackToken := c.Get("x-callback-token")
+		webhookToken := os.Getenv("XENDIT_WEBHOOK_TOKEN")
+
+		if callbackToken != webhookToken {
+			return c.Status(fiber.StatusUnauthorized).JSON(response.WebResponse{
+				Code:    401,
+				Status:  "Unauthorized",
+				Content: "",
+			})
+		}
 
 		return c.Next()
 	}
