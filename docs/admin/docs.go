@@ -443,6 +443,97 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/admin/files": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "image/jpeg"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Get Photo by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "File UUID without extension",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Photo content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Upload Multiple Photos",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Multiple photo files (max 1MB each, .jpg/.jpeg/.png)",
+                        "name": "photos",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "413": {
+                        "description": "File too large",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/menus": {
             "get": {
                 "security": [
@@ -807,6 +898,108 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Order"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/orders/{id}/update-shipping-info": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Update shipping info order",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateOrderShippingByAdmin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Order"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/orders/{id}/update-status": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Update status order",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateOrderStatusByAdmin"
+                        }
                     }
                 ],
                 "responses": {
@@ -1601,21 +1794,42 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "enum.EOrderStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "paid",
+                "preparing",
+                "shipped",
+                "arrived",
+                "completed",
+                "cancelled"
+            ],
+            "x-enum-varnames": [
+                "OrderStatusPending",
+                "OrderStatusPaid",
+                "OrderStatusPreparing",
+                "OrderStatusShipped",
+                "OrderStatusArrived",
+                "OrderStatusCompleted",
+                "OrderStatusCancelled"
+            ]
+        },
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "admin",
-                "customer",
                 "simple",
                 "variant",
-                "bundle"
+                "bundle",
+                "admin",
+                "customer"
             ],
             "x-enum-varnames": [
-                "Admin",
-                "Customer",
                 "ProductTypeSimple",
                 "ProductTypeVariant",
-                "ProductTypeGroup"
+                "ProductTypeGroup",
+                "Admin",
+                "Customer"
             ]
         },
         "request.CompatibilityRule": {
@@ -1908,6 +2122,34 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateOrderShippingByAdmin": {
+            "type": "object",
+            "properties": {
+                "deliveredAt": {
+                    "type": "string"
+                },
+                "estimatedDelivery": {
+                    "type": "string"
+                },
+                "shippedAt": {
+                    "type": "string"
+                },
+                "shippingMethod": {
+                    "type": "string"
+                },
+                "trackingNumber": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpdateOrderStatusByAdmin": {
+            "type": "object",
+            "properties": {
+                "newStatus": {
+                    "$ref": "#/definitions/enum.EOrderStatus"
+                }
+            }
+        },
         "request.VariantOptionPayload": {
             "type": "object",
             "properties": {
@@ -2080,7 +2322,7 @@ const docTemplate = `{
                 "code": {
                     "type": "string"
                 },
-                "createdAt": {
+                "createdByCustomerAt": {
                     "type": "string"
                 },
                 "customerId": {
@@ -2095,7 +2337,7 @@ const docTemplate = `{
                 "isPaid": {
                     "type": "boolean"
                 },
-                "modifiedAt": {
+                "modifiedByCustomerAt": {
                     "type": "string"
                 },
                 "notes": {

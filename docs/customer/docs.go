@@ -15,6 +15,46 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/files": {
+            "get": {
+                "produces": [
+                    "image/jpeg"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Get Photo by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "File UUID without extension",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Photo content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/menus": {
             "get": {
                 "consumes": [
@@ -472,7 +512,7 @@ const docTemplate = `{
                 "code": {
                     "type": "string"
                 },
-                "createdAt": {
+                "createdByCustomerAt": {
                     "type": "string"
                 },
                 "customerId": {
@@ -487,7 +527,7 @@ const docTemplate = `{
                 "isPaid": {
                     "type": "boolean"
                 },
-                "modifiedAt": {
+                "modifiedByCustomerAt": {
                     "type": "string"
                 },
                 "notes": {

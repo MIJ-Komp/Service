@@ -22,16 +22,18 @@ import (
 type OrderServiceImpl struct {
 	OrderRepository           repository.OrderRepository
 	ProductService            service.ProductService
+	ProductRepository         repository.ProductRepository
 	OrderPaymentServiceHelper helper.OrderPaymentServiceHelper
 	PaymentService            service.PaymentService
 	db                        *gorm.DB
 }
 
-func NewOrderService(orderRepostitory repository.OrderRepository, productService service.ProductService, paymentService service.PaymentService, db *gorm.DB) *OrderServiceImpl {
+func NewOrderService(orderRepostitory repository.OrderRepository, productService service.ProductService, productRepository repository.ProductRepository, paymentService service.PaymentService, db *gorm.DB) *OrderServiceImpl {
 	orderPaymentServiceHelper := helper.NewOrderPaymentServiceHelper(orderRepostitory)
 	return &OrderServiceImpl{
 		OrderRepository:           orderRepostitory,
 		ProductService:            productService,
+		ProductRepository:         productRepository,
 		OrderPaymentServiceHelper: *orderPaymentServiceHelper,
 		PaymentService:            paymentService,
 		db:                        db,
@@ -50,34 +52,69 @@ func (service *OrderServiceImpl) Create(payload request.Order) response.Order {
 	formattedCode := fmt.Sprintf("INV%05d", newCode)
 
 	order := entity.Order{
-		Id:         newId,
-		Code:       formattedCode,
-		OrderDate:  time.Now(),
-		Status:     enum.OrderStatusPending,
-		Notes:      payload.Notes,
-		CreatedAt:  time.Now(),
-		ModifiedAt: time.Now(),
+		Id:                   newId,
+		Code:                 formattedCode,
+		OrderDate:            time.Now(),
+		Status:               enum.OrderStatusPending,
+		Notes:                payload.Notes,
+		CreatedByCustomerAt:  time.Now(),
+		ModifiedByCustomerAt: time.Now(),
 	}
 
 	// Order Items
+
+	productSkuIds := []uuid.UUID{}
+	for _, orderItem := range payload.OrderItems {
+		productSkuIds = append(productSkuIds, orderItem.ProductSkuId)
+	}
+
+	productSkus := service.ProductRepository.GetProductSkuByIds(tx, productSkuIds)
 	orderItems := []entity.OrderItem{}
 
+	var totalPrice float64 = 0
 	for i, orderItem := range payload.OrderItems {
+
+		productSkuIdx := slices.IndexFunc(productSkus, func(model response.BrowseProductSku) bool {
+			return model.Id == orderItem.ProductSkuId && model.ProductId == orderItem.ProductId
+		})
+
+		if productSkuIdx == -1 {
+			panic(exception.NewValidationError(fmt.Sprintf("Product at index %d not found.", i)))
+		}
+
+		productSku := productSkus[productSkuIdx]
+
+		if productSku.Stock != nil {
+			if *productSku.Stock < orderItem.Quantity {
+				partMsg := "telah habis"
+				if *productSku.Stock > 0 {
+					partMsg = fmt.Sprintf("tersisa %d", *productSku.Stock)
+				}
+
+				panic(exception.NewValidationError(fmt.Sprintf("Stok produk dengan sku %s %s", productSku.SKU, partMsg)))
+			}
+
+			// kurangi qty product
+			*productSkus[productSkuIdx].Stock -= orderItem.Quantity
+		}
+
 		orderItems = append(orderItems, entity.OrderItem{
 			Id:           uuid.New(),
 			OrderId:      newId,
 			ProductId:    orderItem.ProductId,
 			ProductSkuId: orderItem.ProductSkuId,
 			Quantity:     orderItem.Quantity,
-			Price:        5000,
+			Price:        productSku.Price,
 			Sequence:     i + 1,
 			CreatedAt:    time.Now(),
 		})
+
+		totalPrice += productSku.Price
 	}
 
 	// create payment xendit
 	desc := "Order Payment MIJKomp"
-	paymentReq := service.OrderPaymentServiceHelper.GeneratePaymentRequest(newId, 500000, desc, nil, payload.CustomerInfo.Email)
+	paymentReq := service.OrderPaymentServiceHelper.GeneratePaymentRequest(newId, totalPrice, desc, nil, payload.CustomerInfo.Email)
 
 	paymentInfo, err := service.PaymentService.Create(false, paymentReq)
 	exception.PanicIfNeeded(err)
@@ -119,6 +156,20 @@ func (service *OrderServiceImpl) Create(payload request.Order) response.Order {
 	err = service.OrderRepository.SaveShippingInfo(tx, shippingInfo)
 	exception.PanicIfNeeded(err)
 
+	// Update stock product sku
+	productSkusToBeUpdated := []entity.ProductSku{}
+	for _, pSku := range productSkus {
+		if pSku.ProductType != string(enum.ProductTypeGroup) {
+			productSkusToBeUpdated = append(productSkusToBeUpdated, entity.ProductSku{
+				Id:    pSku.Id,
+				Stock: pSku.Stock,
+			})
+		}
+	}
+
+	err = service.ProductRepository.UpdateStockProductSkus(tx, productSkusToBeUpdated)
+	exception.PanicIfNeeded(err)
+
 	createdOrder, err := service.OrderRepository.GetById(tx, &newOrder.Id, nil)
 	exception.PanicIfNeeded(err)
 	return service.mapOrder(createdOrder)
@@ -133,7 +184,7 @@ func (service *OrderServiceImpl) Update(orderId uuid.UUID, payload request.Order
 	exception.PanicIfNeeded(err)
 
 	order.Notes = payload.Notes
-	order.ModifiedAt = time.Now().UTC()
+	order.ModifiedByCustomerAt = time.Now().UTC()
 
 	_, err = service.OrderRepository.Save(tx, order)
 	exception.PanicIfNeeded(err)
@@ -178,6 +229,57 @@ func (service *OrderServiceImpl) Update(orderId uuid.UUID, payload request.Order
 	exception.PanicIfNeeded(err)
 
 	err = service.OrderRepository.SaveOrderItems(tx, orderItems)
+	exception.PanicIfNeeded(err)
+
+	// return new result
+	res, err := service.OrderRepository.GetById(tx, &orderId, nil)
+	exception.PanicIfNeeded(err)
+
+	return service.mapOrder(res)
+}
+
+func (service *OrderServiceImpl) UpdateStatus(currentUserId uint, orderId uuid.UUID, payload request.UpdateOrderStatusByAdmin) response.Order {
+	// tx
+	tx := service.db.Begin()
+	defer helpers.CommitOrRollback(tx)
+
+	order, err := service.OrderRepository.GetById(service.db, &orderId, nil)
+	exception.PanicIfNeeded(err)
+
+	order.Status = payload.NewStatus
+	order.ModifiedByAdminId = currentUserId
+	order.ModifiedByAdminAt = time.Now().UTC()
+
+	_, err = service.OrderRepository.Save(tx, order)
+	exception.PanicIfNeeded(err)
+
+	// return new result
+	res, err := service.OrderRepository.GetById(tx, &orderId, nil)
+	exception.PanicIfNeeded(err)
+
+	return service.mapOrder(res)
+}
+
+func (service *OrderServiceImpl) UpdateShippingInfo(currentUserId uint, orderId uuid.UUID, payload request.UpdateOrderShippingByAdmin) response.Order {
+	// tx
+	tx := service.db.Begin()
+	defer helpers.CommitOrRollback(tx)
+
+	order, err := service.OrderRepository.GetById(service.db, &orderId, nil)
+	exception.PanicIfNeeded(err)
+
+	shippingInfo := order.ShippingInfo
+
+	shippingInfo.ShippingMethod = payload.ShippingMethod
+	shippingInfo.TrackingNumber = payload.TrackingNumber
+	shippingInfo.EstimatedDelivery = payload.EstimatedDelivery
+	shippingInfo.ShippedAt = payload.ShippedAt
+	shippingInfo.DeliveredAt = payload.DeliveredAt
+
+	order.ModifiedByAdminId = currentUserId
+	order.ModifiedByAdminAt = time.Now().UTC()
+
+	err = service.OrderRepository.SaveShippingInfo(tx, shippingInfo)
 	exception.PanicIfNeeded(err)
 
 	// return new result
@@ -243,10 +345,11 @@ func (service *OrderServiceImpl) mapOrder(order entity.Order) response.Order {
 		PaidAt:     order.Payment.PaidAt,
 		IsPaid:     order.Payment.IsPaid,
 		TotalPaid:  order.Payment.TotalPaid,
-		PaymentUrl: *order.Payment.InvoiceUrl,
+		PaymentUrl: order.Payment.InvoiceUrl,
 		Notes:      order.Notes,
-		CreatedAt:  order.CreatedAt,
-		ModifiedAt: order.ModifiedAt,
+
+		CreatedByCustomerAt:  order.CreatedByCustomerAt,
+		ModifiedByCustomerAt: order.ModifiedByCustomerAt,
 
 		OrderItems:   service.mapOrderItems(order.OrderItems),
 		CustomerInfo: service.mapCustomerInfo(order.CustomerInfo),

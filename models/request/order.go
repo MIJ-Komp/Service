@@ -1,6 +1,9 @@
 package request
 
 import (
+	"time"
+
+	"api.mijkomp.com/models/enum"
 	"github.com/google/uuid"
 )
 
@@ -31,4 +34,16 @@ type ShippingInfo struct {
 	City          string  `json:"city"`
 	PostalCode    string  `json:"postalCode"`
 	Notes         *string `json:"notes"`
+}
+
+type UpdateOrderStatusByAdmin struct {
+	NewStatus enum.EOrderStatus `json:"newStatus"`
+}
+
+type UpdateOrderShippingByAdmin struct {
+	ShippingMethod    *string    `json:"shippingMethod"`
+	TrackingNumber    *string    `json:"trackingNumber"`
+	EstimatedDelivery *time.Time `json:"estimatedDelivery"`
+	ShippedAt         *time.Time `json:"shippedAt"`
+	DeliveredAt       *time.Time `json:"deliveredAt"`
 }

@@ -207,6 +207,9 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 		if payloadIdx != -1 {
 			productSkus[i].SKU = payload.ProductSkus[payloadIdx].SKU
 			productSkus[i].Name = payload.ProductSkus[payloadIdx].Name
+			productSkus[i].Price = payload.ProductSkus[payloadIdx].Price
+			productSkus[i].Stock = payload.ProductSkus[payloadIdx].Stock
+			productSkus[i].StockAlert = payload.ProductSkus[payloadIdx].StockAlert
 			productSkus[i].IsActive = payload.ProductSkus[payloadIdx].IsActive
 		} else {
 			productSkuToBeDeleted = append(productSkuToBeDeleted, productSku)
@@ -221,10 +224,14 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 
 		if savedIdx == -1 {
 			productSkus = append(productSkus, entity.ProductSku{
-				Id:        productSku.Id,
-				ProductId: product.Id,
-				SKU:       productSku.SKU,
-				Sequence:  len(productSkus) + 1,
+				Id:         productSku.Id,
+				ProductId:  product.Id,
+				SKU:        productSku.SKU,
+				Price:      productSku.Price,
+				Stock:      productSku.Stock,
+				StockAlert: productSku.StockAlert,
+				IsActive:   true,
+				Sequence:   len(productSkus) + 1,
 			})
 		}
 	}
@@ -540,6 +547,9 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 			ProductId:    productSku.ProductId,
 			SKU:          productSku.SKU,
 			Name:         productSku.Name,
+			Price:        productSku.Price,
+			Stock:        productSku.Stock,
+			StockAlert:   productSku.StockAlert,
 			IsActive:     productSku.IsActive,
 			Sequence:     productSku.Sequence,
 			ProductSpecs: service.mapProductSpecs(productSku.ProductSpecs),

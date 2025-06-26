@@ -92,6 +92,56 @@ func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, prod
 	return products, totalCount, totalPage
 }
 
+func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUID) (entity.Product, error) {
+	var product entity.Product
+	err := db.
+		Preload("ProductCategory").
+		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+		Preload("ProductSkus.ProductSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+		Preload("ProductGroupItems").
+		Preload("ProductGroupItems.Product").
+		Preload("ProductGroupItems.Product.ProductSkus").
+		Preload("ProductGroupItems.Product.ProductSkus.ProductSpecs").
+		Preload("ProductGroupItems.Product.ProductSkuVariants").
+		Preload("ProductGroupItems.Product.ProductVariantOptions").
+		Preload("ProductGroupItems.Product.ProductVariantOptionValues").
+		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+		Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+		Preload("ProductSkuVariants").
+		First(&product, "id = ?", productId).Error
+	return product, err
+}
+
+// Product SKU
+func (repository *ProductRepositoryImpl) SaveProductSkus(db *gorm.DB, productSkus []entity.ProductSku) error {
+	err := db.Save(&productSkus).Error
+	return err
+}
+
+func (repository *ProductRepositoryImpl) UpdateStockProductSkus(db *gorm.DB, productSkus []entity.ProductSku) error {
+	ids := []uuid.UUID{}
+	caseStmt := "CASE id"
+	for _, sku := range productSkus {
+		ids = append(ids, sku.Id)
+		if sku.Stock != nil {
+			caseStmt += fmt.Sprintf(" WHEN '%s' THEN %d", sku.Id, *sku.Stock)
+		} else {
+			caseStmt += fmt.Sprintf(" WHEN '%s' THEN NULL", sku.Id)
+		}
+	}
+	caseStmt += " END"
+
+	query := fmt.Sprintf("UPDATE product_skus SET stock = %s WHERE id IN ?", caseStmt)
+
+	err := db.Exec(query, ids).Error
+	return err
+}
+
+func (repository *ProductRepositoryImpl) DeleteProductSkus(db *gorm.DB, productId uuid.UUID, productSkus []entity.ProductSku) error {
+	err := db.Where("product_id = ?", productId).Delete(productSkus).Error
+	return err
+}
+
 func (repository *ProductRepositoryImpl) BrowseProductSku(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) ([]response.BrowseProductSku, int64, int64) {
 	var productSkus []response.BrowseProductSku
 	var totalCount int64 = 0
@@ -165,38 +215,45 @@ func (repository *ProductRepositoryImpl) BrowseProductSku(db *gorm.DB, query *st
 	}
 }
 
-func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUID) (entity.Product, error) {
-	var product entity.Product
-	err := db.
-		Preload("ProductCategory").
-		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductSkus.ProductSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductGroupItems").
-		Preload("ProductGroupItems.Product").
-		Preload("ProductGroupItems.Product.ProductSkus").
-		Preload("ProductGroupItems.Product.ProductSkus.ProductSpecs").
-		Preload("ProductGroupItems.Product.ProductSkuVariants").
-		Preload("ProductGroupItems.Product.ProductVariantOptions").
-		Preload("ProductGroupItems.Product.ProductVariantOptionValues").
-		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductSkuVariants").
-		First(&product, "id = ?", productId).Error
-	return product, err
+func (repository *ProductRepositoryImpl) GetProductSkuByIds(db *gorm.DB, productSkuIds []uuid.UUID) []response.BrowseProductSku {
+	var productSkus []response.BrowseProductSku
+
+	dataQuery := `
+		SELECT 
+			ps.id,
+			ps.product_id,
+			ps.sku,
+			p.name || ps.name AS name,
+			ps.stock,
+			ps.stock_alert,
+			ps.price,
+			p.is_active,
+			p.product_type,
+			p.product_category_id,
+			p.picture_id,
+			p.description,
+			p.created_at,
+			p.modified_at
+		FROM products p
+		INNER JOIN product_skus ps 
+			ON p.id = ps.product_id
+		WHERE p.is_active = true AND ps.is_active = true
+					AND ps.id in ?
+		ORDER BY p.created_at, ps.sequence
+	`
+	db.Raw(dataQuery, productSkuIds).Scan(&productSkus)
+
+	return productSkus
 }
 
-// Product SKU
-func (repository *ProductRepositoryImpl) SaveProductSkus(db *gorm.DB, productSkus []entity.ProductSku) error {
-	err := db.Save(&productSkus).Error
-	return err
-}
+// func (repository *ProductRepositoryImpl) GetProductSkuByIds(db *gorm.DB, productSkuIds []uuid.UUID) []entity.ProductSku {
+// 	var productSkus []entity.ProductSku
 
-func (repository *ProductRepositoryImpl) DeleteProductSkus(db *gorm.DB, productId uuid.UUID, productSkus []entity.ProductSku) error {
-	err := db.Where("product_id = ?", productId).Delete(productSkus).Error
-	return err
-}
+// 	db.Find(&productSkus, "id IN (?)", productSkuIds)
+// 	return productSkus
+// }
 
-// Product SKU Details
+// Product SKU specs
 
 func (repository *ProductRepositoryImpl) SaveProductSpecs(db *gorm.DB, productSpecs []entity.ProductSpec) error {
 	err := db.Save(&productSpecs).Error

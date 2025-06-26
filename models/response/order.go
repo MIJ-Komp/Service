@@ -17,10 +17,10 @@ type Order struct {
 	IsPaid     bool       `json:"isPaid"`
 	TotalPaid  *float64   `json:"totalPaid"`
 	PaidAt     *time.Time `json:"paidAt"`
-	PaymentUrl string     `json:"paymentUrl"`
+	PaymentUrl *string    `json:"paymentUrl"`
 
-	CreatedAt  time.Time `json:"createdAt"`
-	ModifiedAt time.Time `json:"modifiedAt"`
+	CreatedByCustomerAt  time.Time `json:"createdByCustomerAt"`
+	ModifiedByCustomerAt time.Time `json:"modifiedByCustomerAt"`
 
 	OrderItems   []OrderItem  `json:"orderItems"`
 	CustomerInfo CustomerInfo `json:"customerInfo"`

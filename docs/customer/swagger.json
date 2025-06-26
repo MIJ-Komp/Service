@@ -7,6 +7,46 @@
         "version": "1.0"
     },
     "paths": {
+        "/api/files": {
+            "get": {
+                "produces": [
+                    "image/jpeg"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Get Photo by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "File UUID without extension",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Photo content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/menus": {
             "get": {
                 "consumes": [
@@ -464,7 +504,7 @@
                 "code": {
                     "type": "string"
                 },
-                "createdAt": {
+                "createdByCustomerAt": {
                     "type": "string"
                 },
                 "customerId": {
@@ -479,7 +519,7 @@
                 "isPaid": {
                     "type": "boolean"
                 },
-                "modifiedAt": {
+                "modifiedByCustomerAt": {
                     "type": "string"
                 },
                 "notes": {

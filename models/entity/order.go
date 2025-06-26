@@ -15,18 +15,25 @@ type Order struct {
 	OrderDate  time.Time         `gorm:"type:timestamptz; not null"`
 	Status     enum.EOrderStatus `gorm:"type:varchar(10); not null;"`
 	Notes      string            `gorm:"type:varchar(4096); null;"`
-	CreatedAt  time.Time         `gorm:"type:timestamptz; not null"`
-	ModifiedAt time.Time         `gorm:"type:timestamptz; not null"`
 	IsPaid     bool              `gorm:"null;"`
 	TotalPaid  *float64          `gorm:"type:decimal(17,5); null"`
 	PaidAt     *time.Time        `gorm:"type:timestamptz; null"`
 	PaymentId  *uuid.UUID        `gorm:"type:uuid; null;"`
 	DeletedAt  gorm.DeletedAt    `gorm:"index"`
 
+	CreatedByCustomerAt  time.Time `gorm:"type:timestamptz; not null"`
+	ModifiedByCustomerAt time.Time `gorm:"type:timestamptz; not null"`
+
+	CreatedByAdminAt  time.Time `gorm:"type:timestamptz; not null"`
+	ModifiedByAdminAt time.Time `gorm:"type:timestamptz; not null"`
+	ModifiedByAdminId uint      `gorm:"type:bigint; not null; foreign_key;"`
+
 	OrderItems   []OrderItem  `gorm:"foreignKey:order_id; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CustomerInfo CustomerInfo `gorm:"foreignKey:order_id; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ShippingInfo ShippingInfo `gorm:"foreignKey:order_id; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Payment      Payment      `gorm:"foreignKey:payment_id;references:Id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+
+	ModifiedByAdmin User
 }
 
 type OrderItem struct {

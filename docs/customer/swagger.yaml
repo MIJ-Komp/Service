@@ -104,7 +104,7 @@ definitions:
     properties:
       code:
         type: string
-      createdAt:
+      createdByCustomerAt:
         type: string
       customerId:
         type: integer
@@ -114,7 +114,7 @@ definitions:
         type: string
       isPaid:
         type: boolean
-      modifiedAt:
+      modifiedByCustomerAt:
         type: string
       notes:
         type: string
@@ -389,6 +389,32 @@ info:
   title: Customer API
   version: "1.0"
 paths:
+  /api/files:
+    get:
+      parameters:
+      - description: File UUID without extension
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - image/jpeg
+      responses:
+        "200":
+          description: Photo content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Get Photo by ID
+      tags:
+      - File
   /api/menus:
     get:
       consumes:

@@ -40,6 +40,8 @@ func CreateServer(
 	}
 	app.Use(recover.New(ConfigDefault))
 
+	// app.Static("/uploads", "./uploads")
+
 	// cors
 	app.Use(cors.New())
 
@@ -61,10 +63,12 @@ func CreateServer(
 	admin.NewCompatibilityRuleController(&userService, &compatibilityRuleService).Route(app)
 	admin.NewMenuController(&userService, &menuService).Route(app)
 	admin.NewOrderController(&userService, &orderService).Route(app)
+	admin.NewFileController(&userService).Route(app)
 
 	customer.NewProductCategoryController(&userService, &productCategoryService).Route(app)
 	customer.NewProductController(&userService, &productService).Route(app)
 	customer.NewMenuController(&userService, &menuService).Route(app)
 	customer.NewOrderController(&userService, &orderService).Route(app)
+	customer.NewFileController(&userService).Route(app)
 	return app
 }

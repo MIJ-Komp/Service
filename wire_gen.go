@@ -38,7 +38,7 @@ func InitializedServer() *fiber.App {
 	orderRepositoryImpl := repository_impl.NewOrderRepository()
 	paymentRepositoryImpl := repository_impl.NewPaymentRepository()
 	paymentServiceImpl := service_impl.NewPaymentService(paymentRepositoryImpl, orderRepositoryImpl, db)
-	orderServiceImpl := service_impl.NewOrderService(orderRepositoryImpl, productServiceImpl, paymentServiceImpl, db)
+	orderServiceImpl := service_impl.NewOrderService(orderRepositoryImpl, productServiceImpl, productRepositoryImpl, paymentServiceImpl, db)
 	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, menuServiceImpl, orderServiceImpl, db)
 	return fiberApp
 }

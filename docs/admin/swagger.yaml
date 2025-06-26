@@ -1,18 +1,36 @@
 definitions:
+  enum.EOrderStatus:
+    enum:
+    - pending
+    - paid
+    - preparing
+    - shipped
+    - arrived
+    - completed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - OrderStatusPending
+    - OrderStatusPaid
+    - OrderStatusPreparing
+    - OrderStatusShipped
+    - OrderStatusArrived
+    - OrderStatusCompleted
+    - OrderStatusCancelled
   enum.EProductType:
     enum:
-    - admin
-    - customer
     - simple
     - variant
     - bundle
+    - admin
+    - customer
     type: string
     x-enum-varnames:
-    - Admin
-    - Customer
     - ProductTypeSimple
     - ProductTypeVariant
     - ProductTypeGroup
+    - Admin
+    - Customer
   request.CompatibilityRule:
     properties:
       condition:
@@ -207,6 +225,24 @@ definitions:
     - password
     - userName
     type: object
+  request.UpdateOrderShippingByAdmin:
+    properties:
+      deliveredAt:
+        type: string
+      estimatedDelivery:
+        type: string
+      shippedAt:
+        type: string
+      shippingMethod:
+        type: string
+      trackingNumber:
+        type: string
+    type: object
+  request.UpdateOrderStatusByAdmin:
+    properties:
+      newStatus:
+        $ref: '#/definitions/enum.EOrderStatus'
+    type: object
   request.VariantOptionPayload:
     properties:
       name:
@@ -319,7 +355,7 @@ definitions:
     properties:
       code:
         type: string
-      createdAt:
+      createdByCustomerAt:
         type: string
       customerId:
         type: integer
@@ -329,7 +365,7 @@ definitions:
         type: string
       isPaid:
         type: boolean
-      modifiedAt:
+      modifiedByCustomerAt:
         type: string
       notes:
         type: string
@@ -888,6 +924,63 @@ paths:
       summary: Update component type
       tags:
       - Component Type
+  /api/admin/files:
+    get:
+      parameters:
+      - description: File UUID without extension
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - image/jpeg
+      responses:
+        "200":
+          description: Photo content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Photo by ID
+      tags:
+      - File
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Multiple photo files (max 1MB each, .jpg/.jpeg/.png)
+        in: formData
+        name: photos
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "413":
+          description: File too large
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Upload Multiple Photos
+      tags:
+      - File
   /api/admin/menus:
     get:
       consumes:
@@ -1125,6 +1218,70 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get order by id
+      tags:
+      - Order
+  /api/admin/orders/{id}/update-shipping-info:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateOrderShippingByAdmin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Order'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update shipping info order
+      tags:
+      - Order
+  /api/admin/orders/{id}/update-status:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateOrderStatusByAdmin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Order'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update status order
       tags:
       - Order
   /api/admin/product-categories:

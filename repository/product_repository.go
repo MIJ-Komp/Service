@@ -11,12 +11,15 @@ type ProductRepository interface {
 	Save(db *gorm.DB, product entity.Product) (entity.Product, error)
 	Delete(db *gorm.DB, product entity.Product) error
 	Search(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) ([]entity.Product, int64, int64)
-	BrowseProductSku(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) ([]response.BrowseProductSku, int64, int64)
 	GetById(db *gorm.DB, productId uuid.UUID) (entity.Product, error)
 
 	// Product SKU
 	SaveProductSkus(db *gorm.DB, variant []entity.ProductSku) error
 	DeleteProductSkus(db *gorm.DB, productId uuid.UUID, variants []entity.ProductSku) error
+	UpdateStockProductSkus(db *gorm.DB, productSkus []entity.ProductSku) error
+	BrowseProductSku(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) ([]response.BrowseProductSku, int64, int64)
+	GetProductSkuByIds(db *gorm.DB, productSkuIds []uuid.UUID) []response.BrowseProductSku
+	// GetProductSkuByIds(db *gorm.DB, productSkuIds []uuid.UUID) []entity.ProductSku
 
 	// // Product SKU Details
 	SaveProductSpecs(db *gorm.DB, productSpecs []entity.ProductSpec) error

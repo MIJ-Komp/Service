@@ -94,6 +94,8 @@ type BrowseProductSku struct {
 	ProductId    uuid.UUID  `json:"productId"`
 	SKU          string     `json:"sku"`
 	Name         string     `json:"name"`
+	Stock        *int       `json:"stock"`
+	Price        float64    `json:"price"`
 	IsActive     bool       `json:"isActive"`
 	ProductType  string     `json:"productType"`
 	PictureId    *uuid.UUID `json:"pictureId"`

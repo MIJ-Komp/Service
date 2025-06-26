@@ -5,6 +5,7 @@ import (
 	"api.mijkomp.com/helpers"
 	"api.mijkomp.com/middleware"
 	"api.mijkomp.com/models/enum"
+	"api.mijkomp.com/models/request"
 	"api.mijkomp.com/models/response"
 	"api.mijkomp.com/service"
 	"github.com/gofiber/fiber/v2"
@@ -23,6 +24,8 @@ func (controller *OrderController) Route(app *fiber.App) {
 	order := app.Group("/api/admin/orders", middleware.AuthMiddleware(controller.UserService))
 	order.Get("/", controller.Search)
 	order.Get("/:id", controller.GetById)
+	order.Put("/:id/update-status", controller.UpdateStatus)
+	order.Put("/:id/update-shipping-info", controller.UpdateShippingInfo)
 }
 
 // @Summary		Search order
@@ -81,6 +84,58 @@ func (controller *OrderController) GetById(ctx *fiber.Ctx) error {
 	id := helpers.ParseUUID(ctx.Params("id"))
 
 	result := controller.OrderService.GetById(&id, nil)
+
+	return ctx.JSON(response.NewWebResponse(result))
+}
+
+// @Summary		Update status order
+// @Tags			Order
+// @Accept		json
+// @Produce		json
+// @Param			id path string true " "
+// @Param     request body request.UpdateOrderStatusByAdmin  true " "
+// @Success		200	{object}	response.Order
+// @Failure		404	{object}	response.WebResponse
+// @Security	ApiKeyAuth
+// @in header
+// @name Authorization
+// @Router		/api/admin/orders/{id}/update-status [put]
+func (controller *OrderController) UpdateStatus(ctx *fiber.Ctx) error {
+
+	currentUserId := helpers.ParseUserId(ctx.Locals("userId"))
+	id := helpers.ParseUUID(ctx.Params("id"))
+
+	var payload request.UpdateOrderStatusByAdmin
+	err := ctx.BodyParser(&payload)
+	exception.PanicIfNeeded(err)
+
+	result := controller.OrderService.UpdateStatus(currentUserId, id, payload)
+
+	return ctx.JSON(response.NewWebResponse(result))
+}
+
+// @Summary		Update shipping info order
+// @Tags			Order
+// @Accept		json
+// @Produce		json
+// @Param			id path string true " "
+// @Param     request body request.UpdateOrderShippingByAdmin  true " "
+// @Success		200	{object}	response.Order
+// @Failure		404	{object}	response.WebResponse
+// @Security	ApiKeyAuth
+// @in header
+// @name Authorization
+// @Router		/api/admin/orders/{id}/update-shipping-info [put]
+func (controller *OrderController) UpdateShippingInfo(ctx *fiber.Ctx) error {
+
+	currentUserId := helpers.ParseUserId(ctx.Locals("userId"))
+	id := helpers.ParseUUID(ctx.Params("id"))
+
+	var payload request.UpdateOrderShippingByAdmin
+	err := ctx.BodyParser(&payload)
+	exception.PanicIfNeeded(err)
+
+	result := controller.OrderService.UpdateShippingInfo(currentUserId, id, payload)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }
