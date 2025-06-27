@@ -31,7 +31,7 @@ func (controller *ProductController) Route(app *fiber.App) {
 // @Produce		json
 // @Param			query query string false " "
 // @Param			productTypes query string false " "
-// @Param			productCategoryId query int false " "
+// @Param  		productCategoryIds query []int false "Array of IDs (1,2,3)"
 // @Param			page query int false " "
 // @Param			pageSize query int false " "
 // @Success		200	{object}	[]response.ProductResponse
@@ -49,7 +49,7 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 	}
 
 	var productCategoryIds *[]uint = nil
-	productCategoryIdsQuery := ctx.Queries()["productCategoryId"]
+	productCategoryIdsQuery := ctx.Queries()["productCategoryIds"]
 	if productCategoryIdsQuery != "" {
 		productCategoryQueries := strings.Split(productCategoryIdsQuery, ",")
 		var ids []uint

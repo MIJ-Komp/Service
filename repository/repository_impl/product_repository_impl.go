@@ -8,7 +8,6 @@ import (
 	"api.mijkomp.com/exception"
 	"api.mijkomp.com/models/entity"
 	"api.mijkomp.com/models/response"
-	"api.mijkomp.com/repository/helpers"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -42,13 +41,21 @@ func (repository *ProductRepositoryImpl) Delete(db *gorm.DB, product entity.Prod
 	return err
 }
 
-func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, productTypes *[]string, productCategoryIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) ([]entity.Product, int64, int64) {
+func (repository *ProductRepositoryImpl) Search(
+	db *gorm.DB,
+	query *string,
+	productTypes *[]string,
+	productCategoryIds *[]uint,
+	isActive, isShowOnlyInMarketPlace *bool,
+	page, pageSize *int,
+) ([]entity.Product, int64, int64) {
 	var products []entity.Product
 	var totalCount int64 = 0
 	var totalPage int64 = 0
-	var offset int = 0
 
-	queries := db.Model(&products).
+	queries := db.Model(&entity.Product{}).
+		Preload("ProductCategory").
+		Preload("Brand").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ProductSpecs").
 		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
@@ -56,39 +63,38 @@ func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, prod
 		Preload("ProductSkuVariants")
 
 	if query != nil {
-		queries.Where("name like ?", "%"+*query+"%")
+		queries = queries.Where("name ILIKE ?", "%"+*query+"%") // ILIKE for case-insensitive in PostgreSQL
 	}
 
-	if productTypes != nil {
-		placeholders := make([]string, len(*productTypes))
-		for i := range *productTypes {
-			placeholders[i] = "?"
-		}
-		inClause := strings.Join(placeholders, ",")
-		queries.Where(fmt.Sprintf("product_type in (%s)", inClause), helpers.InterfaceSlice(*productTypes)...)
+	if productTypes != nil && len(*productTypes) > 0 {
+		queries = queries.Where("product_type IN ?", *productTypes)
 	}
 
-	if productCategoryIds != nil {
-		queries.Where("product_category_id in ?", productCategoryIds)
+	if productCategoryIds != nil && len(*productCategoryIds) > 0 {
+		queries = queries.Where("product_category_id IN ?", *productCategoryIds)
 	}
 
 	if isActive != nil {
-		queries.Where("is_active = ?", isActive)
+		queries = queries.Where("is_active = ?", *isActive)
 	}
 
 	if isShowOnlyInMarketPlace != nil {
-		queries.Where("is_show_only_in_market_place = ?", isShowOnlyInMarketPlace)
+		queries = queries.Where("is_show_only_in_market_place = ?", *isShowOnlyInMarketPlace)
 	}
 
+	// Hitung total
 	queries.Count(&totalCount)
-	if page != nil && pageSize != nil {
-		offset = (*page - 1) * *pageSize
-		totalPage = ((totalCount + int64(*pageSize) - 1) / int64(*pageSize))
 
-		queries.Limit(*pageSize).Offset(offset).Order("products.modified_at desc").Find(&products)
-	} else {
-		queries.Order("products.modified_at desc").Find(&products)
+	if page != nil && pageSize != nil && *page > 0 && *pageSize > 0 {
+		offset := (*page - 1) * *pageSize
+		totalPage = (totalCount + int64(*pageSize) - 1) / int64(*pageSize)
+
+		queries = queries.Limit(*pageSize).Offset(offset)
 	}
+
+	queries = queries.Order("products.modified_at DESC")
+	queries.Find(&products)
+
 	return products, totalCount, totalPage
 }
 
@@ -96,6 +102,7 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 	var product entity.Product
 	err := db.
 		Preload("ProductCategory").
+		Preload("Brand").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ProductSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ProductGroupItems").
@@ -256,6 +263,9 @@ func (repository *ProductRepositoryImpl) GetProductSkuByIds(db *gorm.DB, product
 // Product SKU specs
 
 func (repository *ProductRepositoryImpl) SaveProductSpecs(db *gorm.DB, productSpecs []entity.ProductSpec) error {
+	if len(productSpecs) == 0 {
+		return nil
+	}
 	err := db.Save(&productSpecs).Error
 	return err
 }
@@ -267,6 +277,9 @@ func (repository *ProductRepositoryImpl) DeleteProductSpecs(db *gorm.DB, product
 
 // Group Items
 func (repository *ProductRepositoryImpl) SaveProductGroupItems(db *gorm.DB, groupItems []entity.ProductGroupItem) error {
+	if len(groupItems) == 0 {
+		return nil
+	}
 	err := db.Save(&groupItems).Error
 	return err
 }

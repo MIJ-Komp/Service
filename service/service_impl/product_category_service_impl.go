@@ -81,8 +81,8 @@ func (service *ProductCategoryServiceImpl) Delete(currentUserId uint, categoryId
 	return "Kategori berhasil dihapus"
 }
 
-func (service *ProductCategoryServiceImpl) Search(currentUserId uint, query *string, parentId *uint) []response.ProductCategory {
-	res := service.ProductCategoryRepository.Search(service.db, query, parentId)
+func (service *ProductCategoryServiceImpl) Search(currentUserId uint, query *string) []response.ProductCategory {
+	res := service.ProductCategoryRepository.Search(service.db, query)
 
 	return service.GenerateSearchResult(res)
 }

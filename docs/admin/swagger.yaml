@@ -19,16 +19,16 @@ definitions:
     - OrderStatusCancelled
   enum.EProductType:
     enum:
-    - admin
-    - customer
     - single
     - bundle
+    - admin
+    - customer
     type: string
     x-enum-varnames:
-    - Admin
-    - Customer
     - ProductTypeSingle
     - ProductTypeGroup
+    - Admin
+    - Customer
   request.CompatibilityRule:
     properties:
       condition:
@@ -1324,10 +1324,6 @@ paths:
         in: query
         name: query
         type: string
-      - description: ' '
-        in: query
-        name: parentId
-        type: integer
       produces:
       - application/json
       responses:
@@ -1465,10 +1461,13 @@ paths:
         in: query
         name: productTypes
         type: string
-      - description: ' '
+      - collectionFormat: csv
+        description: Array of IDs
         in: query
+        items:
+          type: integer
         name: productCategoryId
-        type: integer
+        type: array
       - description: ' '
         in: query
         name: isActive

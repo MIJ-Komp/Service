@@ -1041,12 +1041,6 @@ const docTemplate = `{
                         "description": " ",
                         "name": "query",
                         "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": " ",
-                        "name": "parentId",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1269,8 +1263,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": " ",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Array of IDs",
                         "name": "productCategoryId",
                         "in": "query"
                     },
@@ -1818,16 +1816,16 @@ const docTemplate = `{
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "admin",
-                "customer",
                 "single",
-                "bundle"
+                "bundle",
+                "admin",
+                "customer"
             ],
             "x-enum-varnames": [
-                "Admin",
-                "Customer",
                 "ProductTypeSingle",
-                "ProductTypeGroup"
+                "ProductTypeGroup",
+                "Admin",
+                "Customer"
             ]
         },
         "request.CompatibilityRule": {

@@ -266,7 +266,6 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 						Qty:          groupItem.Qty,
 					})
 				}
-
 			}
 
 		}

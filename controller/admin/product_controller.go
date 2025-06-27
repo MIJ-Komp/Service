@@ -119,7 +119,7 @@ func (controller *ProductController) Delete(ctx *fiber.Ctx) error {
 // @Produce		json
 // @Param			query query string false " "
 // @Param			productTypes query string false " "
-// @Param			productCategoryId query int false " "
+// @Param  		productCategoryId query []int false "Array of IDs" collectionFormat(csv)
 // @Param			isActive query bool false " "
 // @Param			isShowOnlyInMarketplace query bool false " "
 // @Param			page query int false " "

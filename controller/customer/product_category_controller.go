@@ -26,8 +26,7 @@ func (controller *ProductCategoryController) Route(app *fiber.App) {
 // @Tags			Product Category
 // @Accept		json
 // @Produce		json
-// @Param			query query string false " "
-// @Param			parentId query int false " "
+// @Param ids query []int false "Array of IDs" collectionFormat(csv)
 // @Success		200	{object} response.ProductCategory
 // @Failure		404	{object} response.WebResponse
 // @Router		/api/product-categories [get]
@@ -35,9 +34,8 @@ func (controller *ProductCategoryController) Search(ctx *fiber.Ctx) error {
 	currentUserId := helpers.ParseUserId(ctx.Locals("userId"))
 
 	query := ctx.Query("query")
-	parentId := helpers.ParseNullableUint(ctx.Query("parentId"))
 
-	result := controller.ProductCategoryService.Search(currentUserId, &query, parentId)
+	result := controller.ProductCategoryService.Search(currentUserId, &query)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }

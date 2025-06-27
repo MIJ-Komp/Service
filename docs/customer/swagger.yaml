@@ -516,14 +516,13 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: ' '
+      - collectionFormat: csv
+        description: Array of IDs
         in: query
-        name: query
-        type: string
-      - description: ' '
-        in: query
-        name: parentId
-        type: integer
+        items:
+          type: integer
+        name: ids
+        type: array
       produces:
       - application/json
       responses:
@@ -575,10 +574,13 @@ paths:
         in: query
         name: productTypes
         type: string
-      - description: ' '
+      - collectionFormat: csv
+        description: Array of IDs (1,2,3)
         in: query
-        name: productCategoryId
-        type: integer
+        items:
+          type: integer
+        name: productCategoryIds
+        type: array
       - description: ' '
         in: query
         name: page

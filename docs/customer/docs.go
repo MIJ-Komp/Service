@@ -183,15 +183,13 @@ const docTemplate = `{
                 "summary": "Search product categories",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": " ",
-                        "name": "query",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": " ",
-                        "name": "parentId",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Array of IDs",
+                        "name": "ids",
                         "in": "query"
                     }
                 ],
@@ -274,9 +272,13 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": " ",
-                        "name": "productCategoryId",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Array of IDs (1,2,3)",
+                        "name": "productCategoryIds",
                         "in": "query"
                     },
                     {

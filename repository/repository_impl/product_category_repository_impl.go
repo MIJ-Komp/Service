@@ -22,7 +22,7 @@ func (repository *ProductCategoryRepositoryImpl) Delete(db *gorm.DB, productCate
 	return err
 }
 
-func (repository *ProductCategoryRepositoryImpl) Search(db *gorm.DB, query *string, parentId *uint) []entity.ProductCategory {
+func (repository *ProductCategoryRepositoryImpl) Search(db *gorm.DB, query *string) []entity.ProductCategory {
 
 	productCategories := []entity.ProductCategory{}
 
@@ -32,9 +32,6 @@ func (repository *ProductCategoryRepositoryImpl) Search(db *gorm.DB, query *stri
 		queries.Where("name like ?", "%"+*query+"%")
 	}
 
-	if parentId != nil {
-		queries.Where("parent_id = ?", parentId)
-	}
 	queries.Order("product_categories.name desc").Find(&productCategories)
 
 	return productCategories
