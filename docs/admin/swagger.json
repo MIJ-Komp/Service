@@ -1810,18 +1810,16 @@
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "simple",
-                "variant",
-                "bundle",
                 "admin",
-                "customer"
+                "customer",
+                "single",
+                "bundle"
             ],
             "x-enum-varnames": [
-                "ProductTypeSimple",
-                "ProductTypeVariant",
-                "ProductTypeGroup",
                 "Admin",
-                "Customer"
+                "Customer",
+                "ProductTypeSingle",
+                "ProductTypeGroup"
             ]
         },
         "request.CompatibilityRule": {
@@ -1936,6 +1934,12 @@
         "request.ProductPayload": {
             "type": "object",
             "properties": {
+                "brandId": {
+                    "type": "integer"
+                },
+                "componentTypeId": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1956,12 +1960,6 @@
                 },
                 "productCategoryId": {
                     "type": "integer"
-                },
-                "productGroupItems": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.ProductGroupItemPayload"
-                    }
                 },
                 "productSkuVariants": {
                     "type": "array",
@@ -1992,6 +1990,12 @@
                 },
                 "sku": {
                     "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "videoUrl": {
+                    "type": "string"
                 }
             }
         },
@@ -2009,6 +2013,12 @@
                 },
                 "price": {
                     "type": "number"
+                },
+                "productGroupItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.ProductGroupItemPayload"
+                    }
                 },
                 "productSpecs": {
                     "type": "array",
@@ -2157,6 +2167,29 @@
                     "type": "integer"
                 },
                 "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.Brand": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "modifiedAt": {
+                    "type": "string"
+                },
+                "modifiedById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -2456,9 +2489,6 @@
                 },
                 "name": {
                     "type": "string"
-                },
-                "parentId": {
-                    "type": "integer"
                 }
             }
         },
@@ -2485,6 +2515,9 @@
         "response.ProductResponse": {
             "type": "object",
             "properties": {
+                "brand": {
+                    "$ref": "#/definitions/response.Brand"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -2556,17 +2589,20 @@
                 },
                 "sku": {
                     "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "videoUrl": {
+                    "type": "string"
                 }
             }
         },
         "response.ProductSku": {
             "type": "object",
             "properties": {
-                "ProductSpecs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.ProductSpec"
-                    }
+                "componentTypeId": {
+                    "type": "integer"
                 },
                 "id": {
                     "type": "string"
@@ -2580,8 +2616,20 @@
                 "price": {
                     "type": "number"
                 },
+                "productGroupItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ProductGroupItemResponse"
+                    }
+                },
                 "productId": {
                     "type": "string"
+                },
+                "productSpecs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ProductSpec"
+                    }
                 },
                 "sequence": {
                     "type": "integer"

@@ -15,8 +15,12 @@ type Product struct {
 	Name                    string            `gorm:"type:varchar(256); not null;"`
 	IsActive                bool              `gorm:"not null;"`
 	IsShowOnlyInMarketPlace bool              `gorm:"not null;"`
-	ImageIds                string            `gorm:"type:varchar(2048); not null;"`
+	ImageIds                *string           `gorm:"type:varchar(2048); null;"`
+	VideoUrl                *string           `gorm:"type:varchar(2048); null;"`
+	ComponentTypeId         *uint             `gorm:"foreignKey; type:bigint; null;"`
 	ProductCategoryId       *uint             `gorm:"type:bigint; foreignKey; null;"`
+	BrandId                 *uint             `gorm:"type:bigint; foreignKey; null;"`
+	Tags                    *string           `gorm:"type:varchar(256); null;"`
 	Description             string            `gorm:"type:varchar(1024);null;"`
 	CreatedById             uint              `gorm:"type:bigint; not null;"`
 	CreatedAt               time.Time         `gorm:"type:timestamptz; not null;"`
@@ -25,28 +29,27 @@ type Product struct {
 	DeletedAt               gorm.DeletedAt    `gorm:"index"`
 
 	ProductCategory *ProductCategory
+	Brand           *Brand
 	ProductSkus     []ProductSku `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	ProductVariantOptions      []ProductVariantOption      `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ProductVariantOptionValues []ProductVariantOptionValue `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ProductSkuVariants         []ProductSkuVariant         `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-
-	ProductGroupItems []ProductGroupItem `gorm:"foreignKey:ParentId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type ProductSku struct {
-	Id              uuid.UUID     `gorm:"primaryKey; type:uuid;"`
-	ProductId       uuid.UUID     `gorm:"foreignKey; type:uuid; not null;"`
-	ComponentTypeId *uint         `gorm:"foreignKey; type:bigint; null;"`
-	SKU             string        `gorm:"type:varchar(256); not null;"`
-	Name            string        `gorm:"type: varchar(128); null"`
-	Price           float64       `gorm:"type:decimal(17,5); not null;"`
-	ImageId         *uuid.UUID    `gorm:"type:uuid; null;"`
-	Stock           *int          `gorm:"type:integer; null"`
-	StockAlert      *int          `gorm:"type:integer; null"`
-	IsActive        bool          `gorm:"not null;"`
-	Sequence        int           `gorm:"type:int; not null"`
-	ProductSpecs    []ProductSpec `gorm:"foreignKey:ProductSkuId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Id                uuid.UUID          `gorm:"primaryKey; type:uuid;"`
+	ProductId         uuid.UUID          `gorm:"foreignKey; type:uuid; not null;"`
+	SKU               string             `gorm:"type:varchar(256); not null;"`
+	Name              string             `gorm:"type: varchar(128); null"`
+	Price             float64            `gorm:"type:decimal(17,5); not null;"`
+	ImageId           *uuid.UUID         `gorm:"type:uuid; null;"`
+	Stock             *int               `gorm:"type:integer; null"`
+	StockAlert        *int               `gorm:"type:integer; null"`
+	IsActive          bool               `gorm:"not null;"`
+	Sequence          int                `gorm:"type:int; not null"`
+	ProductSpecs      []ProductSpec      `gorm:"foreignKey:ProductSkuId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ProductGroupItems []ProductGroupItem `gorm:"foreignKey:ParentId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type ProductSpec struct {

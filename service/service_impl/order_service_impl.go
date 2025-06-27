@@ -247,8 +247,9 @@ func (service *OrderServiceImpl) UpdateStatus(currentUserId uint, orderId uuid.U
 	exception.PanicIfNeeded(err)
 
 	order.Status = payload.NewStatus
-	order.ModifiedByAdminId = currentUserId
-	order.ModifiedByAdminAt = time.Now().UTC()
+	order.ModifiedByAdminId = &currentUserId
+	timeNow := time.Now()
+	order.ModifiedByAdminAt = &timeNow
 
 	_, err = service.OrderRepository.Save(tx, order)
 	exception.PanicIfNeeded(err)
@@ -276,8 +277,9 @@ func (service *OrderServiceImpl) UpdateShippingInfo(currentUserId uint, orderId 
 	shippingInfo.ShippedAt = payload.ShippedAt
 	shippingInfo.DeliveredAt = payload.DeliveredAt
 
-	order.ModifiedByAdminId = currentUserId
-	order.ModifiedByAdminAt = time.Now().UTC()
+	order.ModifiedByAdminId = &currentUserId
+	timeNow := time.Now()
+	order.ModifiedByAdminAt = &timeNow
 
 	err = service.OrderRepository.SaveShippingInfo(tx, shippingInfo)
 	exception.PanicIfNeeded(err)

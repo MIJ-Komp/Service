@@ -21,17 +21,16 @@ type Order struct {
 	PaymentId  *uuid.UUID        `gorm:"type:uuid; null;"`
 	DeletedAt  gorm.DeletedAt    `gorm:"index"`
 
-	CreatedByCustomerAt  time.Time `gorm:"type:timestamptz; not null"`
-	ModifiedByCustomerAt time.Time `gorm:"type:timestamptz; not null"`
+	CreatedByCustomerAt  time.Time `gorm:"type:timestamptz; null"`
+	ModifiedByCustomerAt time.Time `gorm:"type:timestamptz; null"`
 
-	CreatedByAdminAt  time.Time `gorm:"type:timestamptz; not null"`
-	ModifiedByAdminAt time.Time `gorm:"type:timestamptz; not null"`
-	ModifiedByAdminId uint      `gorm:"type:bigint; not null; foreign_key;"`
+	ModifiedByAdminAt *time.Time `gorm:"type:timestamptz; null"`
+	ModifiedByAdminId *uint      `gorm:"type:bigint; null; foreign_key;"`
 
 	OrderItems   []OrderItem  `gorm:"foreignKey:order_id; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CustomerInfo CustomerInfo `gorm:"foreignKey:order_id; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ShippingInfo ShippingInfo `gorm:"foreignKey:order_id; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Payment      Payment      `gorm:"foreignKey:payment_id;references:Id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Payment      Payment      `gorm:"foreignKey:PaymentId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	ModifiedByAdmin User
 }

@@ -3,17 +3,14 @@ package enum
 type EProductType string
 
 const (
-	ProductTypeSimple  EProductType = "simple"
-	ProductTypeVariant EProductType = "variant"
-	ProductTypeGroup   EProductType = "bundle"
+	ProductTypeSingle EProductType = "single"
+	ProductTypeGroup  EProductType = "bundle"
 )
 
 func (e EProductType) DisplayString() string {
 	switch e {
-	case ProductTypeSimple:
-		return "Sederhana"
-	case ProductTypeVariant:
-		return "Bervariasi"
+	case ProductTypeSingle:
+		return "Satuan"
 	default:
 		return "Bundle"
 	}

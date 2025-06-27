@@ -19,18 +19,16 @@ definitions:
     - OrderStatusCancelled
   enum.EProductType:
     enum:
-    - simple
-    - variant
-    - bundle
     - admin
     - customer
+    - single
+    - bundle
     type: string
     x-enum-varnames:
-    - ProductTypeSimple
-    - ProductTypeVariant
-    - ProductTypeGroup
     - Admin
     - Customer
+    - ProductTypeSingle
+    - ProductTypeGroup
   request.CompatibilityRule:
     properties:
       condition:
@@ -105,6 +103,10 @@ definitions:
     type: object
   request.ProductPayload:
     properties:
+      brandId:
+        type: integer
+      componentTypeId:
+        type: integer
       description:
         type: string
       imageIds:
@@ -119,10 +121,6 @@ definitions:
         type: string
       productCategoryId:
         type: integer
-      productGroupItems:
-        items:
-          $ref: '#/definitions/request.ProductGroupItemPayload'
-        type: array
       productSkuVariants:
         items:
           $ref: '#/definitions/request.ProductSkuVariantPayload'
@@ -143,6 +141,10 @@ definitions:
         type: array
       sku:
         type: string
+      tags:
+        type: string
+      videoUrl:
+        type: string
     type: object
   request.ProductSkuPayload:
     properties:
@@ -154,6 +156,10 @@ definitions:
         type: string
       price:
         type: number
+      productGroupItems:
+        items:
+          $ref: '#/definitions/request.ProductGroupItemPayload'
+        type: array
       productSpecs:
         items:
           $ref: '#/definitions/request.ProductSpec'
@@ -253,6 +259,21 @@ definitions:
       id:
         type: integer
       userName:
+        type: string
+    type: object
+  response.Brand:
+    properties:
+      createdAt:
+        type: string
+      createdById:
+        $ref: '#/definitions/response.AuditTrail'
+      id:
+        type: integer
+      modifiedAt:
+        type: string
+      modifiedById:
+        $ref: '#/definitions/response.AuditTrail'
+      name:
         type: string
     type: object
   response.CompatibilityRule:
@@ -449,8 +470,6 @@ definitions:
         $ref: '#/definitions/response.AuditTrail'
       name:
         type: string
-      parentId:
-        type: integer
     type: object
   response.ProductGroupItemResponse:
     properties:
@@ -467,6 +486,8 @@ definitions:
     type: object
   response.ProductResponse:
     properties:
+      brand:
+        $ref: '#/definitions/response.Brand'
       createdAt:
         type: string
       createdById:
@@ -515,13 +536,15 @@ definitions:
         type: array
       sku:
         type: string
+      tags:
+        type: string
+      videoUrl:
+        type: string
     type: object
   response.ProductSku:
     properties:
-      ProductSpecs:
-        items:
-          $ref: '#/definitions/response.ProductSpec'
-        type: array
+      componentTypeId:
+        type: integer
       id:
         type: string
       isActive:
@@ -530,8 +553,16 @@ definitions:
         type: string
       price:
         type: number
+      productGroupItems:
+        items:
+          $ref: '#/definitions/response.ProductGroupItemResponse'
+        type: array
       productId:
         type: string
+      productSpecs:
+        items:
+          $ref: '#/definitions/response.ProductSpec'
+        type: array
       sequence:
         type: integer
       sku:

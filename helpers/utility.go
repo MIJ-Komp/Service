@@ -34,30 +34,38 @@ func SetDefaultPageRequest(page *int, pageSize *int) {
 	}
 }
 
-func SplitImageIds(imageIds string) []uuid.UUID {
-	images := strings.Split(imageIds, ";")
+func SplitImageIds(imageIds *string) []uuid.UUID {
+	var imgIds []uuid.UUID
 
-	imgIds := []uuid.UUID{}
-	if imageIds == "" {
+	if imageIds == nil || *imageIds == "" {
 		return imgIds
 	}
+
+	images := strings.Split(*imageIds, ";")
 	for _, img := range images {
-		imgIds = append(imgIds, ParseUUID(img))
+		id, err := uuid.Parse(strings.TrimSpace(img))
+		if err == nil {
+			imgIds = append(imgIds, id)
+		}
+		// Optional: bisa log atau handle error jika UUID tidak valid
 	}
 
 	return imgIds
 }
 
-func JoinImageIds(imageIds []uuid.UUID) string {
-	imgIds := ""
+func JoinImageIds(imageIds *[]uuid.UUID) *string {
+	if imageIds == nil || len(*imageIds) == 0 {
+		return nil
+	}
 
-	for i, img := range imageIds {
-		if i != len(imageIds) {
-			imgIds += img.String() + ";"
-		} else {
-			imgIds += img.String()
+	var builder strings.Builder
+	for i, img := range *imageIds {
+		builder.WriteString(img.String())
+		if i != len(*imageIds)-1 {
+			builder.WriteString(";")
 		}
 	}
 
-	return imgIds
+	result := builder.String()
+	return &result
 }

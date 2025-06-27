@@ -14,13 +14,16 @@ type ProductResponse struct {
 	IsActive                bool         `json:"isActive"`
 	IsShowOnlyInMarketPlace bool         `json:"isShowOnlyInMarketPlace"`
 	ImageIds                []uuid.UUID  `json:"imageIds"`
+	VideoUrl                *string      `json:"videoUrl"`
 	Description             string       `json:"description"`
 	CreatedById             uint         `json:"createdById"`
 	CreatedAt               time.Time    `json:"createdAt"`
 	ModifiedById            uint         `json:"modifiedById"`
 	ModifiedAt              time.Time    `json:"modifiedAt"`
+	Tags                    *string      `json:"tags"`
 
 	ProductCategory *ProductCategory `json:"productCategory"`
+	Brand           *Brand           `json:"brand"`
 
 	ProductSkus []ProductSku `json:"productSkus"`
 
@@ -33,17 +36,19 @@ type ProductResponse struct {
 }
 
 type ProductSku struct {
-	Id         uuid.UUID `json:"id"`
-	ProductId  uuid.UUID `json:"productId"`
-	SKU        string    `json:"sku"`
-	Name       string    `json:"name"`
-	Price      float64   `json:"price"`
-	Stock      *int      `json:"stock"`
-	StockAlert *int      `json:"stockAlert"`
-	Sequence   int       `json:"sequence"`
-	IsActive   bool      `json:"isActive"`
+	Id              uuid.UUID `json:"id"`
+	ProductId       uuid.UUID `json:"productId"`
+	SKU             string    `json:"sku"`
+	Name            string    `json:"name"`
+	Price           float64   `json:"price"`
+	Stock           *int      `json:"stock"`
+	StockAlert      *int      `json:"stockAlert"`
+	Sequence        int       `json:"sequence"`
+	ComponentTypeId *uint     `json:"componentTypeId"`
+	IsActive        bool      `json:"isActive"`
 
-	ProductSpecs []ProductSpec `json:"ProductSpecs"`
+	ProductSpecs      []ProductSpec              `json:"productSpecs"`
+	ProductGroupItems []ProductGroupItemResponse `json:"productGroupItems"`
 }
 
 type ProductSpec struct {
@@ -104,7 +109,4 @@ type BrowseProductSku struct {
 	CreatedAt    time.Time  `json:"createdAt"`
 	ModifiedById uint       `json:"modifiedById"`
 	ModifiedAt   time.Time  `json:"modifiedAt"`
-
-	// ProductCategory   *ProductCategory           `json:"productCategory"`
-	// ProductGroupItems []ProductGroupItemResponse `json:"productGroupItems"`
 }

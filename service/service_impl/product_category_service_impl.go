@@ -38,7 +38,6 @@ func (service *ProductCategoryServiceImpl) Create(currentUserId uint, payload re
 
 	categoryEntity := entity.ProductCategory{
 		Name:         payload.Name,
-		ParentId:     payload.ParentId,
 		CreatedById:  currentUserId,
 		CreatedAt:    time.Now(),
 		ModifiedById: currentUserId,
@@ -63,7 +62,6 @@ func (service *ProductCategoryServiceImpl) Update(currentUserId uint, categoryId
 	exception.PanicIfNeeded(err)
 
 	category.Name = payload.Name
-	category.ParentId = payload.ParentId
 	category.ModifiedById = currentUserId
 	category.ModifiedAt = time.Now()
 
@@ -112,7 +110,6 @@ func (service *ProductCategoryServiceImpl) GenerateGetResult(category entity.Pro
 	res := response.ProductCategory{
 		Id:         category.Id,
 		Name:       category.Name,
-		ParentId:   category.ParentId,
 		CreatedBy:  data_mapper.MapAuditTrail(category.CreatedBy),
 		CreatedAt:  category.CreatedAt,
 		ModifiedBy: data_mapper.MapAuditTrail(category.ModifiedBy),

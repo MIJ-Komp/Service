@@ -48,14 +48,27 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 		productTypes = &productTypesQueries
 	}
 
-	productCategoryId := helpers.ParseNullableUint(ctx.Query("productCategoryId"))
+	var productCategoryIds *[]uint = nil
+	productCategoryIdsQuery := ctx.Queries()["productCategoryId"]
+	if productCategoryIdsQuery != "" {
+		productCategoryQueries := strings.Split(productCategoryIdsQuery, ",")
+		var ids []uint
+		for _, productCategoryQuery := range productCategoryQueries {
+			id := helpers.ParseUint(productCategoryQuery)
+			ids = append(ids, id)
+		}
+		if len(ids) > 0 {
+			productCategoryIds = &ids
+		}
+	}
+
 	isActive := true
 	isShowOnlyInMarketPlace := false
 
 	page := helpers.ParseNullableInt(ctx.Query("page"))
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
-	result := controller.ProductService.Search(0, query, productTypes, productCategoryId, &isActive, &isShowOnlyInMarketPlace, page, pageSize)
+	result := controller.ProductService.Search(0, query, productTypes, productCategoryIds, &isActive, &isShowOnlyInMarketPlace, page, pageSize)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }

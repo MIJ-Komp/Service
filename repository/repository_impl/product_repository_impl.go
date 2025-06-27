@@ -42,7 +42,7 @@ func (repository *ProductRepositoryImpl) Delete(db *gorm.DB, product entity.Prod
 	return err
 }
 
-func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, productTypes *[]string, productCategoryId *uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) ([]entity.Product, int64, int64) {
+func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, productTypes *[]string, productCategoryIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) ([]entity.Product, int64, int64) {
 	var products []entity.Product
 	var totalCount int64 = 0
 	var totalPage int64 = 0
@@ -68,8 +68,8 @@ func (repository *ProductRepositoryImpl) Search(db *gorm.DB, query *string, prod
 		queries.Where(fmt.Sprintf("product_type in (%s)", inClause), helpers.InterfaceSlice(*productTypes)...)
 	}
 
-	if productCategoryId != nil {
-		queries.Where("product_category_id = ?", productCategoryId)
+	if productCategoryIds != nil {
+		queries.Where("product_category_id in ?", productCategoryIds)
 	}
 
 	if isActive != nil {
@@ -98,13 +98,13 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 		Preload("ProductCategory").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ProductSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductGroupItems").
-		Preload("ProductGroupItems.Product").
-		Preload("ProductGroupItems.Product.ProductSkus").
-		Preload("ProductGroupItems.Product.ProductSkus.ProductSpecs").
-		Preload("ProductGroupItems.Product.ProductSkuVariants").
-		Preload("ProductGroupItems.Product.ProductVariantOptions").
-		Preload("ProductGroupItems.Product.ProductVariantOptionValues").
+		Preload("ProductSkus.ProductGroupItems").
+		Preload("ProductSkus.ProductGroupItems.Product").
+		Preload("ProductSkus.ProductGroupItems.Product.ProductSkus").
+		Preload("ProductSkus.ProductGroupItems.Product.ProductSkus.ProductSpecs").
+		Preload("ProductSkus.ProductGroupItems.Product.ProductSkuVariants").
+		Preload("ProductSkus.ProductGroupItems.Product.ProductVariantOptions").
+		Preload("ProductSkus.ProductGroupItems.Product.ProductVariantOptionValues").
 		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkuVariants").

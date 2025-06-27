@@ -11,17 +11,19 @@ type ProductPayload struct {
 	Name                    string            `json:"name"`
 	IsActive                bool              `json:"isActive"`
 	IsShowOnlyInMarketPlace bool              `json:"isShowOnlyInMarketPlace"`
-	ImageIds                []uuid.UUID       `json:"imageIds"`
-	ProductCategoryId       *uint             `json:"productCategoryId"`
+	ImageIds                *[]uuid.UUID      `json:"imageIds"`
+	VideoUrl                *string           `json:"videoUrl"`
 	Description             string            `json:"description"`
+	ComponentTypeId         *uint             `json:"componentTypeId"`
+	ProductCategoryId       *uint             `json:"productCategoryId"`
+	BrandId                 *uint             `json:"brandId"`
+	Tags                    *string           `json:"tags"`
 
 	ProductSkus        []ProductSkuPayload        `json:"productSkus"`
 	ProductSkuVariants []ProductSkuVariantPayload `json:"productSkuVariants"`
 
 	ProductVariantOptions      []ProductVariantOptionPayload      `json:"productVariantOptions"`
 	ProductVariantOptionValues []ProductVariantOptionValuePayload `json:"productVariantOptionValues"`
-
-	ProductGroupItems []ProductGroupItemPayload `json:"productGroupItems"`
 }
 
 type ProductVariantOptionPayload struct {
@@ -36,14 +38,15 @@ type ProductVariantOptionValuePayload struct {
 }
 
 type ProductSkuPayload struct {
-	Id           uuid.UUID     `json:"id"`
-	SKU          string        `json:"sku"`
-	Name         string        `json:"name"`
-	Price        float64       `json:"price"`
-	Stock        *int          `json:"stock"`
-	StockAlert   *int          `json:"stockAlert"`
-	IsActive     bool          `json:"isActive"`
-	ProductSpecs []ProductSpec `json:"productSpecs"`
+	Id                uuid.UUID                 `json:"id"`
+	SKU               string                    `json:"sku"`
+	Name              string                    `json:"name"`
+	Price             float64                   `json:"price"`
+	Stock             *int                      `json:"stock"`
+	StockAlert        *int                      `json:"stockAlert"`
+	IsActive          bool                      `json:"isActive"`
+	ProductSpecs      []ProductSpec             `json:"productSpecs"`
+	ProductGroupItems []ProductGroupItemPayload `json:"productGroupItems"`
 }
 
 type ProductSpec struct {

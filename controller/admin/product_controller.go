@@ -55,7 +55,9 @@ func (controller *ProductController) Create(ctx *fiber.Ctx) error {
 
 	var productModel request.ProductPayload
 	err := ctx.BodyParser(&productModel)
-	exception.NewModelValidationError(err)
+	if err != nil {
+		panic(exception.NewValidationError(err.Error()))
+	}
 
 	result := controller.ProductService.Create(currentUserId, productId, productModel)
 
@@ -141,14 +143,29 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 		productTypes = &productTypesQueries
 	}
 
-	productCategoryId := helpers.ParseNullableUint(ctx.Query("productCategoryId"))
+	// productCategoryId := helpers.ParseNullableUint(ctx.Query("productCategoryId"))
+	var productCategoryIds *[]uint = nil
+	productCategoryIdsQuery := ctx.Queries()["productCategoryId"]
+
+	if productCategoryIdsQuery != "" {
+		productCategoryQueries := strings.Split(productCategoryIdsQuery, ",")
+		var ids []uint
+		for _, productCategoryQuery := range productCategoryQueries {
+			id := helpers.ParseUint(productCategoryQuery)
+			ids = append(ids, id)
+		}
+		if len(ids) > 0 {
+			productCategoryIds = &ids
+		}
+	}
+
 	isActive := helpers.ParseNullableBool(ctx.Query("isActive"))
 	isShowOnlyInMarketPlace := helpers.ParseNullableBool(ctx.Query("isShowOnlyInMarketPlace"))
 
 	page := helpers.ParseNullableInt(ctx.Query("page"))
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
-	result := controller.ProductService.Search(currentUserId, query, productTypes, productCategoryId, isActive, isShowOnlyInMarketPlace, page, pageSize)
+	result := controller.ProductService.Search(currentUserId, query, productTypes, productCategoryIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }

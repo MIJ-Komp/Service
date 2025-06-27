@@ -432,6 +432,29 @@ const docTemplate = `{
                 }
             }
         },
+        "response.Brand": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "modifiedAt": {
+                    "type": "string"
+                },
+                "modifiedById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "response.CustomerInfo": {
             "type": "object",
             "properties": {
@@ -654,9 +677,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "parentId": {
-                    "type": "integer"
                 }
             }
         },
@@ -683,6 +703,9 @@ const docTemplate = `{
         "response.ProductResponse": {
             "type": "object",
             "properties": {
+                "brand": {
+                    "$ref": "#/definitions/response.Brand"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -754,17 +777,20 @@ const docTemplate = `{
                 },
                 "sku": {
                     "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "videoUrl": {
+                    "type": "string"
                 }
             }
         },
         "response.ProductSku": {
             "type": "object",
             "properties": {
-                "ProductSpecs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.ProductSpec"
-                    }
+                "componentTypeId": {
+                    "type": "integer"
                 },
                 "id": {
                     "type": "string"
@@ -778,8 +804,20 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
+                "productGroupItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ProductGroupItemResponse"
+                    }
+                },
                 "productId": {
                     "type": "string"
+                },
+                "productSpecs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ProductSpec"
+                    }
                 },
                 "sequence": {
                     "type": "integer"
