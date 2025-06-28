@@ -4,6 +4,7 @@ import (
 	"api.mijkomp.com/controller/admin"
 	"api.mijkomp.com/controller/customer"
 	"api.mijkomp.com/exception"
+	"api.mijkomp.com/middleware"
 	"api.mijkomp.com/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -39,6 +40,9 @@ func CreateServer(
 		StackTraceHandler: recover.ConfigDefault.StackTraceHandler,
 	}
 	app.Use(recover.New(ConfigDefault))
+
+	// Logger middleware
+	app.Use(middleware.LoggerMiddleware())
 
 	// app.Static("/uploads", "./uploads")
 

@@ -1,9 +1,11 @@
 package admin
 
 import (
+	"fmt"
 	"strings"
 
 	"api.mijkomp.com/exception"
+	"api.mijkomp.com/helpers/logger"
 	"api.mijkomp.com/helpers"
 	"api.mijkomp.com/middleware"
 	"api.mijkomp.com/models/request"
@@ -53,6 +55,8 @@ func (controller *ProductController) Create(ctx *fiber.Ctx) error {
 	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
 	productId := helpers.ParseUUID(ctx.Params("id"))
 
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencoba membuat produk baru", currentUserId))
+
 	var productModel request.ProductPayload
 	err := ctx.BodyParser(&productModel)
 	if err != nil {
@@ -60,6 +64,8 @@ func (controller *ProductController) Create(ctx *fiber.Ctx) error {
 	}
 
 	result := controller.ProductService.Create(currentUserId, productId, productModel)
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil membuat produk baru", currentUserId))
 
 	return ctx.JSON(response.NewWebResponse(result))
 }
@@ -82,11 +88,15 @@ func (controller *ProductController) Update(ctx *fiber.Ctx) error {
 
 	productId := helpers.ParseUUID(ctx.Params("id"))
 
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencoba mengupdate produk dengan ID %s", currentUserId, productId))
+
 	var productModel request.ProductPayload
 	err := ctx.BodyParser(&productModel)
 	exception.PanicIfNeeded(err)
 
 	result := controller.ProductService.Update(currentUserId, productId, productModel)
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mengupdate produk dengan ID %s", currentUserId, productId))
 
 	return ctx.JSON(response.NewWebResponse(result))
 }
@@ -108,7 +118,11 @@ func (controller *ProductController) Delete(ctx *fiber.Ctx) error {
 
 	productId := helpers.ParseUUID(ctx.Params("id"))
 
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencoba menghapus produk dengan ID %s", currentUserId, productId))
+
 	msgResult := controller.ProductService.Delete(currentUserId, productId)
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil menghapus produk dengan ID %s", currentUserId, productId))
 
 	return ctx.JSON(response.NewWebResponse(nil, msgResult))
 }
@@ -133,6 +147,8 @@ func (controller *ProductController) Delete(ctx *fiber.Ctx) error {
 func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 
 	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencari produk", currentUserId))
 
 	query := helpers.ParseNullableString(ctx.Query("query"))
 
@@ -167,6 +183,8 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 
 	result := controller.ProductService.Search(currentUserId, query, productTypes, productCategoryIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mendapatkan daftar produk", currentUserId))
+
 	return ctx.JSON(response.NewWebResponse(result))
 }
 
@@ -187,6 +205,8 @@ func (controller *ProductController) BrowseProductSku(ctx *fiber.Ctx) error {
 
 	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
 
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencari SKU produk", currentUserId))
+
 	query := helpers.ParseNullableString(ctx.Query("query"))
 
 	var productTypes *[]string = nil
@@ -201,6 +221,8 @@ func (controller *ProductController) BrowseProductSku(ctx *fiber.Ctx) error {
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
 	result := controller.ProductService.BrowseProductSku(currentUserId, query, productTypes, productCategoryId, page, pageSize)
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mendapatkan daftar SKU produk", currentUserId))
 
 	return ctx.JSON(response.NewWebResponse(result))
 }
@@ -222,7 +244,11 @@ func (controller *ProductController) GetById(ctx *fiber.Ctx) error {
 
 	productId := helpers.ParseUUID(ctx.Params("id"))
 
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencoba mendapatkan produk dengan ID %s", currentUserId, productId))
+
 	result := controller.ProductService.GetById(currentUserId, productId)
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mendapatkan produk dengan ID %s", currentUserId, productId))
 
 	return ctx.JSON(response.NewWebResponse(result))
 }
@@ -242,11 +268,15 @@ func (controller *ProductController) CreateVariantOptions(ctx *fiber.Ctx) error 
 
 	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
 
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencoba membuat opsi varian baru", currentUserId))
+
 	var optionModel request.VariantOptionPayload
 	err := ctx.BodyParser(&optionModel)
 	exception.PanicIfNeeded(err)
 
 	result := controller.ProductService.CreateVariantOptions(currentUserId, optionModel)
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil membuat opsi varian baru", currentUserId))
 
 	return ctx.JSON(response.NewWebResponse(result))
 }
@@ -265,7 +295,11 @@ func (controller *ProductController) GetVariantOptions(ctx *fiber.Ctx) error {
 
 	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
 
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencoba mendapatkan daftar opsi varian", currentUserId))
+
 	result := controller.ProductService.GetVariantOptions(currentUserId)
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mendapatkan daftar opsi varian", currentUserId))
 
 	return ctx.JSON(response.NewWebResponse(result))
 }

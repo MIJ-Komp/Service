@@ -63,7 +63,7 @@ func (repository *ProductRepositoryImpl) Search(
 		Preload("ProductSkuVariants")
 
 	if query != nil {
-		queries = queries.Where("name ILIKE ?", "%"+*query+"%") // ILIKE for case-insensitive in PostgreSQL
+		queries = queries.Where("name ILIKE ?", fmt.Sprintf("%%%s%%", *query)) // ILIKE for case-insensitive in PostgreSQL
 	}
 
 	if productTypes != nil && len(*productTypes) > 0 {

@@ -29,7 +29,7 @@ func (repository *ComponentTypeRepositoryImpl) Search(db *gorm.DB, query *string
 	queries := db.Model(&entity.ComponentType{})
 	if query != nil {
 		q := "%" + *query + "%"
-		queries.Where("code || ' ' || name || ' ' || description ILIKE ?", q)
+		queries.Where("CONCAT(code, ' ', name, ' ', description) ILIKE ?", q)
 	}
 
 	queries.Order("component_types.modified_at desc").Find(&productCategories)
