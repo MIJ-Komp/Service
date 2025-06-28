@@ -203,7 +203,8 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	productSkuToBeDeleted := []entity.ProductSku{}
 	productGroupItems := []entity.ProductGroupItem{}
 	productGroupItemsToBeDeleted := []entity.ProductGroupItem{}
-
+	productSpecs := []entity.ProductSpec{}
+	productSpecsToBeDeleted := []entity.ProductSpec{}
 	// Update, delete
 	for i, productSku := range productSkus {
 		payloadIdx := slices.IndexFunc(payload.ProductSkus, func(model request.ProductSkuPayload) bool {
@@ -221,34 +222,56 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 			productSkuToBeDeleted = append(productSkuToBeDeleted, productSku)
 		}
 
+		productSkuSpecs := productSku.ProductSpecs
+
+		for i, productSpec := range productSkuSpecs {
+			productSpecIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ProductSpecs, func(model request.ProductSpec) bool {
+				return model.Id == productSpec.Id
+			})
+
+			if productSpecIdx != -1 {
+				productSpecPayload := payload.ProductSkus[payloadIdx].ProductSpecs[productSpecIdx]
+				productSkuSpecs[i].SpecKey = productSpecPayload.SpecKey
+				productSkuSpecs[i].SpecValue = productSpecPayload.SpecValue
+
+				productSpecs = append(productSpecs, productSkuSpecs[i])
+			} else {
+				productSpecsToBeDeleted = append(productSpecsToBeDeleted, productSpec)
+				toBeDeletedIdx := slices.IndexFunc(productSkuSpecs, func(model entity.ProductSpec) bool {
+					return model.Id == productSpec.Id
+				})
+				productSkuSpecs = append(productSkuSpecs[:toBeDeletedIdx], productSkuSpecs[toBeDeletedIdx+1:]...)
+			}
+		}
+
 		// Product Group Items (Update, Delete, Add New)
 		if product.ProductType == enum.ProductTypeGroup {
 			if len(payload.ProductSkus[payloadIdx].ProductGroupItems) == 0 {
 				panic(exception.NewValidationError("Group detail tidak boleh kosong"))
 			}
 
-			productSKuGroupItems := productSku.ProductGroupItems
-			for i, groupItem := range productSKuGroupItems {
+			productSkuGroupItems := productSku.ProductGroupItems
+			for i, groupItem := range productSkuGroupItems {
 				groupItemIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ProductGroupItems, func(model request.ProductGroupItemPayload) bool {
 					return model.Id == groupItem.Id
 				})
 
-				productGroupPayload := payload.ProductSkus[payloadIdx].ProductGroupItems[groupItemIdx]
-
 				if groupItemIdx != -1 {
-					productSKuGroupItems[i].ParentId = groupItem.ParentId
-					productSKuGroupItems[i].ProductId = groupItem.ProductId
-					productSKuGroupItems[i].ProductSkuId = groupItem.ProductSkuId
-					productSKuGroupItems[i].Qty = productGroupPayload.Qty
+					productGroupPayload := payload.ProductSkus[payloadIdx].ProductGroupItems[groupItemIdx]
+
+					productSkuGroupItems[i].ParentId = groupItem.ParentId
+					productSkuGroupItems[i].ProductId = groupItem.ProductId
+					productSkuGroupItems[i].ProductSkuId = groupItem.ProductSkuId
+					productSkuGroupItems[i].Qty = productGroupPayload.Qty
 				} else {
 					productGroupItemsToBeDeleted = append(productGroupItemsToBeDeleted, groupItem)
 					toBeDeletedIdx := slices.IndexFunc(productGroupItems, func(model entity.ProductGroupItem) bool {
 						return model.Id == groupItem.Id
 					})
-					productSKuGroupItems = append(productGroupItems[:toBeDeletedIdx], productGroupItems[toBeDeletedIdx+1:]...)
+					productSkuGroupItems = append(productGroupItems[:toBeDeletedIdx], productGroupItems[toBeDeletedIdx+1:]...)
 				}
 
-				productGroupItems = append(productGroupItems, productSKuGroupItems...)
+				productGroupItems = append(productGroupItems, productSkuGroupItems...)
 			}
 
 			// Add new
@@ -267,7 +290,6 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 					})
 				}
 			}
-
 		}
 	}
 
@@ -292,16 +314,29 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 			// Product Group
 			for _, groupItem := range productSku.ProductGroupItems {
 
-				if savedIdx == -1 {
-					productGroupItems = append(productGroupItems, entity.ProductGroupItem{
-						Id:           groupItem.Id,
-						ParentId:     productSku.Id,
-						ProductId:    groupItem.ProductId,
-						ProductSkuId: groupItem.ProductSkuId,
-						Qty:          groupItem.Qty,
+				productGroupItems = append(productGroupItems, entity.ProductGroupItem{
+					Id:           groupItem.Id,
+					ParentId:     productSku.Id,
+					ProductId:    groupItem.ProductId,
+					ProductSkuId: groupItem.ProductSkuId,
+					Qty:          groupItem.Qty,
+					Sequence:     len(productGroupItems) + 1,
+				})
+
+				// Product Spec
+
+				for _, productSpec := range productSku.ProductSpecs {
+
+					productSpecs = append(productSpecs, entity.ProductSpec{
+						Id:           productSpec.Id,
+						ProductSkuId: productSku.Id,
+						SpecKey:      productSpec.SpecKey,
+						SpecValue:    productSpec.SpecValue,
+						Sequence:     len(productSpecs) + 1,
 					})
 				}
 			}
+
 		}
 
 	}
@@ -310,6 +345,12 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	exception.PanicIfNeeded(err)
 
 	err = service.ProductRepository.SaveProductSkus(tx, productSkus)
+	exception.PanicIfNeeded(err)
+
+	err = service.ProductRepository.DeleteProductSpecs(tx, productId, productSpecsToBeDeleted)
+	exception.PanicIfNeeded(err)
+
+	err = service.ProductRepository.SaveProductSpecs(tx, productSpecs)
 	exception.PanicIfNeeded(err)
 
 	err = service.ProductRepository.DeleteProductGroupItems(tx, productId, productGroupItemsToBeDeleted)

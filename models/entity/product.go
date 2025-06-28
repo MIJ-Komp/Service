@@ -90,6 +90,7 @@ type ProductGroupItem struct {
 	ProductId    uuid.UUID `gorm:"foreignKey; type:uuid; not null"`
 	ProductSkuId uuid.UUID `gorm:"foreignKey:ProductSkuId; type:uuid; not null"`
 	Qty          int       `gorm:"type:integer; null"`
+	Sequence     int       `gorm:"type:integer; not null"`
 
 	Product Product `gorm:"foreignKey:ProductId;references:Id;"`
 }

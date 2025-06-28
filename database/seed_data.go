@@ -42,10 +42,10 @@ func seedComponentTypes(db *gorm.DB) error {
 
 	for _, ct := range componentTypes {
 		newComponentType := ct
-		newComponentType.CreatedById = 0
-		newComponentType.CreatedAt = time.Now().UTC()
-		newComponentType.ModifiedById = 0
-		newComponentType.ModifiedAt = time.Now().UTC()
+		newComponentType.CreatedById = 1
+		newComponentType.CreatedAt = time.Now()
+		newComponentType.ModifiedById = 1
+		newComponentType.ModifiedAt = time.Now()
 
 		err := db.FirstOrCreate(&newComponentType, entity.ComponentType{Code: ct.Code}).Error
 		if err != nil {
@@ -59,11 +59,12 @@ func seedComponentTypes(db *gorm.DB) error {
 func seedUserAdmin(db *gorm.DB) {
 	// seed admin
 	var userCount int64 = 0
-	db.Find(&entity.User{}).Count(&userCount)
+	db.Model(&entity.User{}).Count(&userCount)
 
 	if userCount == 0 {
 
-		pass := ""
+		pass, err := helpers.PasswordHash("System123!@#")
+		exception.PanicIfNeeded(err)
 		db.Save(&entity.User{
 			UserName: "system",
 			FullName: "System",
@@ -71,7 +72,7 @@ func seedUserAdmin(db *gorm.DB) {
 			Password: &pass,
 		})
 
-		pass, err := helpers.PasswordHash("Admin123!@#")
+		pass, err = helpers.PasswordHash("Admin123!@#")
 		exception.PanicIfNeeded(err)
 		db.Save(&entity.User{
 			UserName: "SuperAdmin",
