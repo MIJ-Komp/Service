@@ -14,6 +14,7 @@ type ProductPayload struct {
 	ImageIds                *[]uuid.UUID      `json:"imageIds"`
 	VideoUrl                *string           `json:"videoUrl"`
 	Description             string            `json:"description"`
+	ProductSpec             string            `json:"productSpec"`
 	ComponentTypeId         *uint             `json:"componentTypeId"`
 	ProductCategoryId       *uint             `json:"productCategoryId"`
 	BrandId                 *uint             `json:"brandId"`
@@ -45,11 +46,11 @@ type ProductSkuPayload struct {
 	Stock             *int                      `json:"stock"`
 	StockAlert        *int                      `json:"stockAlert"`
 	IsActive          bool                      `json:"isActive"`
-	ProductSpecs      []ProductSpec             `json:"productSpecs"`
+	ComponentSpecs    []ComponentSpec           `json:"componentSpecs"`
 	ProductGroupItems []ProductGroupItemPayload `json:"productGroupItems"`
 }
 
-type ProductSpec struct {
+type ComponentSpec struct {
 	Id        uuid.UUID `json:"id"`
 	SpecKey   string    `json:"specKey"`
 	SpecValue string    `json:"specValue"`

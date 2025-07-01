@@ -22,8 +22,8 @@ type ProductRepository interface {
 	// GetProductSkuByIds(db *gorm.DB, productSkuIds []uuid.UUID) []entity.ProductSku
 
 	// // Product SKU Details
-	SaveProductSpecs(db *gorm.DB, productSpecs []entity.ProductSpec) error
-	DeleteProductSpecs(db *gorm.DB, productSkuId uuid.UUID, productSpecs []entity.ProductSpec) error
+	SaveComponentSpecs(db *gorm.DB, componentSpecs []entity.ComponentSpec) error
+	DeleteComponentSpecs(db *gorm.DB, productSkuId uuid.UUID, componentSpecs []entity.ComponentSpec) error
 
 	// Group Details
 	SaveProductGroupItems(db *gorm.DB, groupItems []entity.ProductGroupItem) error

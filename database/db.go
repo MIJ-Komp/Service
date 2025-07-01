@@ -5,6 +5,7 @@ import (
 
 	"api.mijkomp.com/exception"
 	"api.mijkomp.com/helpers/logger"
+	"api.mijkomp.com/models/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
@@ -30,27 +31,28 @@ func NewDB() *gorm.DB {
 
 	// Auto migrate entity
 	db.AutoMigrate(
-	// &entity.User{},
-	// &entity.UserVerification{},
-	// &entity.UserToken{},
-	// &entity.ProductCategory{},
-	// &entity.Product{},
-	// &entity.ProductSku{},
-	// &entity.ProductSpec{},
-	// &entity.ProductGroupItem{},
-	// &entity.ProductVariantOption{},
-	// &entity.ProductVariantOptionValue{},
-	// &entity.ProductSkuVariant{},
-	// &entity.VariantOption{},
-	// &entity.ComponentType{},
-	// &entity.CompatibilityRule{},
-	// &entity.Menu{},
-	// &entity.MenuItem{},
-	// &entity.Order{},
-	// &entity.Payment{},
-	// &entity.OrderItem{},
-	// &entity.CustomerInfo{},
-	// &entity.ShippingInfo{},
+		// &entity.User{},
+		// &entity.UserVerification{},
+		// &entity.UserToken{},
+		// &entity.ProductCategory{},
+		// &entity.Product{},
+		// &entity.ProductSku{},
+		&entity.ComponentSpec{},
+		// &entity.ProductGroupItem{},
+		// &entity.ProductVariantOption{},
+		// &entity.ProductVariantOptionValue{},
+		// &entity.ProductSkuVariant{},
+		// &entity.VariantOption{},
+		// &entity.ComponentType{},
+		// &entity.CompatibilityRule{},
+		// &entity.Menu{},
+		// &entity.MenuItem{},
+		// &entity.Order{},
+		// &entity.Payment{},
+		// &entity.OrderItem{},
+		// &entity.CustomerInfo{},
+		// &entity.ShippingInfo{},
+		&entity.Brand{},
 	)
 
 	// SeedData(db)

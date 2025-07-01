@@ -38,7 +38,7 @@ func (repository *MenuRepositoryImpl) Search(db *gorm.DB, query *string, parentI
 	if parentId != nil {
 		queries.Where("parent_id = ?", parentId)
 	}
-	queries.Order("name desc").Find(&menus)
+	queries.Order("created_at").Find(&menus)
 
 	return menus
 }

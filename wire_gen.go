@@ -27,6 +27,8 @@ func InitializedServer() *fiber.App {
 	userServiceImpl := service_impl.NewUserService(userRepositoryImpl, validate, db)
 	productCategoryRepositoryImpl := repository_impl.NewProductCategoryRepository()
 	productCategoryServiceImpl := service_impl.NewProductCategoryService(productCategoryRepositoryImpl, validate, db)
+	brandRepositoryImpl := repository_impl.NewBrandRepository()
+	brandServiceImpl := service_impl.NewBrandService(brandRepositoryImpl, validate, db)
 	productRepositoryImpl := repository_impl.NewProductRepository()
 	productServiceImpl := service_impl.NewProductService(productRepositoryImpl, db)
 	componentTypeRepositoryImpl := repository_impl.NewComponentTypeRepository()
@@ -39,7 +41,7 @@ func InitializedServer() *fiber.App {
 	paymentRepositoryImpl := repository_impl.NewPaymentRepository()
 	paymentServiceImpl := service_impl.NewPaymentService(paymentRepositoryImpl, orderRepositoryImpl, db)
 	orderServiceImpl := service_impl.NewOrderService(orderRepositoryImpl, productServiceImpl, productRepositoryImpl, paymentServiceImpl, db)
-	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, menuServiceImpl, orderServiceImpl, db)
+	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, brandServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, menuServiceImpl, orderServiceImpl, db)
 	return fiberApp
 }
 
@@ -50,6 +52,8 @@ var validatorSet = wire.NewSet(config.NewValidator)
 var userSet = wire.NewSet(repository_impl.NewUserRepository, wire.Bind(new(repository.UserRepository), new(*repository_impl.UserRepositoryImpl)), service_impl.NewUserService, wire.Bind(new(service.UserService), new(*service_impl.UserServiceImpl)))
 
 var productCategorySet = wire.NewSet(repository_impl.NewProductCategoryRepository, wire.Bind(new(repository.ProductCategoryRepository), new(*repository_impl.ProductCategoryRepositoryImpl)), service_impl.NewProductCategoryService, wire.Bind(new(service.ProductCategoryService), new(*service_impl.ProductCategoryServiceImpl)))
+
+var brandSet = wire.NewSet(repository_impl.NewBrandRepository, wire.Bind(new(repository.BrandRepository), new(*repository_impl.BrandRepositoryImpl)), service_impl.NewBrandService, wire.Bind(new(service.BrandService), new(*service_impl.BrandServiceImpl)))
 
 var productSet = wire.NewSet(repository_impl.NewProductRepository, wire.Bind(new(repository.ProductRepository), new(*repository_impl.ProductRepositoryImpl)), service_impl.NewProductService, wire.Bind(new(service.ProductService), new(*service_impl.ProductServiceImpl)))
 

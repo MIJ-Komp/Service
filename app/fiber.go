@@ -24,6 +24,7 @@ func NewFiberConfig() fiber.Config {
 func CreateServer(
 	userService service.UserService,
 	productCategoryService service.ProductCategoryService,
+	brandService service.BrandService,
 	productService service.ProductService,
 	componentTypeService service.ComponentTypeService,
 	compatibilityRuleService service.CompatibilityRuleService,
@@ -61,6 +62,7 @@ func CreateServer(
 	userController := admin.NewUserController(&userService)
 	userController.Route(app)
 	admin.NewAuthController(&userService).Route(app)
+	admin.NewBrandController(&userService, &brandService).Route(app)
 	admin.NewProductCategoryController(&userService, &productCategoryService).Route(app)
 	admin.NewProductController(&userService, &productService).Route(app)
 	admin.NewComponentTypeController(&userService, &componentTypeService).Route(app)

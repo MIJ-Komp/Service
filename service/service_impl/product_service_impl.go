@@ -48,6 +48,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 		ProductCategoryId:       payload.ProductCategoryId,
 		BrandId:                 payload.BrandId,
 		Description:             payload.Description,
+		ProductSpec:             payload.ProductSpec,
 		CreatedById:             currentUserId,
 		CreatedAt:               time.Now().UTC(),
 		ModifiedById:            currentUserId,
@@ -59,7 +60,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 
 	// Product SKU
 	productSkus := []entity.ProductSku{}
-	productSpecs := []entity.ProductSpec{}
+	componentSpecs := []entity.ComponentSpec{}
 	productGroupItems := []entity.ProductGroupItem{}
 
 	for i, productSku := range payload.ProductSkus {
@@ -75,16 +76,16 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 			IsActive:   true,
 		})
 
-		for i, productSpec := range productSku.ProductSpecs {
-			productSpec := entity.ProductSpec{
-				Id:           productSpec.Id,
+		for i, componentSpec := range productSku.ComponentSpecs {
+			componentSpec := entity.ComponentSpec{
+				Id:           componentSpec.Id,
 				ProductSkuId: productSku.Id,
-				SpecKey:      productSpec.SpecKey,
-				SpecValue:    productSpec.SpecValue,
+				SpecKey:      componentSpec.SpecKey,
+				SpecValue:    componentSpec.SpecValue,
 				Sequence:     i + 1,
 			}
 
-			productSpecs = append(productSpecs, productSpec)
+			componentSpecs = append(componentSpecs, componentSpec)
 		}
 
 		// Product Group
@@ -104,7 +105,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 	err = service.ProductRepository.SaveProductSkus(tx, productSkus)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.SaveProductSpecs(tx, productSpecs)
+	err = service.ProductRepository.SaveComponentSpecs(tx, componentSpecs)
 	exception.PanicIfNeeded(err)
 
 	if payload.ProductType == enum.ProductTypeGroup {
@@ -192,6 +193,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	product.ProductCategoryId = payload.ProductCategoryId
 	product.BrandId = payload.BrandId
 	product.Description = payload.Description
+	product.ProductSpec = payload.ProductSpec
 	product.ModifiedById = currentUserId
 	product.ModifiedAt = time.Now().UTC()
 
@@ -203,8 +205,8 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	productSkuToBeDeleted := []entity.ProductSku{}
 	productGroupItems := []entity.ProductGroupItem{}
 	productGroupItemsToBeDeleted := []entity.ProductGroupItem{}
-	productSpecs := []entity.ProductSpec{}
-	productSpecsToBeDeleted := []entity.ProductSpec{}
+	componentSpecs := []entity.ComponentSpec{}
+	componentSpecsToBeDeleted := []entity.ComponentSpec{}
 	// Update, delete
 	for i, productSku := range productSkus {
 		payloadIdx := slices.IndexFunc(payload.ProductSkus, func(model request.ProductSkuPayload) bool {
@@ -222,23 +224,23 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 			productSkuToBeDeleted = append(productSkuToBeDeleted, productSku)
 		}
 
-		productSkuSpecs := productSku.ProductSpecs
+		productSkuSpecs := productSku.ComponentSpecs
 
-		for i, productSpec := range productSkuSpecs {
-			productSpecIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ProductSpecs, func(model request.ProductSpec) bool {
-				return model.Id == productSpec.Id
+		for i, componentSpec := range productSkuSpecs {
+			componentSpecIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ComponentSpecs, func(model request.ComponentSpec) bool {
+				return model.Id == componentSpec.Id
 			})
 
-			if productSpecIdx != -1 {
-				productSpecPayload := payload.ProductSkus[payloadIdx].ProductSpecs[productSpecIdx]
-				productSkuSpecs[i].SpecKey = productSpecPayload.SpecKey
-				productSkuSpecs[i].SpecValue = productSpecPayload.SpecValue
+			if componentSpecIdx != -1 {
+				componentSpecPayload := payload.ProductSkus[payloadIdx].ComponentSpecs[componentSpecIdx]
+				productSkuSpecs[i].SpecKey = componentSpecPayload.SpecKey
+				productSkuSpecs[i].SpecValue = componentSpecPayload.SpecValue
 
-				productSpecs = append(productSpecs, productSkuSpecs[i])
+				componentSpecs = append(componentSpecs, productSkuSpecs[i])
 			} else {
-				productSpecsToBeDeleted = append(productSpecsToBeDeleted, productSpec)
-				toBeDeletedIdx := slices.IndexFunc(productSkuSpecs, func(model entity.ProductSpec) bool {
-					return model.Id == productSpec.Id
+				componentSpecsToBeDeleted = append(componentSpecsToBeDeleted, componentSpec)
+				toBeDeletedIdx := slices.IndexFunc(productSkuSpecs, func(model entity.ComponentSpec) bool {
+					return model.Id == componentSpec.Id
 				})
 				productSkuSpecs = append(productSkuSpecs[:toBeDeletedIdx], productSkuSpecs[toBeDeletedIdx+1:]...)
 			}
@@ -325,14 +327,14 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 
 				// Product Spec
 
-				for _, productSpec := range productSku.ProductSpecs {
+				for _, componentSpec := range productSku.ComponentSpecs {
 
-					productSpecs = append(productSpecs, entity.ProductSpec{
-						Id:           productSpec.Id,
+					componentSpecs = append(componentSpecs, entity.ComponentSpec{
+						Id:           componentSpec.Id,
 						ProductSkuId: productSku.Id,
-						SpecKey:      productSpec.SpecKey,
-						SpecValue:    productSpec.SpecValue,
-						Sequence:     len(productSpecs) + 1,
+						SpecKey:      componentSpec.SpecKey,
+						SpecValue:    componentSpec.SpecValue,
+						Sequence:     len(componentSpecs) + 1,
 					})
 				}
 			}
@@ -347,10 +349,10 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	err = service.ProductRepository.SaveProductSkus(tx, productSkus)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.DeleteProductSpecs(tx, productId, productSpecsToBeDeleted)
+	err = service.ProductRepository.DeleteComponentSpecs(tx, productId, componentSpecsToBeDeleted)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.SaveProductSpecs(tx, productSpecs)
+	err = service.ProductRepository.SaveComponentSpecs(tx, componentSpecs)
 	exception.PanicIfNeeded(err)
 
 	err = service.ProductRepository.DeleteProductGroupItems(tx, productId, productGroupItemsToBeDeleted)
@@ -577,6 +579,7 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 		VideoUrl:                product.VideoUrl,
 		Tags:                    product.Tags,
 		Description:             product.Description,
+		ProductSpec:             product.ProductSpec,
 		CreatedById:             product.CreatedById,
 		CreatedAt:               product.CreatedAt,
 		ModifiedById:            product.ModifiedById,
@@ -620,7 +623,7 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 			StockAlert:        productSku.StockAlert,
 			IsActive:          productSku.IsActive,
 			Sequence:          productSku.Sequence,
-			ProductSpecs:      service.mapProductSpecs(productSku.ProductSpecs),
+			ComponentSpecs:    service.mapComponentSpecs(productSku.ComponentSpecs),
 			ProductGroupItems: service.mapProductGroupItems(productSku.ProductGroupItems),
 		}
 
@@ -660,19 +663,19 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 }
 
 // Variant Options Map Helpers
-func (service *ProductServiceImpl) mapProductSpecs(productSpecs []entity.ProductSpec) []response.ProductSpec {
+func (service *ProductServiceImpl) mapComponentSpecs(componentSpecs []entity.ComponentSpec) []response.ComponentSpec {
 
-	productSpecRes := []response.ProductSpec{}
-	for _, productSpec := range productSpecs {
-		productSpecRes = append(productSpecRes, response.ProductSpec{
-			Id:           productSpec.Id,
-			ProductSkuId: productSpec.ProductSkuId,
-			SpecKey:      productSpec.SpecKey,
-			SpecValue:    productSpec.SpecValue,
+	componentSpecRes := []response.ComponentSpec{}
+	for _, componentSpec := range componentSpecs {
+		componentSpecRes = append(componentSpecRes, response.ComponentSpec{
+			Id:           componentSpec.Id,
+			ProductSkuId: componentSpec.ProductSkuId,
+			SpecKey:      componentSpec.SpecKey,
+			SpecValue:    componentSpec.SpecValue,
 		})
 	}
 
-	return productSpecRes
+	return componentSpecRes
 }
 
 func (service *ProductServiceImpl) mapProductGroupItems(productGroupItems []entity.ProductGroupItem) []response.ProductGroupItemResponse {

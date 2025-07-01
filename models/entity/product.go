@@ -21,7 +21,8 @@ type Product struct {
 	ProductCategoryId       *uint             `gorm:"type:bigint; foreignKey; null;"`
 	BrandId                 *uint             `gorm:"type:bigint; foreignKey; null;"`
 	Tags                    *string           `gorm:"type:varchar(256); null;"`
-	Description             string            `gorm:"type:varchar(1024);null;"`
+	Description             string            `gorm:"type:varchar(max);null;"`
+	ProductSpec             string            `gorm:"type:varchar(max);null;"`
 	CreatedById             uint              `gorm:"type:bigint; not null;"`
 	CreatedAt               time.Time         `gorm:"type:timestamptz; not null;"`
 	ModifiedById            uint              `gorm:"type:bigint; not null;"`
@@ -48,11 +49,11 @@ type ProductSku struct {
 	StockAlert        *int               `gorm:"type:integer; null"`
 	IsActive          bool               `gorm:"not null;"`
 	Sequence          int                `gorm:"type:int; not null"`
-	ProductSpecs      []ProductSpec      `gorm:"foreignKey:ProductSkuId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ComponentSpecs    []ComponentSpec    `gorm:"foreignKey:ProductSkuId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ProductGroupItems []ProductGroupItem `gorm:"foreignKey:ParentId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-type ProductSpec struct {
+type ComponentSpec struct {
 	Id           uuid.UUID `gorm:"primaryKey; type:uuid;"`
 	ProductSkuId uuid.UUID `gorm:"foreignKey; type:uuid; not null"`
 	SpecKey      string    `gorm:"type:varchar(128); not null;"`

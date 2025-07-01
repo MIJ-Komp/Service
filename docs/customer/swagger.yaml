@@ -67,6 +67,17 @@ definitions:
       name:
         type: string
     type: object
+  response.ComponentSpec:
+    properties:
+      id:
+        type: string
+      productSkuId:
+        type: string
+      specKey:
+        type: string
+      specValue:
+        type: string
+    type: object
   response.CustomerInfo:
     properties:
       email:
@@ -87,6 +98,10 @@ definitions:
     type: object
   response.Menu:
     properties:
+      childs:
+        items:
+          $ref: '#/definitions/response.Menu'
+        type: array
       createdAt:
         type: string
       createdById:
@@ -105,6 +120,8 @@ definitions:
         type: string
       parentId:
         type: integer
+      path:
+        type: string
     type: object
   response.MenuItem:
     properties:
@@ -267,6 +284,8 @@ definitions:
         items:
           $ref: '#/definitions/response.ProductSku'
         type: array
+      productSpec:
+        type: string
       productType:
         $ref: '#/definitions/response.EnumResponse'
       productVariantOptionValues:
@@ -286,6 +305,10 @@ definitions:
     type: object
   response.ProductSku:
     properties:
+      componentSpecs:
+        items:
+          $ref: '#/definitions/response.ComponentSpec'
+        type: array
       componentTypeId:
         type: integer
       id:
@@ -302,10 +325,6 @@ definitions:
         type: array
       productId:
         type: string
-      productSpecs:
-        items:
-          $ref: '#/definitions/response.ProductSpec'
-        type: array
       sequence:
         type: integer
       sku:
@@ -324,17 +343,6 @@ definitions:
       productVariantOptionId:
         type: string
       productVariantOptionValueId:
-        type: string
-    type: object
-  response.ProductSpec:
-    properties:
-      id:
-        type: string
-      productSkuId:
-        type: string
-      specKey:
-        type: string
-      specValue:
         type: string
     type: object
   response.ProductVariantOption:

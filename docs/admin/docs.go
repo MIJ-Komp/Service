@@ -15,6 +15,220 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/admin/brands": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Search brand",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "query",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Brand"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Create brand",
+                "parameters": [
+                    {
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.Brand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/brands/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Get brand by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Brand"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Update brand",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.Brand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Delete brand",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/compatibility-rules": {
             "get": {
                 "security": [
@@ -1828,6 +2042,14 @@ const docTemplate = `{
                 "Customer"
             ]
         },
+        "request.Brand": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CompatibilityRule": {
             "type": "object",
             "properties": {
@@ -1853,6 +2075,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "valueType": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ComponentSpec": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "specKey": {
+                    "type": "string"
+                },
+                "specValue": {
                     "type": "string"
                 }
             }
@@ -1898,6 +2134,9 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "integer"
+                },
+                "path": {
+                    "type": "string"
                 }
             }
         },
@@ -1914,9 +2153,6 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "parentId": {
-                    "type": "integer"
                 }
             }
         },
@@ -1979,6 +2215,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/request.ProductSkuPayload"
                     }
                 },
+                "productSpec": {
+                    "type": "string"
+                },
                 "productType": {
                     "$ref": "#/definitions/enum.EProductType"
                 },
@@ -2008,6 +2247,12 @@ const docTemplate = `{
         "request.ProductSkuPayload": {
             "type": "object",
             "properties": {
+                "componentSpecs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.ComponentSpec"
+                    }
+                },
                 "id": {
                     "type": "string"
                 },
@@ -2024,12 +2269,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/request.ProductGroupItemPayload"
-                    }
-                },
-                "productSpecs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.ProductSpec"
                     }
                 },
                 "sku": {
@@ -2056,20 +2295,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "productVariantOptionValueId": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.ProductSpec": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "specKey": {
-                    "type": "string"
-                },
-                "specValue": {
                     "type": "string"
                 }
             }
@@ -2244,6 +2469,23 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ComponentSpec": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "productSkuId": {
+                    "type": "string"
+                },
+                "specKey": {
+                    "type": "string"
+                },
+                "specValue": {
+                    "type": "string"
+                }
+            }
+        },
         "response.ComponentType": {
             "type": "object",
             "properties": {
@@ -2304,6 +2546,12 @@ const docTemplate = `{
         "response.Menu": {
             "type": "object",
             "properties": {
+                "childs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.Menu"
+                    }
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -2330,6 +2578,9 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "integer"
+                },
+                "path": {
+                    "type": "string"
                 }
             }
         },
@@ -2578,6 +2829,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/response.ProductSku"
                     }
                 },
+                "productSpec": {
+                    "type": "string"
+                },
                 "productType": {
                     "$ref": "#/definitions/response.EnumResponse"
                 },
@@ -2607,6 +2861,12 @@ const docTemplate = `{
         "response.ProductSku": {
             "type": "object",
             "properties": {
+                "componentSpecs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ComponentSpec"
+                    }
+                },
                 "componentTypeId": {
                     "type": "integer"
                 },
@@ -2630,12 +2890,6 @@ const docTemplate = `{
                 },
                 "productId": {
                     "type": "string"
-                },
-                "productSpecs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.ProductSpec"
-                    }
                 },
                 "sequence": {
                     "type": "integer"
@@ -2664,23 +2918,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "productVariantOptionValueId": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.ProductSpec": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "productSkuId": {
-                    "type": "string"
-                },
-                "specKey": {
-                    "type": "string"
-                },
-                "specValue": {
                     "type": "string"
                 }
             }

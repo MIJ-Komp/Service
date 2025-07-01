@@ -16,6 +16,7 @@ type ProductResponse struct {
 	ImageIds                []uuid.UUID  `json:"imageIds"`
 	VideoUrl                *string      `json:"videoUrl"`
 	Description             string       `json:"description"`
+	ProductSpec             string       `json:"productSpec"`
 	CreatedById             uint         `json:"createdById"`
 	CreatedAt               time.Time    `json:"createdAt"`
 	ModifiedById            uint         `json:"modifiedById"`
@@ -47,11 +48,11 @@ type ProductSku struct {
 	ComponentTypeId *uint     `json:"componentTypeId"`
 	IsActive        bool      `json:"isActive"`
 
-	ProductSpecs      []ProductSpec              `json:"productSpecs"`
+	ComponentSpecs    []ComponentSpec            `json:"componentSpecs"`
 	ProductGroupItems []ProductGroupItemResponse `json:"productGroupItems"`
 }
 
-type ProductSpec struct {
+type ComponentSpec struct {
 	Id           uuid.UUID `json:"id"`
 	ProductSkuId uuid.UUID `json:"productSkuId"`
 	SpecKey      string    `json:"specKey"`

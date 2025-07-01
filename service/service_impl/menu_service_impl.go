@@ -39,6 +39,7 @@ func (service *MenuServiceImpl) Create(currentUserId uint, payload request.Menu)
 	menuEntity := entity.Menu{
 		Name:         payload.Name,
 		ParentId:     payload.ParentId,
+		Path:         payload.Path,
 		CreatedById:  currentUserId,
 		CreatedAt:    time.Now(),
 		ModifiedById: currentUserId,
@@ -64,6 +65,7 @@ func (service *MenuServiceImpl) Update(currentUserId uint, menuId uint, payload 
 
 	menu.Name = payload.Name
 	menu.ParentId = payload.ParentId
+	menu.Path = payload.Path
 	menu.ModifiedById = currentUserId
 	menu.ModifiedAt = time.Now()
 
@@ -130,10 +132,52 @@ func (service *MenuServiceImpl) GenerateSearchResult(menus []entity.Menu) []resp
 
 	res := []response.Menu{}
 	for _, menu := range menus {
-		res = append(res, service.GenerateGetResult(menu))
+
+		menuRes := response.Menu{
+			Id:         menu.Id,
+			Name:       menu.Name,
+			ParentId:   menu.ParentId,
+			Path:       menu.Path,
+			CreatedBy:  data_mapper.MapAuditTrail(menu.CreatedBy),
+			CreatedAt:  menu.CreatedAt,
+			ModifiedBy: data_mapper.MapAuditTrail(menu.ModifiedBy),
+			ModifiedAt: menu.ModifiedAt,
+
+			MenuItems: service.GenerateMenuItemResult(menu.MenuItems),
+			Childs:    service.GenerateChildResult(menu.Id, menus),
+		}
+
+		if menu.ParentId == nil {
+			res = append(res, menuRes)
+		}
+
 	}
 
 	return res
+}
+
+func (service *MenuServiceImpl) GenerateChildResult(parentId uint, menus []entity.Menu) []response.Menu {
+	childs := []response.Menu{}
+
+	for _, menuChild := range menus {
+		if menuChild.ParentId != nil && parentId == *menuChild.ParentId {
+			childs = append(childs, response.Menu{
+				Id:         menuChild.Id,
+				Name:       menuChild.Name,
+				ParentId:   menuChild.ParentId,
+				Path:       menuChild.Path,
+				CreatedBy:  data_mapper.MapAuditTrail(menuChild.CreatedBy),
+				CreatedAt:  menuChild.CreatedAt,
+				ModifiedBy: data_mapper.MapAuditTrail(menuChild.ModifiedBy),
+				ModifiedAt: menuChild.ModifiedAt,
+
+				MenuItems: service.GenerateMenuItemResult(menuChild.MenuItems),
+				Childs:    service.GenerateChildResult(menuChild.Id, menus),
+			})
+		}
+
+	}
+	return childs
 }
 
 func (service *MenuServiceImpl) GenerateGetResult(menu entity.Menu) response.Menu {
@@ -141,6 +185,7 @@ func (service *MenuServiceImpl) GenerateGetResult(menu entity.Menu) response.Men
 		Id:         menu.Id,
 		Name:       menu.Name,
 		ParentId:   menu.ParentId,
+		Path:       menu.Path,
 		CreatedBy:  data_mapper.MapAuditTrail(menu.CreatedBy),
 		CreatedAt:  menu.CreatedAt,
 		ModifiedBy: data_mapper.MapAuditTrail(menu.ModifiedBy),

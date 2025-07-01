@@ -29,6 +29,11 @@ definitions:
     - ProductTypeGroup
     - Admin
     - Customer
+  request.Brand:
+    properties:
+      name:
+        type: string
+    type: object
   request.CompatibilityRule:
     properties:
       condition:
@@ -46,6 +51,15 @@ definitions:
       targetKey:
         type: string
       valueType:
+        type: string
+    type: object
+  request.ComponentSpec:
+    properties:
+      id:
+        type: string
+      specKey:
+        type: string
+      specValue:
         type: string
     type: object
   request.ComponentType:
@@ -77,6 +91,8 @@ definitions:
         type: string
       parentId:
         type: integer
+      path:
+        type: string
     type: object
   request.MenuItem:
     properties:
@@ -87,8 +103,6 @@ definitions:
     properties:
       name:
         type: string
-      parentId:
-        type: integer
     type: object
   request.ProductGroupItemPayload:
     properties:
@@ -129,6 +143,8 @@ definitions:
         items:
           $ref: '#/definitions/request.ProductSkuPayload'
         type: array
+      productSpec:
+        type: string
       productType:
         $ref: '#/definitions/enum.EProductType'
       productVariantOptionValues:
@@ -148,6 +164,10 @@ definitions:
     type: object
   request.ProductSkuPayload:
     properties:
+      componentSpecs:
+        items:
+          $ref: '#/definitions/request.ComponentSpec'
+        type: array
       id:
         type: string
       isActive:
@@ -159,10 +179,6 @@ definitions:
       productGroupItems:
         items:
           $ref: '#/definitions/request.ProductGroupItemPayload'
-        type: array
-      productSpecs:
-        items:
-          $ref: '#/definitions/request.ProductSpec'
         type: array
       sku:
         type: string
@@ -180,15 +196,6 @@ definitions:
       productVariantOptionId:
         type: string
       productVariantOptionValueId:
-        type: string
-    type: object
-  request.ProductSpec:
-    properties:
-      id:
-        type: string
-      specKey:
-        type: string
-      specValue:
         type: string
     type: object
   request.ProductVariantOptionPayload:
@@ -305,6 +312,17 @@ definitions:
       valueType:
         type: string
     type: object
+  response.ComponentSpec:
+    properties:
+      id:
+        type: string
+      productSkuId:
+        type: string
+      specKey:
+        type: string
+      specValue:
+        type: string
+    type: object
   response.ComponentType:
     properties:
       code:
@@ -344,6 +362,10 @@ definitions:
     type: object
   response.Menu:
     properties:
+      childs:
+        items:
+          $ref: '#/definitions/response.Menu'
+        type: array
       createdAt:
         type: string
       createdById:
@@ -362,6 +384,8 @@ definitions:
         type: string
       parentId:
         type: integer
+      path:
+        type: string
     type: object
   response.MenuItem:
     properties:
@@ -524,6 +548,8 @@ definitions:
         items:
           $ref: '#/definitions/response.ProductSku'
         type: array
+      productSpec:
+        type: string
       productType:
         $ref: '#/definitions/response.EnumResponse'
       productVariantOptionValues:
@@ -543,6 +569,10 @@ definitions:
     type: object
   response.ProductSku:
     properties:
+      componentSpecs:
+        items:
+          $ref: '#/definitions/response.ComponentSpec'
+        type: array
       componentTypeId:
         type: integer
       id:
@@ -559,10 +589,6 @@ definitions:
         type: array
       productId:
         type: string
-      productSpecs:
-        items:
-          $ref: '#/definitions/response.ProductSpec'
-        type: array
       sequence:
         type: integer
       sku:
@@ -581,17 +607,6 @@ definitions:
       productVariantOptionId:
         type: string
       productVariantOptionValueId:
-        type: string
-    type: object
-  response.ProductSpec:
-    properties:
-      id:
-        type: string
-      productSkuId:
-        type: string
-      specKey:
-        type: string
-      specValue:
         type: string
     type: object
   response.ProductVariantOption:
@@ -689,6 +704,139 @@ info:
   title: Admin API
   version: "1.0"
 paths:
+  /api/admin/brands:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: query
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Brand'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search brand
+      tags:
+      - Brand
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.Brand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create brand
+      tags:
+      - Brand
+  /api/admin/brands/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete brand
+      tags:
+      - Brand
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Brand'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get brand by id
+      tags:
+      - Brand
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ' '
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.Brand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update brand
+      tags:
+      - Brand
   /api/admin/compatibility-rules:
     get:
       consumes:

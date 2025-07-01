@@ -6,6 +6,7 @@ type Menu struct {
 	Id           uint      `gorm:"primaryKey;autoincrement"`
 	Name         string    `gorm:"type:varchar(128); not null"`
 	ParentId     *uint     `gorm:"type:bigint;null"`
+	Path         *string   `gorm:"type:varchar(256); null"`
 	CreatedById  uint      `gorm:"type:bigint; not null"`
 	CreatedAt    time.Time `gorm:"type:timestamptz; not null"`
 	ModifiedById uint      `gorm:"type:bigint; not null"`

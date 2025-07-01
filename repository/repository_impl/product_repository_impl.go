@@ -57,7 +57,7 @@ func (repository *ProductRepositoryImpl) Search(
 		Preload("ProductCategory").
 		Preload("Brand").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductSkus.ProductSpecs").
+		Preload("ProductSkus.ComponentSpecs").
 		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkuVariants")
@@ -104,11 +104,11 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 		Preload("ProductCategory").
 		Preload("Brand").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductSkus.ProductSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+		Preload("ProductSkus.ComponentSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ProductGroupItems").
 		Preload("ProductSkus.ProductGroupItems.Product").
 		Preload("ProductSkus.ProductGroupItems.Product.ProductSkus").
-		Preload("ProductSkus.ProductGroupItems.Product.ProductSkus.ProductSpecs").
+		Preload("ProductSkus.ProductGroupItems.Product.ProductSkus.ComponentSpecs").
 		Preload("ProductSkus.ProductGroupItems.Product.ProductSkuVariants").
 		Preload("ProductSkus.ProductGroupItems.Product.ProductVariantOptions").
 		Preload("ProductSkus.ProductGroupItems.Product.ProductVariantOptionValues").
@@ -262,16 +262,16 @@ func (repository *ProductRepositoryImpl) GetProductSkuByIds(db *gorm.DB, product
 
 // Product SKU specs
 
-func (repository *ProductRepositoryImpl) SaveProductSpecs(db *gorm.DB, productSpecs []entity.ProductSpec) error {
-	if len(productSpecs) == 0 {
+func (repository *ProductRepositoryImpl) SaveComponentSpecs(db *gorm.DB, componentSpecs []entity.ComponentSpec) error {
+	if len(componentSpecs) == 0 {
 		return nil
 	}
-	err := db.Save(&productSpecs).Error
+	err := db.Save(&componentSpecs).Error
 	return err
 }
 
-func (repository *ProductRepositoryImpl) DeleteProductSpecs(db *gorm.DB, productSkuId uuid.UUID, productSpecs []entity.ProductSpec) error {
-	err := db.Where("ProductSkuId = ?", productSkuId).Delete(productSpecs).Error
+func (repository *ProductRepositoryImpl) DeleteComponentSpecs(db *gorm.DB, productSkuId uuid.UUID, componentSpecs []entity.ComponentSpec) error {
+	err := db.Where("ProductSkuId = ?", productSkuId).Delete(componentSpecs).Error
 	return err
 }
 

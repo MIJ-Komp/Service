@@ -457,6 +457,23 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ComponentSpec": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "productSkuId": {
+                    "type": "string"
+                },
+                "specKey": {
+                    "type": "string"
+                },
+                "specValue": {
+                    "type": "string"
+                }
+            }
+        },
         "response.CustomerInfo": {
             "type": "object",
             "properties": {
@@ -488,6 +505,12 @@ const docTemplate = `{
         "response.Menu": {
             "type": "object",
             "properties": {
+                "childs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.Menu"
+                    }
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -514,6 +537,9 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "integer"
+                },
+                "path": {
+                    "type": "string"
                 }
             }
         },
@@ -762,6 +788,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/response.ProductSku"
                     }
                 },
+                "productSpec": {
+                    "type": "string"
+                },
                 "productType": {
                     "$ref": "#/definitions/response.EnumResponse"
                 },
@@ -791,6 +820,12 @@ const docTemplate = `{
         "response.ProductSku": {
             "type": "object",
             "properties": {
+                "componentSpecs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ComponentSpec"
+                    }
+                },
                 "componentTypeId": {
                     "type": "integer"
                 },
@@ -814,12 +849,6 @@ const docTemplate = `{
                 },
                 "productId": {
                     "type": "string"
-                },
-                "productSpecs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.ProductSpec"
-                    }
                 },
                 "sequence": {
                     "type": "integer"
@@ -848,23 +877,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "productVariantOptionValueId": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.ProductSpec": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "productSkuId": {
-                    "type": "string"
-                },
-                "specKey": {
-                    "type": "string"
-                },
-                "specValue": {
                     "type": "string"
                 }
             }

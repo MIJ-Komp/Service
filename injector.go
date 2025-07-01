@@ -31,6 +31,13 @@ var productCategorySet = wire.NewSet(
 	wire.Bind(new(service.ProductCategoryService), new(*service_impl.ProductCategoryServiceImpl)),
 )
 
+var brandSet = wire.NewSet(
+	repository_impl.NewBrandRepository,
+	wire.Bind(new(repository.BrandRepository), new(*repository_impl.BrandRepositoryImpl)),
+	service_impl.NewBrandService,
+	wire.Bind(new(service.BrandService), new(*service_impl.BrandServiceImpl)),
+)
+
 var productSet = wire.NewSet(
 	repository_impl.NewProductRepository,
 	wire.Bind(new(repository.ProductRepository), new(*repository_impl.ProductRepositoryImpl)),
@@ -78,6 +85,7 @@ func InitializedServer() *fiber.App {
 		database.NewDB,
 		userSet,
 		productCategorySet,
+		brandSet,
 		productSet,
 		componentTypeSet,
 		compatibilityRuleSet,
