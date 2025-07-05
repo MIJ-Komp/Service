@@ -21,8 +21,8 @@ type Product struct {
 	ProductCategoryId       *uint             `gorm:"type:bigint; foreignKey; null;"`
 	BrandId                 *uint             `gorm:"type:bigint; foreignKey; null;"`
 	Tags                    *string           `gorm:"type:varchar(256); null;"`
-	Description             string            `gorm:"type:varchar(max);null;"`
-	ProductSpec             string            `gorm:"type:varchar(max);null;"`
+	Description             string            `gorm:"type:varchar; null;"`
+	ProductSpec             string            `gorm:"type:varchar; null;"`
 	CreatedById             uint              `gorm:"type:bigint; not null;"`
 	CreatedAt               time.Time         `gorm:"type:timestamptz; not null;"`
 	ModifiedById            uint              `gorm:"type:bigint; not null;"`
