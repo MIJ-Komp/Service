@@ -4,7 +4,7 @@ type EProductType string
 
 const (
 	ProductTypeSingle EProductType = "single"
-	ProductTypeGroup  EProductType = "bundle"
+	ProductTypeGroup  EProductType = "group"
 )
 
 func (e EProductType) DisplayString() string {

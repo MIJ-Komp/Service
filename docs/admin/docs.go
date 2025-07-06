@@ -2033,7 +2033,7 @@ const docTemplate = `{
                 "admin",
                 "customer",
                 "single",
-                "bundle"
+                "group"
             ],
             "x-enum-varnames": [
                 "Admin",

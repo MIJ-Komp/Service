@@ -22,7 +22,7 @@ definitions:
     - admin
     - customer
     - single
-    - bundle
+    - group
     type: string
     x-enum-varnames:
     - Admin
