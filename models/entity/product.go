@@ -32,10 +32,14 @@ type Product struct {
 	ProductCategory *ProductCategory
 	Brand           *Brand
 	ProductSkus     []ProductSku `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ComponentType   *ComponentType
 
 	ProductVariantOptions      []ProductVariantOption      `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ProductVariantOptionValues []ProductVariantOptionValue `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ProductSkuVariants         []ProductSkuVariant         `gorm:"foreignKey:ProductId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+
+	CreatedBy  User
+	ModifiedBy User
 }
 
 type ProductSku struct {

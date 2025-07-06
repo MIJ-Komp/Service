@@ -17,9 +17,9 @@ type ProductResponse struct {
 	VideoUrl                *string      `json:"videoUrl"`
 	Description             string       `json:"description"`
 	ProductSpec             string       `json:"productSpec"`
-	CreatedById             uint         `json:"createdById"`
+	CreatedBy               AuditTrail   `json:"createdById"`
 	CreatedAt               time.Time    `json:"createdAt"`
-	ModifiedById            uint         `json:"modifiedById"`
+	ModifiedBy              AuditTrail   `json:"modifiedById"`
 	ModifiedAt              time.Time    `json:"modifiedAt"`
 	Tags                    *string      `json:"tags"`
 
@@ -34,19 +34,20 @@ type ProductResponse struct {
 	ProductVariantOptionValues []ProductVariantOptionValue `json:"productVariantOptionValues"`
 
 	ProductSkuVariants []ProductSkuVariant `json:"productSkuVariants"`
+	ComponentType      *ComponentType      `json:"componentType"`
 }
 
 type ProductSku struct {
-	Id              uuid.UUID `json:"id"`
-	ProductId       uuid.UUID `json:"productId"`
-	SKU             string    `json:"sku"`
-	Name            string    `json:"name"`
-	Price           float64   `json:"price"`
-	Stock           *int      `json:"stock"`
-	StockAlert      *int      `json:"stockAlert"`
-	Sequence        int       `json:"sequence"`
-	ComponentTypeId *uint     `json:"componentTypeId"`
-	IsActive        bool      `json:"isActive"`
+	Id         uuid.UUID `json:"id"`
+	ProductId  uuid.UUID `json:"productId"`
+	SKU        string    `json:"sku"`
+	Name       string    `json:"name"`
+	Price      float64   `json:"price"`
+	Stock      *int      `json:"stock"`
+	StockAlert *int      `json:"stockAlert"`
+	Sequence   int       `json:"sequence"`
+
+	IsActive bool `json:"isActive"`
 
 	ComponentSpecs    []ComponentSpec            `json:"componentSpecs"`
 	ProductGroupItems []ProductGroupItemResponse `json:"productGroupItems"`

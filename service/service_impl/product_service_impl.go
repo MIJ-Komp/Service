@@ -7,6 +7,7 @@ import (
 
 	"api.mijkomp.com/exception"
 	"api.mijkomp.com/helpers"
+	"api.mijkomp.com/helpers/data_mapper"
 	"api.mijkomp.com/models/entity"
 	"api.mijkomp.com/models/enum"
 	"api.mijkomp.com/models/request"
@@ -580,9 +581,9 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 		Tags:                    product.Tags,
 		Description:             product.Description,
 		ProductSpec:             product.ProductSpec,
-		CreatedById:             product.CreatedById,
+		CreatedBy:               data_mapper.MapAuditTrail(product.CreatedBy),
 		CreatedAt:               product.CreatedAt,
-		ModifiedById:            product.ModifiedById,
+		ModifiedBy:              data_mapper.MapAuditTrail(product.ModifiedBy),
 		ModifiedAt:              product.ModifiedAt,
 
 		ProductSkus:                []response.ProductSku{},
@@ -591,6 +592,7 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 		ProductVariantOptionValues: []response.ProductVariantOptionValue{},
 		ProductSkuVariants:         []response.ProductSkuVariant{},
 	}
+
 	productRes.ProductType = response.EnumResponse{
 		Code: string(product.ProductType),
 		Name: product.ProductType.DisplayString(),
@@ -610,6 +612,15 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 			Name: product.Brand.Name,
 		}
 		productRes.Brand = &brandRes
+	}
+
+	if product.ComponentTypeId != nil {
+		componentTypeRes := response.ComponentType{
+			Id:   product.ComponentType.Id,
+			Code: product.ComponentType.Code,
+			Name: product.ComponentType.Name,
+		}
+		productRes.ComponentType = &componentTypeRes
 	}
 
 	for _, productSku := range product.ProductSkus {
@@ -662,7 +673,6 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 	return productRes
 }
 
-// Variant Options Map Helpers
 func (service *ProductServiceImpl) mapComponentSpecs(componentSpecs []entity.ComponentSpec) []response.ComponentSpec {
 
 	componentSpecRes := []response.ComponentSpec{}

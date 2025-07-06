@@ -474,6 +474,35 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ComponentType": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "modifiedAt": {
+                    "type": "string"
+                },
+                "modifiedById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "response.CustomerInfo": {
             "type": "object",
             "properties": {
@@ -734,11 +763,14 @@ const docTemplate = `{
                 "brand": {
                     "$ref": "#/definitions/response.Brand"
                 },
+                "componentType": {
+                    "$ref": "#/definitions/response.ComponentType"
+                },
                 "createdAt": {
                     "type": "string"
                 },
                 "createdById": {
-                    "type": "integer"
+                    "$ref": "#/definitions/response.AuditTrail"
                 },
                 "description": {
                     "type": "string"
@@ -762,7 +794,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "modifiedById": {
-                    "type": "integer"
+                    "$ref": "#/definitions/response.AuditTrail"
                 },
                 "name": {
                     "type": "string"
@@ -825,9 +857,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.ComponentSpec"
                     }
-                },
-                "componentTypeId": {
-                    "type": "integer"
                 },
                 "id": {
                     "type": "string"

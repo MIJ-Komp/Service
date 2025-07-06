@@ -103,6 +103,7 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 	err := db.
 		Preload("ProductCategory").
 		Preload("Brand").
+		Preload("ComponentType").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ComponentSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ProductGroupItems").
@@ -271,7 +272,7 @@ func (repository *ProductRepositoryImpl) SaveComponentSpecs(db *gorm.DB, compone
 }
 
 func (repository *ProductRepositoryImpl) DeleteComponentSpecs(db *gorm.DB, productSkuId uuid.UUID, componentSpecs []entity.ComponentSpec) error {
-	err := db.Where("ProductSkuId = ?", productSkuId).Delete(componentSpecs).Error
+	err := db.Where("product_sku_id = ?", productSkuId).Delete(componentSpecs).Error
 	return err
 }
 

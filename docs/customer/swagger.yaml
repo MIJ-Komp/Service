@@ -78,6 +78,25 @@ definitions:
       specValue:
         type: string
     type: object
+  response.ComponentType:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      createdById:
+        $ref: '#/definitions/response.AuditTrail'
+      description:
+        type: string
+      id:
+        type: integer
+      modifiedAt:
+        type: string
+      modifiedById:
+        $ref: '#/definitions/response.AuditTrail'
+      name:
+        type: string
+    type: object
   response.CustomerInfo:
     properties:
       email:
@@ -248,10 +267,12 @@ definitions:
     properties:
       brand:
         $ref: '#/definitions/response.Brand'
+      componentType:
+        $ref: '#/definitions/response.ComponentType'
       createdAt:
         type: string
       createdById:
-        type: integer
+        $ref: '#/definitions/response.AuditTrail'
       description:
         type: string
       id:
@@ -267,7 +288,7 @@ definitions:
       modifiedAt:
         type: string
       modifiedById:
-        type: integer
+        $ref: '#/definitions/response.AuditTrail'
       name:
         type: string
       productCategory:
@@ -309,8 +330,6 @@ definitions:
         items:
           $ref: '#/definitions/response.ComponentSpec'
         type: array
-      componentTypeId:
-        type: integer
       id:
         type: string
       isActive:

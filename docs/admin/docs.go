@@ -2030,16 +2030,16 @@ const docTemplate = `{
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "admin",
-                "customer",
                 "single",
-                "bundle"
+                "bundle",
+                "admin",
+                "customer"
             ],
             "x-enum-varnames": [
-                "Admin",
-                "Customer",
                 "ProductTypeSingle",
-                "ProductTypeGroup"
+                "ProductTypeGroup",
+                "Admin",
+                "Customer"
             ]
         },
         "request.Brand": {
@@ -2775,11 +2775,14 @@ const docTemplate = `{
                 "brand": {
                     "$ref": "#/definitions/response.Brand"
                 },
+                "componentType": {
+                    "$ref": "#/definitions/response.ComponentType"
+                },
                 "createdAt": {
                     "type": "string"
                 },
                 "createdById": {
-                    "type": "integer"
+                    "$ref": "#/definitions/response.AuditTrail"
                 },
                 "description": {
                     "type": "string"
@@ -2803,7 +2806,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "modifiedById": {
-                    "type": "integer"
+                    "$ref": "#/definitions/response.AuditTrail"
                 },
                 "name": {
                     "type": "string"
@@ -2866,9 +2869,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.ComponentSpec"
                     }
-                },
-                "componentTypeId": {
-                    "type": "integer"
                 },
                 "id": {
                     "type": "string"
