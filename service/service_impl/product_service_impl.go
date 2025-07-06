@@ -606,7 +606,7 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 		productRes.ProductCategory = &productCategoryRes
 	}
 
-	if product.BrandId != nil {
+	if product.Brand != nil {
 		brandRes := response.Brand{
 			Id:   product.Brand.Id,
 			Name: product.Brand.Name,
@@ -614,7 +614,7 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 		productRes.Brand = &brandRes
 	}
 
-	if product.ComponentTypeId != nil {
+	if product.ComponentType != nil {
 		componentTypeRes := response.ComponentType{
 			Id:   product.ComponentType.Id,
 			Code: product.ComponentType.Code,

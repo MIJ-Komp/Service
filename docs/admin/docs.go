@@ -2030,16 +2030,16 @@ const docTemplate = `{
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "single",
-                "bundle",
                 "admin",
-                "customer"
+                "customer",
+                "single",
+                "bundle"
             ],
             "x-enum-varnames": [
-                "ProductTypeSingle",
-                "ProductTypeGroup",
                 "Admin",
-                "Customer"
+                "Customer",
+                "ProductTypeSingle",
+                "ProductTypeGroup"
             ]
         },
         "request.Brand": {

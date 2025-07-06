@@ -56,6 +56,7 @@ func (repository *ProductRepositoryImpl) Search(
 	queries := db.Model(&entity.Product{}).
 		Preload("ProductCategory").
 		Preload("Brand").
+		Preload("ComponentType").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ComponentSpecs").
 		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
