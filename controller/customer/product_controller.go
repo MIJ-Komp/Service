@@ -7,6 +7,7 @@ import (
 	"api.mijkomp.com/models/response"
 	"api.mijkomp.com/service"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type ProductController struct {
@@ -30,8 +31,10 @@ func (controller *ProductController) Route(app *fiber.App) {
 // @Accept		json
 // @Produce		json
 // @Param			query query string false " "
+// @Param  		ids query []string false "Array of Ids (1,2,3)"
 // @Param			productTypes query string false " "
-// @Param  		productCategoryIds query []int false "Array of IDs (1,2,3)"
+// @Param  		productCategoryIds query string false "Array of IDs (1,2,3)"
+// @Param  		componentTypeIds query string false "Array of IDs (1,2,3)"
 // @Param			page query int false " "
 // @Param			pageSize query int false " "
 // @Success		200	{object}	[]response.ProductResponse
@@ -48,6 +51,20 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 		productTypes = &productTypesQueries
 	}
 
+	var ids *[]uuid.UUID = nil
+	productIdQuery := ctx.Queries()["ids"]
+	if productIdQuery != "" {
+		productIdQueries := strings.Split(productIdQuery, ",")
+
+		uuidIds := []uuid.UUID{}
+		for _, strId := range productIdQueries {
+			uuidIds = append(uuidIds, helpers.ParseUUID(strId))
+		}
+		if len(uuidIds) > 0 {
+			ids = &uuidIds
+		}
+	}
+
 	var productCategoryIds *[]uint = nil
 	productCategoryIdsQuery := ctx.Queries()["productCategoryIds"]
 	if productCategoryIdsQuery != "" {
@@ -62,13 +79,26 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 		}
 	}
 
+	var componentTypeIds *[]uint = nil
+	if cIdsQuery := ctx.Queries()["componentTypeIds"]; cIdsQuery != "" {
+		cIds := strings.Split(cIdsQuery, ",")
+		ids := []uint{}
+
+		for _, cid := range cIds {
+			ids = append(ids, helpers.ParseUint(cid))
+		}
+		if len(ids) > 0 {
+			componentTypeIds = &ids
+		}
+	}
+
 	isActive := true
 	isShowOnlyInMarketPlace := false
 
 	page := helpers.ParseNullableInt(ctx.Query("page"))
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
-	result := controller.ProductService.Search(0, query, productTypes, productCategoryIds, &isActive, &isShowOnlyInMarketPlace, page, pageSize)
+	result := controller.ProductService.Search(0, query, ids, productTypes, productCategoryIds, componentTypeIds, &isActive, &isShowOnlyInMarketPlace, page, pageSize)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }

@@ -44,8 +44,10 @@ func (repository *ProductRepositoryImpl) Delete(db *gorm.DB, product entity.Prod
 func (repository *ProductRepositoryImpl) Search(
 	db *gorm.DB,
 	query *string,
+	ids *[]uuid.UUID,
 	productTypes *[]string,
 	productCategoryIds *[]uint,
+	componentTypeIds *[]uint,
 	isActive, isShowOnlyInMarketPlace *bool,
 	page, pageSize *int,
 ) ([]entity.Product, int64, int64) {
@@ -71,8 +73,16 @@ func (repository *ProductRepositoryImpl) Search(
 		queries = queries.Where("product_type IN ?", *productTypes)
 	}
 
+	if ids != nil && len(*ids) > 0 {
+		queries = queries.Where("id IN ?", *ids)
+	}
+
 	if productCategoryIds != nil && len(*productCategoryIds) > 0 {
 		queries = queries.Where("product_category_id IN ?", *productCategoryIds)
+	}
+
+	if componentTypeIds != nil && len(*componentTypeIds) > 0 {
+		queries = queries.Where("component_type_id IN ?", *componentTypeIds)
 	}
 
 	if isActive != nil {
@@ -239,7 +249,7 @@ func (repository *ProductRepositoryImpl) GetProductSkuByIds(db *gorm.DB, product
 			p.is_active,
 			p.product_type,
 			p.product_category_id,
-			p.picture_id,
+			p.image_ids,
 			p.description,
 			p.created_at,
 			p.modified_at

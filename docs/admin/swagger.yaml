@@ -19,16 +19,16 @@ definitions:
     - OrderStatusCancelled
   enum.EProductType:
     enum:
-    - admin
-    - customer
     - single
     - group
+    - admin
+    - customer
     type: string
     x-enum-varnames:
-    - Admin
-    - Customer
     - ProductTypeSingle
     - ProductTypeGroup
+    - Admin
+    - Customer
   request.Brand:
     properties:
       name:
@@ -538,10 +538,6 @@ definitions:
         type: string
       productCategory:
         $ref: '#/definitions/response.ProductCategory'
-      productGroupItems:
-        items:
-          $ref: '#/definitions/response.ProductGroupItemResponse'
-        type: array
       productSkuVariants:
         items:
           $ref: '#/definitions/response.ProductSkuVariant'
@@ -644,6 +640,8 @@ definitions:
       createdAt:
         type: string
       deliveredAt:
+        type: string
+      district:
         type: string
       estimatedDelivery:
         type: string
@@ -1614,7 +1612,14 @@ paths:
         in: query
         items:
           type: integer
-        name: productCategoryId
+        name: productCategoryIds
+        type: array
+      - collectionFormat: csv
+        description: Array of IDs
+        in: query
+        items:
+          type: integer
+        name: componentTypeIds
         type: array
       - description: ' '
         in: query

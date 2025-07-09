@@ -9,6 +9,6 @@ type CompatibilityRuleService interface {
 	Create(currentUserId uint, payload request.CompatibilityRule) response.CompatibilityRule
 	Update(currentUserId uint, CompatibilityRuleId uint, payload request.CompatibilityRule) response.CompatibilityRule
 	Delete(currentUserId uint, CompatibilityRuleId uint) string
-	Search(currentUserId uint, query *string) []response.CompatibilityRule
+	Search(currentUserId uint, sourceComponentTypeCode *string, targetComponentTypeCode *string) []response.CompatibilityRule
 	GetById(currentUserId uint, CompatibilityRuleId uint) response.CompatibilityRule
 }

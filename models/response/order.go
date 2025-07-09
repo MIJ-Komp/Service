@@ -69,8 +69,9 @@ type ShippingInfo struct {
 	OrderId           uuid.UUID  `json:"orderId"`
 	RecipientName     string     `json:"recipientName"`
 	Address           string     `json:"address"`
-	Province          string     `json:"province"`
+	District          string     `json:"district"`
 	City              string     `json:"city"`
+	Province          string     `json:"province"`
 	PostalCode        string     `json:"postalCode"`
 	ShippingMethod    *string    `json:"shippingMethod"`
 	TrackingNumber    *string    `json:"trackingNumber"`

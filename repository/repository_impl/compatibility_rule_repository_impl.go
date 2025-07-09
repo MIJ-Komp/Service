@@ -22,19 +22,20 @@ func (repository *CompatibilityRuleRepositoryImpl) Delete(db *gorm.DB, compatibi
 	return err
 }
 
-func (repository *CompatibilityRuleRepositoryImpl) Search(db *gorm.DB, query *string) []entity.CompatibilityRule {
+func (repository *CompatibilityRuleRepositoryImpl) Search(db *gorm.DB, sourceComponentTypeCode *string, targetComponentTypeCode *string) []entity.CompatibilityRule {
 
 	compatibilityRules := []entity.CompatibilityRule{}
 
 	queries := db.Model(&entity.CompatibilityRule{})
 
-	// if query != nil {
-	// 	queries.Where("name like ?", "%"+*query+"%")
-	// }
+	if sourceComponentTypeCode != nil {
+		queries.Where("name source_component_type_code = ?", sourceComponentTypeCode)
+	}
 
-	// if parentId != nil {
-	// 	queries.Where("parent_id = ?", parentId)
-	// }
+	if targetComponentTypeCode != nil {
+		queries.Where("name target_component_type_code = ?", targetComponentTypeCode)
+	}
+
 	queries.Order("modified_at desc").Find(&compatibilityRules)
 
 	return compatibilityRules

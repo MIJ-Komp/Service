@@ -44,31 +44,33 @@ type OrderItem struct {
 	Price        float64   `gorm:"type:decimal(17,5); not null;"`
 	Sequence     int       `gorm:"type:int; not null;"`
 	CreatedAt    time.Time `gorm:"type:timestamptz; not null"`
-	Product      Product   `gorm:"foreignKey:product_id;references:Id;"`
+
+	Product Product `gorm:"foreignKey:product_id;references:Id;"`
 }
 
 type CustomerInfo struct {
 	Id          uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
 	OrderId     uuid.UUID `gorm:"foreignKey; type:uuid; not null;"`
-	Name        string    `json:"name"`
-	Email       string    `json:"email"`
-	PhoneNumber string    `json:"phoneNumber"`
+	Name        string    `gorm:"type:varchar(128); not null;"`
+	Email       string    `gorm:"type:varchar(128); not null;"`
+	PhoneNumber string    `gorm:"type:varchar(15); not null;"`
 }
 
 type ShippingInfo struct {
-	Id                uuid.UUID  `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
+	Id                uuid.UUID  `gorm:"type:uuid; primaryKey; default:gen_random_uuid();"`
 	OrderId           uuid.UUID  `gorm:"foreignKey; type:uuid; not null;"`
-	RecipientName     string     `gorm:"size:100;not null"`
-	Address           string     `gorm:"type:text;not null"`
-	Province          string     `gorm:"size:100"`
-	City              string     `gorm:"size:100"`
-	PostalCode        string     `gorm:"size:20"`
-	ShippingMethod    *string    `gorm:"size:50"`
-	TrackingNumber    *string    `gorm:"size:100"`
-	EstimatedDelivery *time.Time `gorm:"type:date"`
-	ShippedAt         *time.Time `gorm:"type:timestamptz"`
-	DeliveredAt       *time.Time `gorm:"type:timestamptz"`
-	Notes             *string    `gorm:"type:text"`
-	CreatedAt         time.Time  `gorm:"autoCreateTime"`
-	UpdatedAt         time.Time  `gorm:"autoUpdateTime"`
+	RecipientName     string     `gorm:"type:varchar(256); not null"`
+	Address           string     `gorm:"type:vaarchar(4086); not null"`
+	District          string     `gorm:"type:varchar(128); not null"`
+	City              string     `gorm:"type:varchar(128); not null"`
+	Province          string     `gorm:"type:varchar(128); not null"`
+	PostalCode        string     `gorm:"type:varchar(128); not null"`
+	ShippingMethod    *string    `gorm:"type:varchar(256); null"`
+	TrackingNumber    *string    `gorm:"type:varchar(256); null"`
+	EstimatedDelivery *time.Time `gorm:"type:timestamptz; null"`
+	ShippedAt         *time.Time `gorm:"type:timestamptz; null"`
+	DeliveredAt       *time.Time `gorm:"type:timestamptz; null"`
+	Notes             *string    `gorm:"type:varcha(2048); null"`
+	CreatedAt         time.Time  `gorm:"type:timestamptz; not null"`
+	UpdatedAt         time.Time  `gorm:"type:timestamptz; not null"`
 }

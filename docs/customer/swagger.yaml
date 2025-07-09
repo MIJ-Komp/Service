@@ -36,6 +36,8 @@ definitions:
         type: string
       city:
         type: string
+      district:
+        type: string
       notes:
         type: string
       postalCode:
@@ -293,10 +295,6 @@ definitions:
         type: string
       productCategory:
         $ref: '#/definitions/response.ProductCategory'
-      productGroupItems:
-        items:
-          $ref: '#/definitions/response.ProductGroupItemResponse'
-        type: array
       productSkuVariants:
         items:
           $ref: '#/definitions/response.ProductSkuVariant'
@@ -399,6 +397,8 @@ definitions:
       createdAt:
         type: string
       deliveredAt:
+        type: string
+      district:
         type: string
       estimatedDelivery:
         type: string
@@ -597,17 +597,25 @@ paths:
         in: query
         name: query
         type: string
+      - collectionFormat: csv
+        description: Array of Ids (1,2,3)
+        in: query
+        items:
+          type: string
+        name: ids
+        type: array
       - description: ' '
         in: query
         name: productTypes
         type: string
-      - collectionFormat: csv
-        description: Array of IDs (1,2,3)
+      - description: Array of IDs (1,2,3)
         in: query
-        items:
-          type: integer
         name: productCategoryIds
-        type: array
+        type: string
+      - description: Array of IDs (1,2,3)
+        in: query
+        name: componentTypeIds
+        type: string
       - description: ' '
         in: query
         name: page

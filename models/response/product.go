@@ -28,8 +28,6 @@ type ProductResponse struct {
 
 	ProductSkus []ProductSku `json:"productSkus"`
 
-	ProductGroupItems []ProductGroupItemResponse `json:"productGroupItems"`
-
 	ProductVariantOptions      []ProductVariantOption      `json:"productVariantOptions"`
 	ProductVariantOptionValues []ProductVariantOptionValue `json:"productVariantOptionValues"`
 

@@ -110,9 +110,18 @@ func (controller *CompatibilityRuleController) Delete(ctx *fiber.Ctx) error {
 func (controller *CompatibilityRuleController) Search(ctx *fiber.Ctx) error {
 	currentUserId := helpers.ParseUserId(ctx.Locals("userId"))
 
-	query := ctx.Query("query")
+	var sourceComponentTypeCode *string = nil
+	var targetComponentTypeCode *string = nil
 
-	result := controller.CompatibilityRuleService.Search(currentUserId, &query)
+	if str := ctx.Query("sourceComponentTypeCode"); str != "" {
+		sourceComponentTypeCode = &str
+	}
+
+	if str := ctx.Query("targetComponentTypeCode"); str != "" {
+		targetComponentTypeCode = &str
+	}
+
+	result := controller.CompatibilityRuleService.Search(currentUserId, sourceComponentTypeCode, targetComponentTypeCode)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }

@@ -30,8 +30,9 @@ type CustomerInfo struct {
 type ShippingInfo struct {
 	RecipientName string  `json:"recipientName"`
 	Address       string  `json:"address"`
-	Province      string  `json:"province"`
+	District      string  `json:"district"`
 	City          string  `json:"city"`
+	Province      string  `json:"province"`
 	PostalCode    string  `json:"postalCode"`
 	Notes         *string `json:"notes"`
 }

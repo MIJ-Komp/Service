@@ -266,19 +266,31 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Array of Ids (1,2,3)",
+                        "name": "ids",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": " ",
                         "name": "productTypes",
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Array of IDs (1,2,3)",
                         "name": "productCategoryIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Array of IDs (1,2,3)",
+                        "name": "componentTypeIds",
                         "in": "query"
                     },
                     {
@@ -407,6 +419,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "city": {
+                    "type": "string"
+                },
+                "district": {
                     "type": "string"
                 },
                 "notes": {
@@ -802,12 +817,6 @@ const docTemplate = `{
                 "productCategory": {
                     "$ref": "#/definitions/response.ProductCategory"
                 },
-                "productGroupItems": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.ProductGroupItemResponse"
-                    }
-                },
                 "productSkuVariants": {
                     "type": "array",
                     "items": {
@@ -963,6 +972,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deliveredAt": {
+                    "type": "string"
+                },
+                "district": {
                     "type": "string"
                 },
                 "estimatedDelivery": {

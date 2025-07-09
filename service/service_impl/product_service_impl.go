@@ -172,7 +172,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 	res, err := service.ProductRepository.GetById(tx, productRes.Id)
 	exception.PanicIfNeeded(err)
 
-	return service.MapProduct(res)
+	return service.MapProduct(res, currentUserId != 0)
 }
 
 func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUID, payload request.ProductPayload) response.ProductResponse {
@@ -490,7 +490,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	res, err := service.ProductRepository.GetById(tx, productId)
 	exception.PanicIfNeeded(err)
 
-	return service.MapProduct(res)
+	return service.MapProduct(res, currentUserId != 0)
 }
 
 func (service *ProductServiceImpl) Delete(currentUserId uint, productId uuid.UUID) string {
@@ -507,12 +507,12 @@ func (service *ProductServiceImpl) Delete(currentUserId uint, productId uuid.UUI
 	return fmt.Sprintf("Produk %s berhasil di hapus", product.Name)
 }
 
-func (service *ProductServiceImpl) Search(currentUserId uint, query *string, productTypes *[]string, productCategoryIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult {
+func (service *ProductServiceImpl) Search(currentUserId uint, query *string, ids *[]uuid.UUID, productTypes *[]string, productCategoryIds *[]uint, componentTypeIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult {
 
-	res, totalCount, totalPage := service.ProductRepository.Search(service.db, query, productTypes, productCategoryIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
+	res, totalCount, totalPage := service.ProductRepository.Search(service.db, query, ids, productTypes, productCategoryIds, componentTypeIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
 	return response.PageResult{
-		Items:      service.mapProducts(res),
+		Items:      service.mapProducts(res, currentUserId != 0),
 		TotalCount: totalCount,
 		PageSize:   totalPage,
 	}
@@ -531,7 +531,7 @@ func (service *ProductServiceImpl) GetById(currentUserId uint, productId uuid.UU
 	res, err := service.ProductRepository.GetById(service.db, productId)
 	exception.PanicIfNeeded(err)
 
-	return service.MapProduct(res)
+	return service.MapProduct(res, currentUserId != 0)
 }
 
 // Variant Options
@@ -559,17 +559,17 @@ func (service *ProductServiceImpl) GetVariantOptions(currentUserId uint) []respo
 }
 
 // Map helpers
-func (service *ProductServiceImpl) mapProducts(products []entity.Product) []response.ProductResponse {
+func (service *ProductServiceImpl) mapProducts(products []entity.Product, isAdmin bool) []response.ProductResponse {
 	productRes := []response.ProductResponse{}
 
 	for _, el := range products {
-		productRes = append(productRes, service.MapProduct(el))
+		productRes = append(productRes, service.MapProduct(el, isAdmin))
 	}
 
 	return productRes
 }
 
-func (service *ProductServiceImpl) MapProduct(product entity.Product) response.ProductResponse {
+func (service *ProductServiceImpl) MapProduct(product entity.Product, isAdmin bool) response.ProductResponse {
 	productRes := response.ProductResponse{
 		Id:                      product.Id,
 		SKU:                     product.SKU,
@@ -587,7 +587,6 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 		ModifiedAt:              product.ModifiedAt,
 
 		ProductSkus:                []response.ProductSku{},
-		ProductGroupItems:          []response.ProductGroupItemResponse{},
 		ProductVariantOptions:      []response.ProductVariantOption{},
 		ProductVariantOptionValues: []response.ProductVariantOptionValue{},
 		ProductSkuVariants:         []response.ProductSkuVariant{},
@@ -624,6 +623,9 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product) response.P
 	}
 
 	for _, productSku := range product.ProductSkus {
+		if !isAdmin && !productSku.IsActive {
+			continue
+		}
 		productSkuRes := response.ProductSku{
 			Id:                productSku.Id,
 			ProductId:         productSku.ProductId,
@@ -697,7 +699,7 @@ func (service *ProductServiceImpl) mapProductGroupItems(productGroupItems []enti
 			ProductId:    item.Product.Id,
 			ProductSkuId: item.ProductSkuId,
 			Qty:          item.Qty,
-			Product:      service.MapProduct(item.Product),
+			Product:      service.MapProduct(item.Product, true),
 		})
 	}
 

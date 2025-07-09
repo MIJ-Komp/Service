@@ -95,8 +95,8 @@ func (service *CompatibilityRuleServiceImpl) Delete(currentUserId uint, compatib
 	return "Kategori berhasil dihapus"
 }
 
-func (service *CompatibilityRuleServiceImpl) Search(currentUserId uint, query *string) []response.CompatibilityRule {
-	res := service.CompatibilityRuleRepository.Search(service.db, query)
+func (service *CompatibilityRuleServiceImpl) Search(currentUserId uint, sourceComponentTypeCode *string, targetComponentTypeCode *string) []response.CompatibilityRule {
+	res := service.CompatibilityRuleRepository.Search(service.db, sourceComponentTypeCode, targetComponentTypeCode)
 
 	return service.GenerateSearchResult(res)
 }

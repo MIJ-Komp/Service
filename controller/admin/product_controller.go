@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"api.mijkomp.com/exception"
-	"api.mijkomp.com/helpers/logger"
 	"api.mijkomp.com/helpers"
+	"api.mijkomp.com/helpers/logger"
 	"api.mijkomp.com/middleware"
 	"api.mijkomp.com/models/request"
 	"api.mijkomp.com/models/response"
@@ -133,7 +133,8 @@ func (controller *ProductController) Delete(ctx *fiber.Ctx) error {
 // @Produce		json
 // @Param			query query string false " "
 // @Param			productTypes query string false " "
-// @Param  		productCategoryId query []int false "Array of IDs" collectionFormat(csv)
+// @Param  		productCategoryIds query string false "Array of IDs" collectionFormat(csv)
+// @Param  		componentTypeIds query string false "Array of IDs" collectionFormat(csv)
 // @Param			isActive query bool false " "
 // @Param			isShowOnlyInMarketplace query bool false " "
 // @Param			page query int false " "
@@ -161,7 +162,7 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 
 	// productCategoryId := helpers.ParseNullableUint(ctx.Query("productCategoryId"))
 	var productCategoryIds *[]uint = nil
-	productCategoryIdsQuery := ctx.Queries()["productCategoryId"]
+	productCategoryIdsQuery := ctx.Queries()["productCategoryIds"]
 
 	if productCategoryIdsQuery != "" {
 		productCategoryQueries := strings.Split(productCategoryIdsQuery, ",")
@@ -175,13 +176,26 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 		}
 	}
 
+	var componentTypeIds *[]uint = nil
+	if cIdsQuery := ctx.Queries()["componentTypeIds"]; cIdsQuery != "" {
+		cIds := strings.Split(cIdsQuery, ",")
+		ids := []uint{}
+
+		for _, cid := range cIds {
+			ids = append(ids, helpers.ParseUint(cid))
+		}
+		if len(ids) > 0 {
+			componentTypeIds = &ids
+		}
+	}
+
 	isActive := helpers.ParseNullableBool(ctx.Query("isActive"))
 	isShowOnlyInMarketPlace := helpers.ParseNullableBool(ctx.Query("isShowOnlyInMarketPlace"))
 
 	page := helpers.ParseNullableInt(ctx.Query("page"))
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
-	result := controller.ProductService.Search(currentUserId, query, productTypes, productCategoryIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
+	result := controller.ProductService.Search(currentUserId, query, nil, productTypes, productCategoryIds, componentTypeIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
 	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mendapatkan daftar produk", currentUserId))
 
