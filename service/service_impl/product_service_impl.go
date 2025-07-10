@@ -190,6 +190,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	product.IsShowOnlyInMarketPlace = payload.IsShowOnlyInMarketPlace
 	product.ImageIds = helpers.JoinImageIds(payload.ImageIds)
 	product.VideoUrl = payload.VideoUrl
+	product.ComponentTypeId = payload.ComponentTypeId
 	product.Tags = payload.Tags
 	product.ProductCategoryId = payload.ProductCategoryId
 	product.BrandId = payload.BrandId
@@ -509,7 +510,7 @@ func (service *ProductServiceImpl) Delete(currentUserId uint, productId uuid.UUI
 
 func (service *ProductServiceImpl) Search(currentUserId uint, query *string, ids *[]uuid.UUID, productTypes *[]string, productCategoryIds *[]uint, componentTypeIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult {
 
-	res, totalCount, totalPage := service.ProductRepository.Search(service.db, query, ids, productTypes, productCategoryIds, componentTypeIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
+	res, totalCount, totalPage := service.ProductRepository.Search(service.db, currentUserId != 0, query, ids, productTypes, productCategoryIds, componentTypeIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
 	return response.PageResult{
 		Items:      service.mapProducts(res, currentUserId != 0),

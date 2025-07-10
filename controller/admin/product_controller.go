@@ -133,8 +133,8 @@ func (controller *ProductController) Delete(ctx *fiber.Ctx) error {
 // @Produce		json
 // @Param			query query string false " "
 // @Param			productTypes query string false " "
-// @Param  		productCategoryIds query string false "Array of IDs" collectionFormat(csv)
-// @Param  		componentTypeIds query string false "Array of IDs" collectionFormat(csv)
+// @Param  		productCategoryIds query []int false "Array of IDs" collectionFormat(csv)
+// @Param  		componentTypeIds query []int false "Array of IDs" collectionFormat(csv)
 // @Param			isActive query bool false " "
 // @Param			isShowOnlyInMarketplace query bool false " "
 // @Param			page query int false " "

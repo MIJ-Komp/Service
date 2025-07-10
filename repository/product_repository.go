@@ -10,7 +10,7 @@ import (
 type ProductRepository interface {
 	Save(db *gorm.DB, product entity.Product) (entity.Product, error)
 	Delete(db *gorm.DB, product entity.Product) error
-	Search(db *gorm.DB, query *string, ids *[]uuid.UUID, productTypes *[]string, productCategoryIds *[]uint, componentTypeIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) ([]entity.Product, int64, int64)
+	Search(db *gorm.DB, isAdmin bool, query *string, ids *[]uuid.UUID, productTypes *[]string, productCategoryIds *[]uint, componentTypeIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) ([]entity.Product, int64, int64)
 	GetById(db *gorm.DB, productId uuid.UUID) (entity.Product, error)
 
 	// Product SKU

@@ -60,7 +60,7 @@ type ShippingInfo struct {
 	Id                uuid.UUID  `gorm:"type:uuid; primaryKey; default:gen_random_uuid();"`
 	OrderId           uuid.UUID  `gorm:"foreignKey; type:uuid; not null;"`
 	RecipientName     string     `gorm:"type:varchar(256); not null"`
-	Address           string     `gorm:"type:vaarchar(4086); not null"`
+	Address           string     `gorm:"type:varchar(4086); not null"`
 	District          string     `gorm:"type:varchar(128); not null"`
 	City              string     `gorm:"type:varchar(128); not null"`
 	Province          string     `gorm:"type:varchar(128); not null"`
@@ -70,7 +70,7 @@ type ShippingInfo struct {
 	EstimatedDelivery *time.Time `gorm:"type:timestamptz; null"`
 	ShippedAt         *time.Time `gorm:"type:timestamptz; null"`
 	DeliveredAt       *time.Time `gorm:"type:timestamptz; null"`
-	Notes             *string    `gorm:"type:varcha(2048); null"`
+	Notes             *string    `gorm:"type:varchar(2048); null"`
 	CreatedAt         time.Time  `gorm:"type:timestamptz; not null"`
 	UpdatedAt         time.Time  `gorm:"type:timestamptz; not null"`
 }

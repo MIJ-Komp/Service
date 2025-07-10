@@ -43,6 +43,7 @@ func (repository *ProductRepositoryImpl) Delete(db *gorm.DB, product entity.Prod
 
 func (repository *ProductRepositoryImpl) Search(
 	db *gorm.DB,
+	isAdmin bool,
 	query *string,
 	ids *[]uuid.UUID,
 	productTypes *[]string,
@@ -55,11 +56,22 @@ func (repository *ProductRepositoryImpl) Search(
 	var totalCount int64 = 0
 	var totalPage int64 = 0
 
-	queries := db.Model(&entity.Product{}).
-		Preload("ProductCategory").
+	queries := db.Model(&entity.Product{})
+	if !isAdmin {
+		queries.Joins("JOIN product_skus ON product_skus.product_id = products.id AND product_skus.is_active = TRUE").
+			Group("products.id").
+			Preload("ProductSkus", func(db *gorm.DB) *gorm.DB {
+				return db.Where("product_skus.is_active = TRUE").Order("sequence")
+			})
+	} else {
+		queries.Preload("ProductSkus", func(db *gorm.DB) *gorm.DB {
+			return db.Order("sequence")
+		})
+	}
+
+	queries.Preload("ProductCategory").
 		Preload("Brand").
 		Preload("ComponentType").
-		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ComponentSpecs").
 		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
@@ -74,7 +86,7 @@ func (repository *ProductRepositoryImpl) Search(
 	}
 
 	if ids != nil && len(*ids) > 0 {
-		queries = queries.Where("id IN ?", *ids)
+		queries = queries.Where("products.id IN ?", *ids)
 	}
 
 	if productCategoryIds != nil && len(*productCategoryIds) > 0 {
@@ -86,7 +98,7 @@ func (repository *ProductRepositoryImpl) Search(
 	}
 
 	if isActive != nil {
-		queries = queries.Where("is_active = ?", *isActive)
+		queries = queries.Where("products.is_active = ?", *isActive)
 	}
 
 	if isShowOnlyInMarketPlace != nil {
