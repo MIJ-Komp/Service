@@ -19,16 +19,16 @@ definitions:
     - OrderStatusCancelled
   enum.EProductType:
     enum:
-    - admin
-    - customer
     - single
     - group
+    - admin
+    - customer
     type: string
     x-enum-varnames:
-    - Admin
-    - Customer
     - ProductTypeSingle
     - ProductTypeGroup
+    - Admin
+    - Customer
   request.Brand:
     properties:
       name:

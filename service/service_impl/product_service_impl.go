@@ -41,13 +41,14 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 		ProductType:             payload.ProductType,
 		SKU:                     payload.SKU,
 		Name:                    payload.Name,
-		IsActive:                payload.IsActive,
+		IsActive:                true,
 		IsShowOnlyInMarketPlace: payload.IsShowOnlyInMarketPlace,
 		ImageIds:                helpers.JoinImageIds(payload.ImageIds),
 		VideoUrl:                payload.VideoUrl,
 		Tags:                    payload.Tags,
 		ProductCategoryId:       payload.ProductCategoryId,
 		BrandId:                 payload.BrandId,
+		ComponentTypeId:         payload.ComponentTypeId,
 		Description:             payload.Description,
 		ProductSpec:             payload.ProductSpec,
 		CreatedById:             currentUserId,
@@ -114,7 +115,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 			err := service.ProductRepository.SaveProductGroupItems(tx, productGroupItems)
 			exception.PanicIfNeeded(err)
 		} else {
-			panic(exception.NewValidationError("Group Detail tidak boleh kosong"))
+			panic(exception.NewValidationError("Bundle item tidak boleh kosong"))
 		}
 	}
 	// Product Variant
@@ -228,6 +229,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 
 		productSkuSpecs := productSku.ComponentSpecs
 
+		// update exsisting productSkuSpec
 		for i, componentSpec := range productSkuSpecs {
 			componentSpecIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ComponentSpecs, func(model request.ComponentSpec) bool {
 				return model.Id == componentSpec.Id
@@ -238,7 +240,6 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				productSkuSpecs[i].SpecKey = componentSpecPayload.SpecKey
 				productSkuSpecs[i].SpecValue = componentSpecPayload.SpecValue
 
-				componentSpecs = append(componentSpecs, productSkuSpecs[i])
 			} else {
 				componentSpecsToBeDeleted = append(componentSpecsToBeDeleted, componentSpec)
 				toBeDeletedIdx := slices.IndexFunc(productSkuSpecs, func(model entity.ComponentSpec) bool {
@@ -248,7 +249,29 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 			}
 		}
 
-		// Product Group Items (Update, Delete, Add New)
+		// add new component spec
+		for _, productSkuSpec := range payload.ProductSkus[payloadIdx].ComponentSpecs {
+
+			savedIdx := slices.IndexFunc(productSkuSpecs, func(model entity.ComponentSpec) bool {
+				fmt.Println(model.Id)
+				fmt.Println(productSkuSpec.Id)
+				return model.Id == productSkuSpec.Id
+			})
+
+			if savedIdx == -1 {
+				productSkuSpecs = append(productSkuSpecs, entity.ComponentSpec{
+					Id:           productSkuSpec.Id,
+					ProductSkuId: productSku.Id,
+					SpecKey:      productSkuSpec.SpecKey,
+					SpecValue:    productSkuSpec.SpecValue,
+					Sequence:     len(productSkuSpecs) + 1,
+				})
+			}
+		}
+
+		componentSpecs = productSkuSpecs
+
+		// Product Bundle items (Update, Delete, Add New)
 		if product.ProductType == enum.ProductTypeGroup {
 			if len(payload.ProductSkus[payloadIdx].ProductGroupItems) == 0 {
 				panic(exception.NewValidationError("Group detail tidak boleh kosong"))
@@ -291,6 +314,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 						ProductId:    groupItem.ProductId,
 						ProductSkuId: groupItem.ProductSkuId,
 						Qty:          groupItem.Qty,
+						Sequence:     len(productSkuGroupItems) + 1,
 					})
 				}
 			}
