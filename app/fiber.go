@@ -74,6 +74,7 @@ func CreateServer(
 	customer.NewProductCategoryController(&userService, &productCategoryService).Route(app)
 	customer.NewProductController(&userService, &productService).Route(app)
 	customer.NewMenuController(&userService, &menuService).Route(app)
+	customer.NewCompatibilityRuleController(&userService, &compatibilityRuleService).Route(app)
 	customer.NewOrderController(&userService, &orderService).Route(app)
 	customer.NewFileController(&userService).Route(app)
 	return app

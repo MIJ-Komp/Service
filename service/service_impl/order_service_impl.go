@@ -109,7 +109,7 @@ func (service *OrderServiceImpl) Create(payload request.Order) response.Order {
 			CreatedAt:    time.Now(),
 		})
 
-		totalPrice += productSku.Price
+		totalPrice += productSku.Price * float64(orderItem.Quantity)
 	}
 
 	// create payment xendit
@@ -346,7 +346,7 @@ func (service *OrderServiceImpl) mapOrder(order entity.Order) response.Order {
 			Name: order.Status.DisplayString(),
 		},
 		PaidAt:     order.Payment.PaidAt,
-		IsPaid:     order.Payment.IsPaid,
+		IsPaid:     order.IsPaid,
 		TotalPaid:  order.Payment.TotalPaid,
 		PaymentUrl: order.Payment.InvoiceUrl,
 		Notes:      order.Notes,

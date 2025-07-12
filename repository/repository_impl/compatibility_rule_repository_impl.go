@@ -29,11 +29,11 @@ func (repository *CompatibilityRuleRepositoryImpl) Search(db *gorm.DB, sourceCom
 	queries := db.Model(&entity.CompatibilityRule{})
 
 	if sourceComponentTypeCode != nil {
-		queries.Where("name source_component_type_code = ?", sourceComponentTypeCode)
+		queries.Where("source_component_type_code = ?", sourceComponentTypeCode)
 	}
 
 	if targetComponentTypeCode != nil {
-		queries.Where("name target_component_type_code = ?", targetComponentTypeCode)
+		queries.Where("target_component_type_code = ?", targetComponentTypeCode)
 	}
 
 	queries.Order("modified_at desc").Find(&compatibilityRules)

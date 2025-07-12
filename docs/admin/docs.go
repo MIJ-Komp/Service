@@ -250,7 +250,13 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": " ",
-                        "name": "query",
+                        "name": "sourceComponentTypeCode",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "targetComponentTypeCode",
                         "in": "query"
                     }
                 ],
@@ -2040,16 +2046,16 @@ const docTemplate = `{
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "single",
-                "group",
                 "admin",
-                "customer"
+                "customer",
+                "single",
+                "group"
             ],
             "x-enum-varnames": [
-                "ProductTypeSingle",
-                "ProductTypeGroup",
                 "Admin",
-                "Customer"
+                "Customer",
+                "ProductTypeSingle",
+                "ProductTypeGroup"
             ]
         },
         "request.Brand": {

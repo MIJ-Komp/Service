@@ -100,7 +100,8 @@ func (controller *CompatibilityRuleController) Delete(ctx *fiber.Ctx) error {
 // @Tags			Compatibility Rules
 // @Accept		json
 // @Produce		json
-// @Param			query query string false " "
+// @Param			sourceComponentTypeCode query string false " "
+// @Param			targetComponentTypeCode query string false " "
 // @Success		200	{object}	response.CompatibilityRule
 // @Failure		404	{object}	response.WebResponse
 // @Security	ApiKeyAuth

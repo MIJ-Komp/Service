@@ -1,6 +1,7 @@
 package repository_impl
 
 import (
+	"strings"
 	"time"
 
 	"api.mijkomp.com/models/entity"
@@ -79,7 +80,7 @@ func (repository *OrderRepositoryImpl) GetById(db *gorm.DB, orderId *uuid.UUID, 
 	}
 
 	if code != nil {
-		queries.Where("code = ?", code)
+		queries.Where("LOWER(code) = ?", strings.ToLower(*code))
 	}
 
 	err := queries.First(&order).Error

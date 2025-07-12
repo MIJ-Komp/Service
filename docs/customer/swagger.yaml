@@ -69,6 +69,35 @@ definitions:
       name:
         type: string
     type: object
+  response.CompatibilityRule:
+    properties:
+      condition:
+        type: string
+      createdAt:
+        type: string
+      createdById:
+        $ref: '#/definitions/response.AuditTrail'
+      errorMessage:
+        type: string
+      id:
+        type: integer
+      isActive:
+        type: boolean
+      modifiedAt:
+        type: string
+      modifiedById:
+        $ref: '#/definitions/response.AuditTrail'
+      sourceComponentTypeCode:
+        type: string
+      sourceKey:
+        type: string
+      targetComponentTypeCode:
+        type: string
+      targetKey:
+        type: string
+      valueType:
+        type: string
+    type: object
   response.ComponentSpec:
     properties:
       id:
@@ -441,6 +470,57 @@ info:
   title: Customer API
   version: "1.0"
 paths:
+  /api/compatibility-rules:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: query
+        name: sourceComponentTypeCode
+        type: string
+      - description: ' '
+        in: query
+        name: targetComponentTypeCode
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CompatibilityRule'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Search compatibility rules
+      tags:
+      - Compatibility Rules
+  /api/compatibility-rules/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ' '
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CompatibilityRule'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      summary: Get compatibility rules by id
+      tags:
+      - Compatibility Rules
   /api/files:
     get:
       parameters:

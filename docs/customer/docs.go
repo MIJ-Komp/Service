@@ -15,6 +15,85 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/compatibility-rules": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Compatibility Rules"
+                ],
+                "summary": "Search compatibility rules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "sourceComponentTypeCode",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "targetComponentTypeCode",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CompatibilityRule"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/compatibility-rules/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Compatibility Rules"
+                ],
+                "summary": "Get compatibility rules by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": " ",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CompatibilityRule"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/files": {
             "get": {
                 "produces": [
@@ -468,6 +547,50 @@ const docTemplate = `{
                     "$ref": "#/definitions/response.AuditTrail"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.CompatibilityRule": {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "errorMessage": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "modifiedAt": {
+                    "type": "string"
+                },
+                "modifiedById": {
+                    "$ref": "#/definitions/response.AuditTrail"
+                },
+                "sourceComponentTypeCode": {
+                    "type": "string"
+                },
+                "sourceKey": {
+                    "type": "string"
+                },
+                "targetComponentTypeCode": {
+                    "type": "string"
+                },
+                "targetKey": {
+                    "type": "string"
+                },
+                "valueType": {
                     "type": "string"
                 }
             }

@@ -19,16 +19,16 @@ definitions:
     - OrderStatusCancelled
   enum.EProductType:
     enum:
-    - single
-    - group
     - admin
     - customer
+    - single
+    - group
     type: string
     x-enum-varnames:
-    - ProductTypeSingle
-    - ProductTypeGroup
     - Admin
     - Customer
+    - ProductTypeSingle
+    - ProductTypeGroup
   request.Brand:
     properties:
       name:
@@ -842,7 +842,11 @@ paths:
       parameters:
       - description: ' '
         in: query
-        name: query
+        name: sourceComponentTypeCode
+        type: string
+      - description: ' '
+        in: query
+        name: targetComponentTypeCode
         type: string
       produces:
       - application/json
