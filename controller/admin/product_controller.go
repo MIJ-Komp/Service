@@ -28,6 +28,7 @@ func (controller *ProductController) Route(app *fiber.App) {
 	product := app.Group("/api/admin/products")
 	product.Post("/:id", middleware.AuthMiddleware(controller.UserService), controller.Create)
 	product.Put("/:id", middleware.AuthMiddleware(controller.UserService), controller.Update)
+	product.Put("/change-component", middleware.AuthMiddleware(controller.UserService), controller.UpdateComponent)
 	product.Delete("/:id", middleware.AuthMiddleware(controller.UserService), controller.Delete)
 	product.Get("/", middleware.AuthMiddleware(controller.UserService), controller.Search)
 	product.Get("/browse-product-sku", middleware.AuthMiddleware(controller.UserService), controller.BrowseProductSku)
@@ -97,6 +98,34 @@ func (controller *ProductController) Update(ctx *fiber.Ctx) error {
 	result := controller.ProductService.Update(currentUserId, productId, productModel)
 
 	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mengupdate produk dengan ID %s", currentUserId, productId))
+
+	return ctx.JSON(response.NewWebResponse(result))
+}
+
+// @Summary     change component (for product bundle)
+// @Tags        Product
+// @Accept      json
+// @Produce     json
+// @Param       oldProductSkuId query string  true "GUID"
+// @Param       newProductSkuId query string  true "GUID"
+// @Success     200  {object}  response.WebResponse
+// @Failure     400  {object}  response.WebResponse
+// @Security		ApiKeyAuth
+// @in 					header
+// @name 				Authorization
+// @Router       /api/admin/products/change-component [put]
+func (controller *ProductController) UpdateComponent(ctx *fiber.Ctx) error {
+
+	currentUserId := helpers.ParseUint(ctx.Locals("userId").(string))
+
+	oldProductSkuId := helpers.ParseUUID(ctx.Params("oldProductSkuId"))
+	newProductSkuId := helpers.ParseUUID(ctx.Params("newProductSkuId"))
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Mencoba mengupdate komponent pada semua produk bundle", currentUserId))
+
+	result := controller.ProductService.ChangeComponent(currentUserId, oldProductSkuId, newProductSkuId)
+
+	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mengupdate komponent pada semua produk bundle", currentUserId))
 
 	return ctx.JSON(response.NewWebResponse(result))
 }

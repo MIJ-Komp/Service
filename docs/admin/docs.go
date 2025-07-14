@@ -1602,6 +1602,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/admin/products/change-component": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "change component (for product bundle)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "GUID",
+                        "name": "oldProductSkuId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "GUID",
+                        "name": "newProductSkuId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/products/{id}": {
             "get": {
                 "security": [
@@ -2046,16 +2095,16 @@ const docTemplate = `{
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "admin",
-                "customer",
                 "single",
-                "group"
+                "group",
+                "admin",
+                "customer"
             ],
             "x-enum-varnames": [
-                "Admin",
-                "Customer",
                 "ProductTypeSingle",
-                "ProductTypeGroup"
+                "ProductTypeGroup",
+                "Admin",
+                "Customer"
             ]
         },
         "request.Brand": {

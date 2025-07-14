@@ -3,6 +3,7 @@ package service_impl
 import (
 	"fmt"
 	"slices"
+	"strconv"
 	"time"
 
 	"api.mijkomp.com/exception"
@@ -335,7 +336,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				Price:      productSku.Price,
 				Stock:      productSku.Stock,
 				StockAlert: productSku.StockAlert,
-				IsActive:   true,
+				IsActive:   productSku.IsActive,
 				Sequence:   len(productSkus) + 1,
 			})
 
@@ -352,7 +353,6 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				})
 
 				// Product Spec
-
 				for _, componentSpec := range productSku.ComponentSpecs {
 
 					componentSpecs = append(componentSpecs, entity.ComponentSpec{
@@ -516,6 +516,43 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	exception.PanicIfNeeded(err)
 
 	return service.MapProduct(res, currentUserId != 0)
+}
+
+func (service *ProductServiceImpl) ChangeComponent(currentUserId uint, oldProductSkuId, newProductSkuId uuid.UUID) string {
+	tx := service.db.Begin()
+	defer helpers.CommitOrRollback(tx)
+
+	// Get Data
+	oldProduct := entity.Product{}
+	err := tx.Model(oldProduct).
+		Joins("Join product_skus on product_skus.product_id = products.id and product_skus.id = ?", oldProductSkuId).
+		Preload("ProductSkus").First(&oldProduct).Error
+
+	exception.PanicIfNeeded(err)
+
+	newProduct := entity.Product{}
+	err = tx.Model(newProduct).
+		Joins("Join product_skus on product_skus.product_id = products.id and product_skus.id = ?", newProductSkuId).
+		Preload("ProductSkus").First(&newProduct).Error
+
+	exception.PanicIfNeeded(err)
+
+	// validate new product
+
+	if !newProduct.IsActive || !newProduct.ProductSkus[0].IsActive {
+		productName := newProduct.Name
+		if newProduct.ProductSkus[0].Name != "" {
+			productName += " / " + newProduct.ProductSkus[0].Name
+		}
+		panic(exception.NewValidationError(fmt.Sprintf("Produk %s tidak aktif", productName)))
+	}
+
+	res := tx.Raw("UPDATE product_group_items set product_id = ?, product_sku_id = ? where product_sku_id = ?",
+		newProduct.Id, newProduct.ProductSkus[0].Id, oldProductSkuId)
+
+	exception.PanicIfNeeded(res.Error)
+
+	return fmt.Sprintf("%s produk telah diperbarui", strconv.Itoa(int(res.RowsAffected)))
 }
 
 func (service *ProductServiceImpl) Delete(currentUserId uint, productId uuid.UUID) string {
