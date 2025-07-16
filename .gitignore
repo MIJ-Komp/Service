@@ -30,3 +30,6 @@ logs/*
 
 # keep folder
 !logs/.gitkeep
+
+# build app
+MIJKomp

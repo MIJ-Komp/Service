@@ -211,6 +211,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	productGroupItemsToBeDeleted := []entity.ProductGroupItem{}
 	componentSpecs := []entity.ComponentSpec{}
 	componentSpecsToBeDeleted := []entity.ComponentSpec{}
+
 	// Update, delete
 	for i, productSku := range productSkus {
 		payloadIdx := slices.IndexFunc(payload.ProductSkus, func(model request.ProductSkuPayload) bool {
@@ -243,10 +244,6 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 
 			} else {
 				componentSpecsToBeDeleted = append(componentSpecsToBeDeleted, componentSpec)
-				toBeDeletedIdx := slices.IndexFunc(productSkuSpecs, func(model entity.ComponentSpec) bool {
-					return model.Id == componentSpec.Id
-				})
-				productSkuSpecs = append(productSkuSpecs[:toBeDeletedIdx], productSkuSpecs[toBeDeletedIdx+1:]...)
 			}
 		}
 
@@ -265,7 +262,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 					ProductSkuId: productSku.Id,
 					SpecKey:      productSkuSpec.SpecKey,
 					SpecValue:    productSkuSpec.SpecValue,
-					Sequence:     len(productSkuSpecs) + 1,
+					Sequence:     productSkuSpecs[len(productSkuSpecs)-1].Sequence + 1,
 				})
 			}
 		}
@@ -287,19 +284,12 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				if groupItemIdx != -1 {
 					productGroupPayload := payload.ProductSkus[payloadIdx].ProductGroupItems[groupItemIdx]
 
-					productSkuGroupItems[i].ParentId = groupItem.ParentId
-					productSkuGroupItems[i].ProductId = groupItem.ProductId
-					productSkuGroupItems[i].ProductSkuId = groupItem.ProductSkuId
+					productSkuGroupItems[i].ProductId = productGroupPayload.ProductId
+					productSkuGroupItems[i].ProductSkuId = productGroupPayload.ProductSkuId
 					productSkuGroupItems[i].Qty = productGroupPayload.Qty
 				} else {
 					productGroupItemsToBeDeleted = append(productGroupItemsToBeDeleted, groupItem)
-					toBeDeletedIdx := slices.IndexFunc(productGroupItems, func(model entity.ProductGroupItem) bool {
-						return model.Id == groupItem.Id
-					})
-					productSkuGroupItems = append(productGroupItems[:toBeDeletedIdx], productGroupItems[toBeDeletedIdx+1:]...)
 				}
-
-				productGroupItems = append(productGroupItems, productSkuGroupItems...)
 			}
 
 			// Add new
@@ -309,16 +299,18 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				})
 
 				if savedIdx == -1 {
-					productGroupItems = append(productGroupItems, entity.ProductGroupItem{
+					productSkuGroupItems = append(productSkuGroupItems, entity.ProductGroupItem{
 						Id:           groupItem.Id,
-						ParentId:     product.Id,
+						ParentId:     productSku.Id,
 						ProductId:    groupItem.ProductId,
 						ProductSkuId: groupItem.ProductSkuId,
 						Qty:          groupItem.Qty,
-						Sequence:     len(productSkuGroupItems) + 1,
+						Sequence:     productSkuGroupItems[len(productSkuGroupItems)-1].Sequence + 1,
 					})
 				}
 			}
+
+			productGroupItems = productSkuGroupItems
 		}
 	}
 
@@ -337,7 +329,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				Stock:      productSku.Stock,
 				StockAlert: productSku.StockAlert,
 				IsActive:   productSku.IsActive,
-				Sequence:   len(productSkus) + 1,
+				Sequence:   productSkus[len(productSkus)-1].Sequence + 1,
 			})
 
 			// Product Group
@@ -349,7 +341,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 					ProductId:    groupItem.ProductId,
 					ProductSkuId: groupItem.ProductSkuId,
 					Qty:          groupItem.Qty,
-					Sequence:     len(productGroupItems) + 1,
+					Sequence:     productGroupItems[len(productGroupItems)-1].Sequence + 1,
 				})
 
 				// Product Spec
@@ -360,7 +352,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 						ProductSkuId: productSku.Id,
 						SpecKey:      componentSpec.SpecKey,
 						SpecValue:    componentSpec.SpecValue,
-						Sequence:     len(componentSpecs) + 1,
+						Sequence:     componentSpecs[len(componentSpecs)-1].Sequence + 1,
 					})
 				}
 			}
@@ -369,22 +361,22 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 
 	}
 
-	err = service.ProductRepository.DeleteProductSkus(tx, product.Id, productSkuToBeDeleted)
+	err = service.ProductRepository.SaveComponentSpecs(tx, componentSpecs)
+	exception.PanicIfNeeded(err)
+
+	err = service.ProductRepository.DeleteComponentSpecs(tx, componentSpecsToBeDeleted)
+	exception.PanicIfNeeded(err)
+
+	err = service.ProductRepository.SaveProductGroupItems(tx, productGroupItems)
+	exception.PanicIfNeeded(err)
+
+	err = service.ProductRepository.DeleteProductGroupItems(tx, productGroupItemsToBeDeleted)
 	exception.PanicIfNeeded(err)
 
 	err = service.ProductRepository.SaveProductSkus(tx, productSkus)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.DeleteComponentSpecs(tx, productId, componentSpecsToBeDeleted)
-	exception.PanicIfNeeded(err)
-
-	err = service.ProductRepository.SaveComponentSpecs(tx, componentSpecs)
-	exception.PanicIfNeeded(err)
-
-	err = service.ProductRepository.DeleteProductGroupItems(tx, productId, productGroupItemsToBeDeleted)
-	exception.PanicIfNeeded(err)
-
-	err = service.ProductRepository.SaveProductGroupItems(tx, productGroupItems)
+	err = service.ProductRepository.DeleteProductSkus(tx, product.Id, productSkuToBeDeleted)
 	exception.PanicIfNeeded(err)
 
 	// Product Variant
@@ -417,15 +409,15 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				Id:        variantOption.Id,
 				ProductId: product.Id,
 				Name:      variantOption.Name,
-				Sequence:  len(productVariantOptions) + 1,
+				Sequence:  productVariantOptions[len(productVariantOptions)-1].Sequence + 1,
 			})
 		}
 	}
 
-	err = service.ProductRepository.DeleteProductVariantOptions(tx, product.Id, productVariantOptionsToBeDeleted)
+	err = service.ProductRepository.SaveProductVariantOptions(tx, productVariantOptions)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.SaveProductVariantOptions(tx, productVariantOptions)
+	err = service.ProductRepository.DeleteProductVariantOptions(tx, productVariantOptionsToBeDeleted)
 	exception.PanicIfNeeded(err)
 
 	// Product variant option values (Update, Delete, Add New)
@@ -458,15 +450,15 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				ProductId:              product.Id,
 				ProductVariantOptionId: variantOptionValue.ProductVariantOptionId,
 				Name:                   variantOptionValue.Name,
-				Sequence:               len(productVariantOptionValues) + 1,
+				Sequence:               productVariantOptionValues[len(productVariantOptionValues)-1].Sequence + 1,
 			})
 		}
 	}
 
-	err = service.ProductRepository.DeleteProductVariantOptionValues(tx, productId, productVariantOptionValuesToBeDeleted)
+	err = service.ProductRepository.SaveProductVariantOptionValues(tx, productVariantOptionValues)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.SaveProductVariantOptionValues(tx, productVariantOptionValues)
+	err = service.ProductRepository.DeleteProductVariantOptionValues(tx, productVariantOptionValuesToBeDeleted)
 	exception.PanicIfNeeded(err)
 
 	// Product SKU variant (Update, Delete, Add New)
@@ -500,15 +492,15 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				ProductSkuId:                skuVariant.ProductSkuId,
 				ProductVariantOptionId:      skuVariant.ProductVariantOptionId,
 				ProductVariantOptionValueId: skuVariant.ProductVariantOptionValueId,
-				Sequence:                    len(productVariantOptionValues) + 1,
+				Sequence:                    productVariantOptionValues[len(productVariantOptionValues)-1].Sequence + 1,
 			})
 		}
 	}
 
-	err = service.ProductRepository.DeleteProductSkuVariants(tx, productId, productSkuVariantsToBeDeleted)
+	err = service.ProductRepository.SaveProductSkuVariants(tx, productSkuVariants)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.SaveProductSkuVariants(tx, productSkuVariants)
+	err = service.ProductRepository.DeleteProductSkuVariants(tx, productSkuVariantsToBeDeleted)
 	exception.PanicIfNeeded(err)
 
 	// return new result

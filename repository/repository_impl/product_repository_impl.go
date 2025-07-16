@@ -28,7 +28,6 @@ func (repository *ProductRepositoryImpl) Save(db *gorm.DB, product entity.Produc
 		"ProductVariantOptions",
 		"ProductVariantOptionValues",
 		"ProductSkuVariants",
-		"ProductGroupItems",
 	}
 	err := db.Omit(
 		productOmitFields...,
@@ -129,7 +128,7 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 		Preload("ComponentType").
 		Preload("ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ComponentSpecs", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("ProductSkus.ProductGroupItems").
+		Preload("ProductSkus.ProductGroupItems", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkus.ProductGroupItems.Product").
 		Preload("ProductSkus.ProductGroupItems.Product.ProductSkus").
 		Preload("ProductSkus.ProductGroupItems.Product.ProductSkus.ComponentSpecs").
@@ -145,7 +144,11 @@ func (repository *ProductRepositoryImpl) GetById(db *gorm.DB, productId uuid.UUI
 
 // Product SKU
 func (repository *ProductRepositoryImpl) SaveProductSkus(db *gorm.DB, productSkus []entity.ProductSku) error {
-	err := db.Save(&productSkus).Error
+	var omitFields = []string{
+		"ComponentSpecs",
+		"ProductGroupItems",
+	}
+	err := db.Omit(omitFields...).Save(&productSkus).Error
 	return err
 }
 
@@ -169,7 +172,13 @@ func (repository *ProductRepositoryImpl) UpdateStockProductSkus(db *gorm.DB, pro
 }
 
 func (repository *ProductRepositoryImpl) DeleteProductSkus(db *gorm.DB, productId uuid.UUID, productSkus []entity.ProductSku) error {
-	err := db.Where("product_id = ?", productId).Delete(productSkus).Error
+	ids := []uuid.UUID{}
+
+	for _, item := range productSkus {
+		ids = append(ids, item.Id)
+	}
+
+	err := db.Where("product_id = ? and id in ?", productId, ids).Delete(productSkus).Error
 	return err
 }
 
@@ -294,8 +303,13 @@ func (repository *ProductRepositoryImpl) SaveComponentSpecs(db *gorm.DB, compone
 	return err
 }
 
-func (repository *ProductRepositoryImpl) DeleteComponentSpecs(db *gorm.DB, productSkuId uuid.UUID, componentSpecs []entity.ComponentSpec) error {
-	err := db.Where("product_sku_id = ?", productSkuId).Delete(componentSpecs).Error
+func (repository *ProductRepositoryImpl) DeleteComponentSpecs(db *gorm.DB, componentSpecs []entity.ComponentSpec) error {
+	ids := []uuid.UUID{}
+
+	for _, item := range componentSpecs {
+		ids = append(ids, item.Id)
+	}
+	err := db.Where("id in ?", ids).Delete(componentSpecs).Error
 	return err
 }
 
@@ -304,12 +318,17 @@ func (repository *ProductRepositoryImpl) SaveProductGroupItems(db *gorm.DB, grou
 	if len(groupItems) == 0 {
 		return nil
 	}
-	err := db.Save(&groupItems).Error
+	err := db.Omit("Product").Save(&groupItems).Error
 	return err
 }
 
-func (repository *ProductRepositoryImpl) DeleteProductGroupItems(db *gorm.DB, parentId uuid.UUID, groupItems []entity.ProductGroupItem) error {
-	err := db.Where("parent_id = ?", parentId).Delete(groupItems).Error
+func (repository *ProductRepositoryImpl) DeleteProductGroupItems(db *gorm.DB, groupItems []entity.ProductGroupItem) error {
+	ids := []uuid.UUID{}
+
+	for _, item := range groupItems {
+		ids = append(ids, item.Id)
+	}
+	err := db.Where("id in ?", ids).Delete(groupItems).Error
 	return err
 }
 
@@ -323,8 +342,13 @@ func (repository *ProductRepositoryImpl) SaveProductVariantOptions(db *gorm.DB, 
 	return err
 }
 
-func (repository *ProductRepositoryImpl) DeleteProductVariantOptions(db *gorm.DB, productId uuid.UUID, variantOptions []entity.ProductVariantOption) error {
-	err := db.Where("product_id = ?", productId).Delete(variantOptions).Error
+func (repository *ProductRepositoryImpl) DeleteProductVariantOptions(db *gorm.DB, variantOptions []entity.ProductVariantOption) error {
+	ids := []uuid.UUID{}
+
+	for _, item := range variantOptions {
+		ids = append(ids, item.Id)
+	}
+	err := db.Where("id in ?", ids).Delete(variantOptions).Error
 	return err
 }
 
@@ -337,8 +361,13 @@ func (repository *ProductRepositoryImpl) SaveProductVariantOptionValues(db *gorm
 	return err
 }
 
-func (repository *ProductRepositoryImpl) DeleteProductVariantOptionValues(db *gorm.DB, productId uuid.UUID, optionValues []entity.ProductVariantOptionValue) error {
-	err := db.Where("product_id = ?", productId).Delete(optionValues).Error
+func (repository *ProductRepositoryImpl) DeleteProductVariantOptionValues(db *gorm.DB, optionValues []entity.ProductVariantOptionValue) error {
+	ids := []uuid.UUID{}
+
+	for _, item := range optionValues {
+		ids = append(ids, item.Id)
+	}
+	err := db.Where("id in ?", ids).Delete(optionValues).Error
 	return err
 }
 
@@ -352,8 +381,13 @@ func (repository *ProductRepositoryImpl) SaveProductSkuVariants(db *gorm.DB, pro
 	return err
 }
 
-func (repository *ProductRepositoryImpl) DeleteProductSkuVariants(db *gorm.DB, productId uuid.UUID, productSkuVariants []entity.ProductSkuVariant) error {
-	err := db.Where("product_id = ?", productId).Delete(productSkuVariants).Error
+func (repository *ProductRepositoryImpl) DeleteProductSkuVariants(db *gorm.DB, productSkuVariants []entity.ProductSkuVariant) error {
+	ids := []uuid.UUID{}
+
+	for _, item := range productSkuVariants {
+		ids = append(ids, item.Id)
+	}
+	err := db.Where("id in ?", ids).Delete(productSkuVariants).Error
 	return err
 }
 

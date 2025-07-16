@@ -21,25 +21,25 @@ type ProductRepository interface {
 	GetProductSkuByIds(db *gorm.DB, productSkuIds []uuid.UUID) []response.BrowseProductSku
 	// GetProductSkuByIds(db *gorm.DB, productSkuIds []uuid.UUID) []entity.ProductSku
 
-	// // Product SKU Details
+	// Product Component Specs
 	SaveComponentSpecs(db *gorm.DB, componentSpecs []entity.ComponentSpec) error
-	DeleteComponentSpecs(db *gorm.DB, productSkuId uuid.UUID, componentSpecs []entity.ComponentSpec) error
+	DeleteComponentSpecs(db *gorm.DB, componentSpecs []entity.ComponentSpec) error
 
 	// Group Details
 	SaveProductGroupItems(db *gorm.DB, groupItems []entity.ProductGroupItem) error
-	DeleteProductGroupItems(db *gorm.DB, parentId uuid.UUID, groupItems []entity.ProductGroupItem) error
+	DeleteProductGroupItems(db *gorm.DB, groupItems []entity.ProductGroupItem) error
 
 	// Variant Options
 	SaveProductVariantOptions(db *gorm.DB, variantOptions []entity.ProductVariantOption) error
-	DeleteProductVariantOptions(db *gorm.DB, productId uuid.UUID, variantOptions []entity.ProductVariantOption) error
+	DeleteProductVariantOptions(db *gorm.DB, variantOptions []entity.ProductVariantOption) error
 
 	// Variant Option Values
 	SaveProductVariantOptionValues(db *gorm.DB, optionValues []entity.ProductVariantOptionValue) error
-	DeleteProductVariantOptionValues(db *gorm.DB, productId uuid.UUID, optionValues []entity.ProductVariantOptionValue) error
+	DeleteProductVariantOptionValues(db *gorm.DB, optionValues []entity.ProductVariantOptionValue) error
 
 	// Product SKU Variant
 	SaveProductSkuVariants(db *gorm.DB, productSkuVariants []entity.ProductSkuVariant) error
-	DeleteProductSkuVariants(db *gorm.DB, productId uuid.UUID, productSkuVariants []entity.ProductSkuVariant) error
+	DeleteProductSkuVariants(db *gorm.DB, productSkuVariants []entity.ProductSkuVariant) error
 
 	// Variant Option
 	SaveVariantOption(db *gorm.DB, variantOption entity.VariantOption) (entity.VariantOption, error)
