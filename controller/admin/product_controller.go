@@ -224,7 +224,7 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 	page := helpers.ParseNullableInt(ctx.Query("page"))
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
-	result := controller.ProductService.Search(currentUserId, query, nil, productTypes, productCategoryIds, componentTypeIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
+	result := controller.ProductService.Search(currentUserId, query, nil, productTypes, componentTypeIds, productCategoryIds, nil, nil, nil, nil, nil, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
 	logger.LogInfo(fmt.Sprintf("[Admin %d] Berhasil mendapatkan daftar produk", currentUserId))
 

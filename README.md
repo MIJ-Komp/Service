@@ -26,3 +26,7 @@ sudo systemctl daemon-reexec
 sudo systemctl enable MIJKomp
 sudo systemctl start MIJKomp
 sudo systemctl status MIJKomp
+
+dev
+321Admin!@#
+51.79.255.146

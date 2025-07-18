@@ -561,9 +561,9 @@ func (service *ProductServiceImpl) Delete(currentUserId uint, productId uuid.UUI
 	return fmt.Sprintf("Produk %s berhasil di hapus", product.Name)
 }
 
-func (service *ProductServiceImpl) Search(currentUserId uint, query *string, ids *[]uuid.UUID, productTypes *[]string, productCategoryIds *[]uint, componentTypeIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult {
+func (service *ProductServiceImpl) Search(currentUserId uint, query *string, ids *[]uuid.UUID, productTypes *[]string, componentTypeIds *[]uint, productCategoryIds *[]uint, brandIds *[]uint, tag *string, minPrice, maxPrice *float64, isInStockOnly *bool, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult {
 
-	res, totalCount, totalPage := service.ProductRepository.Search(service.db, currentUserId != 0, query, ids, productTypes, productCategoryIds, componentTypeIds, isActive, isShowOnlyInMarketPlace, page, pageSize)
+	res, totalCount, totalPage := service.ProductRepository.Search(service.db, currentUserId != 0, query, ids, productTypes, componentTypeIds, productCategoryIds, brandIds, tag, minPrice, maxPrice, isInStockOnly, isActive, isShowOnlyInMarketPlace, page, pageSize)
 
 	return response.PageResult{
 		Items:      service.mapProducts(res, currentUserId != 0),

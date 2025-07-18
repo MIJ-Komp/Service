@@ -12,7 +12,7 @@ type ProductService interface {
 	Update(currentUserId uint, productId uuid.UUID, req request.ProductPayload) response.ProductResponse
 	ChangeComponent(currentUserId uint, oldProductSkuId, newProductSkuId uuid.UUID) string
 	Delete(currentUserId uint, productId uuid.UUID) string
-	Search(currentUserId uint, query *string, ids *[]uuid.UUID, productTypes *[]string, productCategoryIds *[]uint, componentTypeIds *[]uint, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult
+	Search(currentUserId uint, query *string, ids *[]uuid.UUID, productTypes *[]string, componentTypeIds *[]uint, productCategoryIds *[]uint, brandIds *[]uint, tag *string, minPrice, maxPrice *float64, isInStockOnly *bool, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult
 	BrowseProductSku(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) response.PageResult
 	GetById(currentUserId uint, productId uuid.UUID) response.ProductResponse
 

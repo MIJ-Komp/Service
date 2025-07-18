@@ -690,12 +690,32 @@ paths:
         type: string
       - description: Array of IDs (1,2,3)
         in: query
+        name: componentTypeIds
+        type: string
+      - description: Array of IDs (1,2,3)
+        in: query
         name: productCategoryIds
         type: string
       - description: Array of IDs (1,2,3)
         in: query
-        name: componentTypeIds
+        name: brandIds
         type: string
+      - description: String
+        in: query
+        name: tag
+        type: string
+      - description: money
+        in: query
+        name: minPrice
+        type: number
+      - description: money
+        in: query
+        name: maxPrice
+        type: number
+      - description: boolean
+        in: query
+        name: isInStockOnly
+        type: boolean
       - description: ' '
         in: query
         name: page

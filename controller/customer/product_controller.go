@@ -33,8 +33,13 @@ func (controller *ProductController) Route(app *fiber.App) {
 // @Param			query query string false " "
 // @Param  		ids query []string false "Array of Ids (1,2,3)"
 // @Param			productTypes query string false " "
-// @Param  		productCategoryIds query string false "Array of IDs (1,2,3)"
 // @Param  		componentTypeIds query string false "Array of IDs (1,2,3)"
+// @Param  		productCategoryIds query string false "Array of IDs (1,2,3)"
+// @Param  		brandIds query string false "Array of IDs (1,2,3)"
+// @Param  		tag query string false "String"
+// @Param  		minPrice query float64 false "money"
+// @Param  		maxPrice query float64 false "money"
+// @Param  		isInStockOnly query bool false "boolean"
 // @Param			page query int false " "
 // @Param			pageSize query int false " "
 // @Success		200	{object}	[]response.ProductResponse
@@ -65,6 +70,19 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 		}
 	}
 
+	var componentTypeIds *[]uint = nil
+	if cIdsQuery := ctx.Queries()["componentTypeIds"]; cIdsQuery != "" {
+		cIds := strings.Split(cIdsQuery, ",")
+		ids := []uint{}
+
+		for _, cid := range cIds {
+			ids = append(ids, helpers.ParseUint(cid))
+		}
+		if len(ids) > 0 {
+			componentTypeIds = &ids
+		}
+	}
+
 	var productCategoryIds *[]uint = nil
 	productCategoryIdsQuery := ctx.Queries()["productCategoryIds"]
 	if productCategoryIdsQuery != "" {
@@ -79,18 +97,26 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 		}
 	}
 
-	var componentTypeIds *[]uint = nil
-	if cIdsQuery := ctx.Queries()["componentTypeIds"]; cIdsQuery != "" {
-		cIds := strings.Split(cIdsQuery, ",")
-		ids := []uint{}
-
-		for _, cid := range cIds {
-			ids = append(ids, helpers.ParseUint(cid))
+	var brandIds *[]uint = nil
+	brandIdsQuery := ctx.Queries()["brandIds"]
+	if brandIdsQuery != "" {
+		brandIdsQueries := strings.Split(brandIdsQuery, ",")
+		var ids []uint
+		for _, brandQuery := range brandIdsQueries {
+			id := helpers.ParseUint(brandQuery)
+			ids = append(ids, id)
 		}
 		if len(ids) > 0 {
-			componentTypeIds = &ids
+			brandIds = &ids
 		}
 	}
+
+	tag := helpers.ParseNullableString(ctx.Query("tag"))
+
+	minPrice := helpers.ParseNullableFloat64(ctx.Query("minPrice"))
+	maxPrice := helpers.ParseNullableFloat64(ctx.Query("maxPrice"))
+
+	isInStockOnly := helpers.ParseNullableBool(ctx.Query("isInStockOnly"))
 
 	isActive := true
 	isShowOnlyInMarketPlace := false
@@ -98,7 +124,7 @@ func (controller *ProductController) Search(ctx *fiber.Ctx) error {
 	page := helpers.ParseNullableInt(ctx.Query("page"))
 	pageSize := helpers.ParseNullableInt(ctx.Query("pageSize"))
 
-	result := controller.ProductService.Search(0, query, ids, productTypes, productCategoryIds, componentTypeIds, &isActive, &isShowOnlyInMarketPlace, page, pageSize)
+	result := controller.ProductService.Search(0, query, ids, productTypes, componentTypeIds, productCategoryIds, brandIds, tag, minPrice, maxPrice, isInStockOnly, &isActive, &isShowOnlyInMarketPlace, page, pageSize)
 
 	return ctx.JSON(response.NewWebResponse(result))
 }

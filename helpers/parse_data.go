@@ -23,6 +23,16 @@ func ParseFloat64(str string) float64 {
 	return id
 }
 
+func ParseNullableFloat64(str string) *float64 {
+
+	val, err := strconv.ParseFloat(str, 64)
+	if err != nil {
+		return nil
+	}
+
+	return &val
+}
+
 func ParseInt(str string) int {
 	val, _ := strconv.Atoi(str)
 	return int(val)

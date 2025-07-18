@@ -355,13 +355,43 @@
                     {
                         "type": "string",
                         "description": "Array of IDs (1,2,3)",
+                        "name": "componentTypeIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Array of IDs (1,2,3)",
                         "name": "productCategoryIds",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "description": "Array of IDs (1,2,3)",
-                        "name": "componentTypeIds",
+                        "name": "brandIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "String",
+                        "name": "tag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "money",
+                        "name": "minPrice",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "money",
+                        "name": "maxPrice",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "boolean",
+                        "name": "isInStockOnly",
                         "in": "query"
                     },
                     {

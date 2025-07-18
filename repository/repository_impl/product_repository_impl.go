@@ -46,8 +46,12 @@ func (repository *ProductRepositoryImpl) Search(
 	query *string,
 	ids *[]uuid.UUID,
 	productTypes *[]string,
-	productCategoryIds *[]uint,
 	componentTypeIds *[]uint,
+	productCategoryIds *[]uint,
+	brandIds *[]uint,
+	tag *string,
+	minPrice, maxPrice *float64,
+	isInStockOnly *bool,
 	isActive, isShowOnlyInMarketPlace *bool,
 	page, pageSize *int,
 ) ([]entity.Product, int64, int64) {
@@ -56,16 +60,16 @@ func (repository *ProductRepositoryImpl) Search(
 	var totalPage int64 = 0
 
 	queries := db.Model(&entity.Product{})
-	if !isAdmin {
+	if isAdmin {
+		queries.Preload("ProductSkus", func(db *gorm.DB) *gorm.DB {
+			return db.Order("sequence")
+		})
+	} else {
 		queries.Joins("JOIN product_skus ON product_skus.product_id = products.id AND product_skus.is_active = TRUE").
 			Group("products.id").
 			Preload("ProductSkus", func(db *gorm.DB) *gorm.DB {
 				return db.Where("product_skus.is_active = TRUE").Order("sequence")
 			})
-	} else {
-		queries.Preload("ProductSkus", func(db *gorm.DB) *gorm.DB {
-			return db.Order("sequence")
-		})
 	}
 
 	queries.Preload("ProductCategory").
@@ -89,7 +93,27 @@ func (repository *ProductRepositoryImpl) Search(
 	}
 
 	if productCategoryIds != nil && len(*productCategoryIds) > 0 {
-		queries = queries.Where("product_category_id IN ?", *productCategoryIds)
+		queries = queries.Where("products.product_category_id IN ?", *productCategoryIds)
+	}
+
+	if brandIds != nil && len(*brandIds) > 0 {
+		queries = queries.Where("products.brand_id IN ?", *brandIds)
+	}
+
+	if tag != nil && len(*tag) > 0 {
+		queries = queries.Where("products.tags ILIKE ?", fmt.Sprintf("%%%s%%", *tag))
+	}
+
+	if isInStockOnly != nil && *isInStockOnly {
+		queries = queries.Having("SUM(COALESCE(product_skus.stock, 0)) > 0")
+	}
+
+	if minPrice != nil {
+		queries = queries.Having("MIN(COALESCE(product_skus.price, 0)) >= ?", *minPrice)
+	}
+
+	if maxPrice != nil {
+		queries = queries.Having("MAX(COALESCE(product_skus.price, 0)) <= ?", *maxPrice)
 	}
 
 	if componentTypeIds != nil && len(*componentTypeIds) > 0 {
