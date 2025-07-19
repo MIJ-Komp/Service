@@ -80,6 +80,11 @@ var paymentSet = wire.NewSet(
 	wire.Bind(new(service.PaymentService), new(*service_impl.PaymentServiceImpl)),
 )
 
+var dashboardSet = wire.NewSet(
+	service_impl.NewDashboardService,
+	wire.Bind(new(service.DashboardService), new(*service_impl.DashboardServiceImpl)),
+)
+
 func InitializedServer() *fiber.App {
 	wire.Build(
 		database.NewDB,
@@ -92,6 +97,7 @@ func InitializedServer() *fiber.App {
 		menuSet,
 		orderSet,
 		paymentSet,
+		dashboardSet,
 		validatorSet,
 		app.CreateServer,
 	)

@@ -30,6 +30,7 @@ func CreateServer(
 	compatibilityRuleService service.CompatibilityRuleService,
 	menuService service.MenuService,
 	orderService service.OrderService,
+	dashboardService service.DashboardService,
 	db *gorm.DB,
 ) *fiber.App {
 
@@ -70,6 +71,7 @@ func CreateServer(
 	admin.NewMenuController(&userService, &menuService).Route(app)
 	admin.NewOrderController(&userService, &orderService).Route(app)
 	admin.NewFileController(&userService).Route(app)
+	admin.NewDashboardController(&userService, &dashboardService).Route(app)
 
 	customer.NewProductCategoryController(&userService, &productCategoryService).Route(app)
 	customer.NewProductController(&userService, &productService).Route(app)

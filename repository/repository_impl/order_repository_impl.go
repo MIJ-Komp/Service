@@ -37,7 +37,9 @@ func (repository *OrderRepositoryImpl) Search(db *gorm.DB, query *string, status
 
 	queries := db.Model(&orders).
 		Preload("OrderItems", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
-		Preload("CustomerInfo")
+		Preload("CustomerInfo").
+		Preload("ShippingInfo").
+		Preload("Payment")
 
 	if query != nil {
 		queries.Where("name like ?", "%"+*query+"%")

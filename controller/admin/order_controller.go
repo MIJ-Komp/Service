@@ -35,7 +35,7 @@ func (controller *OrderController) Route(app *fiber.App) {
 // @Param			query query string false " "
 // @Param			status query string false " "
 // @Param			fromDate query string false " "
-// @Param			toDate query time.Time false " "
+// @Param			toDate query string false " "
 // @Param			page query int true " "
 // @Param			pageSize query int true " "
 // @Success		200	{object}	response.Order

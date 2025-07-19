@@ -41,7 +41,8 @@ func InitializedServer() *fiber.App {
 	paymentRepositoryImpl := repository_impl.NewPaymentRepository()
 	paymentServiceImpl := service_impl.NewPaymentService(paymentRepositoryImpl, orderRepositoryImpl, db)
 	orderServiceImpl := service_impl.NewOrderService(orderRepositoryImpl, productServiceImpl, productRepositoryImpl, paymentServiceImpl, db)
-	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, brandServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, menuServiceImpl, orderServiceImpl, db)
+	dashboardServiceImpl := service_impl.NewDashboardService(db)
+	fiberApp := app.CreateServer(userServiceImpl, productCategoryServiceImpl, brandServiceImpl, productServiceImpl, componentTypeServiceImpl, compatibilityRuleServiceImpl, menuServiceImpl, orderServiceImpl, dashboardServiceImpl, db)
 	return fiberApp
 }
 
@@ -66,3 +67,5 @@ var menuSet = wire.NewSet(repository_impl.NewMenuRepository, wire.Bind(new(repos
 var orderSet = wire.NewSet(repository_impl.NewOrderRepository, wire.Bind(new(repository.OrderRepository), new(*repository_impl.OrderRepositoryImpl)), service_impl.NewOrderService, wire.Bind(new(service.OrderService), new(*service_impl.OrderServiceImpl)))
 
 var paymentSet = wire.NewSet(repository_impl.NewPaymentRepository, wire.Bind(new(repository.PaymentRepository), new(*repository_impl.PaymentRepositoryImpl)), service_impl.NewPaymentService, wire.Bind(new(service.PaymentService), new(*service_impl.PaymentServiceImpl)))
+
+var dashboardSet = wire.NewSet(service_impl.NewDashboardService, wire.Bind(new(service.DashboardService), new(*service_impl.DashboardServiceImpl)))

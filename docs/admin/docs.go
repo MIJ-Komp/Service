@@ -663,6 +663,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/admin/dashboard": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get Summary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "fromDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "toDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/files": {
             "get": {
                 "security": [
@@ -1061,6 +1108,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": " ",
                         "name": "fromDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": " ",
+                        "name": "toDate",
                         "in": "query"
                     },
                     {
@@ -2090,16 +2143,16 @@ const docTemplate = `{
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "single",
-                "group",
                 "admin",
-                "customer"
+                "customer",
+                "single",
+                "group"
             ],
             "x-enum-varnames": [
-                "ProductTypeSingle",
-                "ProductTypeGroup",
                 "Admin",
-                "Customer"
+                "Customer",
+                "ProductTypeSingle",
+                "ProductTypeGroup"
             ]
         },
         "request.Brand": {

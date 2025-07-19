@@ -122,6 +122,15 @@ func ParseBool(str string) bool {
 	return boolean
 }
 
+func ParseTime(str string) time.Time {
+	layout := "2006-01-02 15:04:05"
+	parsedTime, err := time.Parse(layout, str)
+
+	exception.PanicIfNeeded(err)
+
+	return parsedTime
+}
+
 func ParseNullableTime(str string) *time.Time {
 
 	if str == "" {

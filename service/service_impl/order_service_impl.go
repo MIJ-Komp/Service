@@ -358,6 +358,9 @@ func (service *OrderServiceImpl) mapOrder(order entity.Order) response.Order {
 		CustomerInfo: service.mapCustomerInfo(order.CustomerInfo),
 		ShippingInfo: service.mapShippingInfo(order.ShippingInfo),
 	}
+	if orderRes.IsPaid {
+		orderRes.PaymentUrl = nil
+	}
 
 	return orderRes
 }
