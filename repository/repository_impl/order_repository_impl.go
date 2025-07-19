@@ -60,7 +60,7 @@ func (repository *OrderRepositoryImpl) Search(db *gorm.DB, query *string, status
 	offset = (page - 1) * pageSize
 	totalPage = ((totalCount + int64(pageSize) - 1) / int64(pageSize))
 
-	queries.Limit(pageSize).Offset(offset).Order("orders.modified_at desc").Find(&orders)
+	queries.Limit(pageSize).Offset(offset).Order("orders.order_date desc").Find(&orders)
 
 	return orders, totalCount, totalPage
 }

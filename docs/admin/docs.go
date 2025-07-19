@@ -1621,18 +1621,13 @@ const docTemplate = `{
                 "summary": "change component (for product bundle)",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "GUID",
-                        "name": "oldProductSkuId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "GUID",
-                        "name": "newProductSkuId",
-                        "in": "query",
-                        "required": true
+                        "description": " ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ChangeComponent"
+                        }
                     }
                 ],
                 "responses": {
@@ -2111,6 +2106,17 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ChangeComponent": {
+            "type": "object",
+            "properties": {
+                "newProductSkuId": {
+                    "type": "string"
+                },
+                "oldProductSkuId": {
                     "type": "string"
                 }
             }

@@ -10,7 +10,7 @@ import (
 type ProductService interface {
 	Create(currentUserId uint, productId uuid.UUID, req request.ProductPayload) response.ProductResponse
 	Update(currentUserId uint, productId uuid.UUID, req request.ProductPayload) response.ProductResponse
-	ChangeComponent(currentUserId uint, oldProductSkuId, newProductSkuId uuid.UUID) string
+	ChangeComponent(currentUserId uint, payload request.ChangeComponent) string
 	Delete(currentUserId uint, productId uuid.UUID) string
 	Search(currentUserId uint, query *string, ids *[]uuid.UUID, productTypes *[]string, componentTypeIds *[]uint, productCategoryIds *[]uint, brandIds *[]uint, tag *string, minPrice, maxPrice *float64, isInStockOnly *bool, isActive, isShowOnlyInMarketPlace *bool, page, pageSize *int) response.PageResult
 	BrowseProductSku(currentUserId uint, query *string, productTypes *[]string, productCategoryId *uint, page, pageSize *int) response.PageResult

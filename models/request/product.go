@@ -73,3 +73,8 @@ type ProductGroupItemPayload struct {
 type VariantOptionPayload struct {
 	Name string `json:"name"`
 }
+
+type ChangeComponent struct {
+	OldProductSkuId uuid.UUID `json:"oldProductSkuId"`
+	NewProductSkuId uuid.UUID `json:"newProductSkuId"`
+}

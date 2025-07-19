@@ -34,6 +34,13 @@ definitions:
       name:
         type: string
     type: object
+  request.ChangeComponent:
+    properties:
+      newProductSkuId:
+        type: string
+      oldProductSkuId:
+        type: string
+    type: object
   request.CompatibilityRule:
     properties:
       condition:
@@ -1813,16 +1820,12 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: GUID
-        in: query
-        name: oldProductSkuId
+      - description: ' '
+        in: body
+        name: request
         required: true
-        type: string
-      - description: GUID
-        in: query
-        name: newProductSkuId
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/request.ChangeComponent'
       produces:
       - application/json
       responses:

@@ -510,21 +510,21 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	return service.MapProduct(res, currentUserId != 0)
 }
 
-func (service *ProductServiceImpl) ChangeComponent(currentUserId uint, oldProductSkuId, newProductSkuId uuid.UUID) string {
+func (service *ProductServiceImpl) ChangeComponent(currentUserId uint, payload request.ChangeComponent) string {
 	tx := service.db.Begin()
 	defer helpers.CommitOrRollback(tx)
 
 	// Get Data
 	oldProduct := entity.Product{}
 	err := tx.Model(oldProduct).
-		Joins("Join product_skus on product_skus.product_id = products.id and product_skus.id = ?", oldProductSkuId).
+		Joins("Join product_skus on product_skus.product_id = products.id and product_skus.id = ?", payload.OldProductSkuId).
 		Preload("ProductSkus").First(&oldProduct).Error
 
 	exception.PanicIfNeeded(err)
 
 	newProduct := entity.Product{}
 	err = tx.Model(newProduct).
-		Joins("Join product_skus on product_skus.product_id = products.id and product_skus.id = ?", newProductSkuId).
+		Joins("Join product_skus on product_skus.product_id = products.id and product_skus.id = ?", payload.NewProductSkuId).
 		Preload("ProductSkus").First(&newProduct).Error
 
 	exception.PanicIfNeeded(err)
@@ -539,8 +539,8 @@ func (service *ProductServiceImpl) ChangeComponent(currentUserId uint, oldProduc
 		panic(exception.NewValidationError(fmt.Sprintf("Produk %s tidak aktif", productName)))
 	}
 
-	res := tx.Raw("UPDATE product_group_items set product_id = ?, product_sku_id = ? where product_sku_id = ?",
-		newProduct.Id, newProduct.ProductSkus[0].Id, oldProductSkuId)
+	res := tx.Exec("UPDATE product_group_items set product_id = ?, product_sku_id = ? where product_sku_id = ?",
+		newProduct.Id, newProduct.ProductSkus[0].Id, payload.OldProductSkuId)
 
 	exception.PanicIfNeeded(res.Error)
 
