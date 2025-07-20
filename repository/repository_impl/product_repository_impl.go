@@ -76,6 +76,9 @@ func (repository *ProductRepositoryImpl) Search(
 		Preload("Brand").
 		Preload("ComponentType").
 		Preload("ProductSkus.ComponentSpecs").
+		Preload("ProductSkus.ProductGroupItems", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+		Preload("ProductSkus.ProductGroupItems.Product").
+		Preload("ProductSkus.ProductGroupItems.Product.ProductSkus").
 		Preload("ProductVariantOptions", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductVariantOptionValues", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("ProductSkuVariants")
