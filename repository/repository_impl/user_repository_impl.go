@@ -21,7 +21,7 @@ func (repository *UserRepositoryImpl) Save(db *gorm.DB, user entity.User) (entit
 	logger.LogDBOperation("Save", "Save user", user.Email)
 	err := db.Save(&user).Error
 	if err != nil {
-		logger.LogError(err)
+		logger.LogError(err.Error())
 	}
 	return user, err
 }
@@ -32,7 +32,7 @@ func (repository *UserRepositoryImpl) GetById(db *gorm.DB, userId uint) (entity.
 	var users entity.User
 	err := db.First(&users, "id = ?", id).Error
 	if err != nil {
-		logger.LogError(err)
+		logger.LogError(err.Error())
 	}
 	return users, err
 }
@@ -42,7 +42,7 @@ func (repository *UserRepositoryImpl) GetByEmail(db *gorm.DB, email string) (ent
 	var user entity.User
 	err := db.First(&user, "email = ?", email).Error
 	if err != nil {
-		logger.LogError(err)
+		logger.LogError(err.Error())
 	}
 	return user, err
 }
@@ -50,7 +50,7 @@ func (repository *UserRepositoryImpl) GetByEmail(db *gorm.DB, email string) (ent
 func (repository *UserRepositoryImpl) SaveToken(db *gorm.DB, token entity.UserToken) error {
 	logger.LogDBOperation("SaveToken", "Save user token", token.UserId)
 	if err := db.Save(&token).Error; err != nil {
-		logger.LogError(err)
+		logger.LogError(err.Error())
 		exception.PanicIfNeeded(err)
 	}
 	return nil
@@ -65,7 +65,7 @@ func (repository *UserRepositoryImpl) HasToken(db *gorm.DB, userId uint, tokenId
 			logger.LogInfo("Token not found for user")
 			return false // User does not exist
 		}
-		logger.LogError(err)
+		logger.LogError(err.Error())
 		return false
 	}
 	return true
@@ -75,7 +75,7 @@ func (repository *UserRepositoryImpl) CreateUserVerification(db *gorm.DB, userVe
 	logger.LogDBOperation("CreateUserVerification", "Create user verification", userVerification.UserId)
 	err := db.Save(&userVerification).Error
 	if err != nil {
-		logger.LogError(err)
+		logger.LogError(err.Error())
 	}
 	return err
 }
@@ -86,7 +86,7 @@ func (repository *UserRepositoryImpl) GetUserVerification(db *gorm.DB, userId ui
 
 	err := db.First(&userVerification, "user_id = ? and code = ?", userId, code).Error
 	if err != nil {
-		logger.LogError(err)
+		logger.LogError(err.Error())
 	}
 
 	return userVerification, err

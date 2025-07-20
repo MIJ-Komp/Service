@@ -19,16 +19,16 @@ definitions:
     - OrderStatusCancelled
   enum.EProductType:
     enum:
-    - admin
-    - customer
     - single
     - group
+    - admin
+    - customer
     type: string
     x-enum-varnames:
-    - Admin
-    - Customer
     - ProductTypeSingle
     - ProductTypeGroup
+    - Admin
+    - Customer
   request.Brand:
     properties:
       name:
@@ -275,6 +275,15 @@ definitions:
       userName:
         type: string
     type: object
+  response.BestSellingProduct:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      sold:
+        type: integer
+    type: object
   response.Brand:
     properties:
       createdAt:
@@ -359,6 +368,25 @@ definitions:
         type: string
       phoneNumber:
         type: string
+    type: object
+  response.Dashboard:
+    properties:
+      bestSellingProduct:
+        items:
+          $ref: '#/definitions/response.BestSellingProduct'
+        type: array
+      stockAlert:
+        items:
+          $ref: '#/definitions/response.StockAlert'
+        type: array
+      totalActiveProduct:
+        type: integer
+      totalOrder:
+        type: integer
+      totalPendingOrder:
+        type: integer
+      totalSales:
+        type: number
     type: object
   response.EnumResponse:
     properties:
@@ -672,6 +700,15 @@ definitions:
         type: string
       updatedAt:
         type: string
+    type: object
+  response.StockAlert:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      stock:
+        type: integer
     type: object
   response.User:
     properties:
@@ -1116,12 +1153,13 @@ paths:
     get:
       consumes:
       - application/json
+      description: Get dashboard summary with optional date range filter
       parameters:
-      - description: ' '
+      - description: 'Start date for filtering (format: 2006-01-02 15:04:05)'
         in: query
         name: fromDate
         type: string
-      - description: ' '
+      - description: 'End date for filtering (format: 2006-01-02 15:04:05)'
         in: query
         name: toDate
         type: string
@@ -1131,7 +1169,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.WebResponse'
+            allOf:
+            - $ref: '#/definitions/response.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.Dashboard'
+              type: object
         "400":
           description: Bad Request
           schema:

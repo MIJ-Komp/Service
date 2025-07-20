@@ -6,8 +6,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceRoot}",
-      "preLaunchTask": "Generate Swagger All" 
+      "program": "${workspaceRoot}"
     }
   ]
 }

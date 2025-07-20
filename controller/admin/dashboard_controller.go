@@ -23,22 +23,21 @@ func (controller *DashboardController) Route(app *fiber.App) {
 }
 
 // @Summary      Get Summary
+// @Description  Get dashboard summary with optional date range filter
 // @Tags         Dashboard
 // @Accept       json
 // @Produce      json
-// @Param				 fromDate query string false " "
-// @Param				 toDate query string false " "
-// @Success      200  {object}  response.WebResponse
+// @Param        fromDate query string false "Start date for filtering (format: 2006-01-02)"
+// @Param        toDate query string false "End date for filtering (format: 2006-01-02)"
+// @Success      200  {object}  response.WebResponse{data=response.Dashboard}
 // @Failure      400  {object}  response.WebResponse
-// @Security	ApiKeyAuth
-// @in header
-// @name Authorization
+// @Security     ApiKeyAuth
 // @Router       /api/admin/dashboard [get]
 func (controller *DashboardController) GetSummary(ctx *fiber.Ctx) error {
 	currentUserId := helpers.ParseUserId(ctx.Locals("userId"))
 
-	fromDate := helpers.ParseTime(ctx.Query("fromDate"))
-	toDate := helpers.ParseTime(ctx.Query("toDate"))
+	fromDate := helpers.ParseDate(ctx.Query("fromDate"))
+	toDate := helpers.ParseDate(ctx.Query("toDate"))
 	result := controller.DashboardService.GetSummary(currentUserId, fromDate, toDate)
 
 	return ctx.JSON(response.NewWebResponse(result))

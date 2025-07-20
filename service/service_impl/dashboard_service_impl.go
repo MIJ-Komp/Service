@@ -33,17 +33,17 @@ func (service *DashboardServiceImpl) GetSummary(currentUserId uint, fromDate, to
 	// total sales
 	service.db.Model(&entity.Order{}).
 		Select("COALESCE(SUM(total_paid), 0)").
-		Where("is_paid = true AND total_paid IS NOT NULL AND deleted_at IS NULL AND status = ?", enum.OrderStatusCompleted).
+		Where("is_paid = true AND total_paid IS NOT NULL AND deleted_at IS NULL AND status = ? AND created_at >= ? AND created_at <= ?", enum.OrderStatusCompleted, fromDate, toDate).
 		Scan(&totalSales)
 
 	// total order
 	service.db.Model(&entity.Order{}).
-		Where("deleted_at IS NULL and status != ?", enum.OrderStatusCancelled).
+		Where("deleted_at IS NULL and status != ? AND created_at >= ? AND created_at <= ?", enum.OrderStatusCancelled, fromDate, toDate).
 		Count(&totalOrder)
 
 	// pending order
 	service.db.Model(&entity.Order{}).
-		Where("deleted_at IS NULL and status not in ?", []enum.EOrderStatus{enum.OrderStatusCompleted, enum.OrderStatusCancelled}).
+		Where("deleted_at IS NULL and status not in ? AND created_at >= ? AND created_at <= ?", []enum.EOrderStatus{enum.OrderStatusCompleted, enum.OrderStatusCancelled}, fromDate, toDate).
 		Count(&totalPendingOrder)
 
 	// active product

@@ -22,7 +22,7 @@ func NewDB() *gorm.DB {
 	})
 
 	if err != nil {
-		logger.LogError(err)
+		logger.LogError(err.Error())
 		exception.PanicIfNeeded(err)
 	}
 

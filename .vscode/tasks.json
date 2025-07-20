@@ -4,7 +4,7 @@
     {
       "label": "Generate Swagger Admin",
       "type": "shell",
-      "command": "swag init -g main_admin.go -o ./docs/admin --dir ./swagger,./controller/admin,./models",
+      "command": "swag init -g ./swagger/main_admin.go -o ./docs/admin --dir ./controller/admin,./models/request,./models/response,./models/entity,./models/enum",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -14,7 +14,7 @@
     {
       "label": "Generate Swagger Customer",
       "type": "shell",
-      "command": "swag init -g main_customer.go -o ./docs/customer --dir ./swagger,./controller/customer,./models",
+      "command": "swag init -g ./swagger/main_customer.go -o ./docs/customer --dir ./controller/customer,./models/request,./models/response,./models/entity,./models/enum",
       "options": {
         "cwd": "${workspaceFolder}"
       },

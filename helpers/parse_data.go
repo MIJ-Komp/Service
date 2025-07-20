@@ -59,8 +59,8 @@ func ParseNullableInt64(str string) *int64 {
 }
 
 func ParseInt64(str string) int64 {
-	val, _ := strconv.Atoi(str)
-	return int64(val)
+	val, _ := strconv.ParseInt(str, 10, 64)
+	return val
 }
 
 func ParseUint(strId string) uint {
@@ -131,6 +131,15 @@ func ParseTime(str string) time.Time {
 	return parsedTime
 }
 
+func ParseDate(str string) time.Time {
+	layout := "2006-01-02"
+	parsedTime, err := time.Parse(layout, str)
+
+	exception.PanicIfNeeded(err)
+
+	return parsedTime
+}
+
 func ParseNullableTime(str string) *time.Time {
 
 	if str == "" {
@@ -138,6 +147,20 @@ func ParseNullableTime(str string) *time.Time {
 	}
 
 	layout := "2006-01-02 15:04:05"
+	parsedTime, err := time.Parse(layout, str)
+
+	exception.PanicIfNeeded(err)
+
+	return &parsedTime
+}
+
+func ParseNullableDate(str string) *time.Time {
+
+	if str == "" {
+		return nil
+	}
+
+	layout := "2006-01-02"
 	parsedTime, err := time.Parse(layout, str)
 
 	exception.PanicIfNeeded(err)

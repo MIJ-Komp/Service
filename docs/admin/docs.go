@@ -670,6 +670,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
+                "description": "Get dashboard summary with optional date range filter",
                 "consumes": [
                     "application/json"
                 ],
@@ -683,13 +684,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": " ",
+                        "description": "Start date for filtering (format: 2006-01-02 15:04:05)",
                         "name": "fromDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": " ",
+                        "description": "End date for filtering (format: 2006-01-02 15:04:05)",
                         "name": "toDate",
                         "in": "query"
                     }
@@ -698,7 +699,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.WebResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.WebResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.Dashboard"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -2143,16 +2156,16 @@ const docTemplate = `{
         "enum.EProductType": {
             "type": "string",
             "enum": [
-                "admin",
-                "customer",
                 "single",
-                "group"
+                "group",
+                "admin",
+                "customer"
             ],
             "x-enum-varnames": [
-                "Admin",
-                "Customer",
                 "ProductTypeSingle",
-                "ProductTypeGroup"
+                "ProductTypeGroup",
+                "Admin",
+                "Customer"
             ]
         },
         "request.Brand": {
@@ -2526,6 +2539,20 @@ const docTemplate = `{
                 }
             }
         },
+        "response.BestSellingProduct": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sold": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.Brand": {
             "type": "object",
             "properties": {
@@ -2653,6 +2680,35 @@ const docTemplate = `{
                 },
                 "phoneNumber": {
                     "type": "string"
+                }
+            }
+        },
+        "response.Dashboard": {
+            "type": "object",
+            "properties": {
+                "bestSellingProduct": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.BestSellingProduct"
+                    }
+                },
+                "stockAlert": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.StockAlert"
+                    }
+                },
+                "totalActiveProduct": {
+                    "type": "integer"
+                },
+                "totalOrder": {
+                    "type": "integer"
+                },
+                "totalPendingOrder": {
+                    "type": "integer"
+                },
+                "totalSales": {
+                    "type": "number"
                 }
             }
         },
@@ -3130,6 +3186,20 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "response.StockAlert": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stock": {
+                    "type": "integer"
                 }
             }
         },
