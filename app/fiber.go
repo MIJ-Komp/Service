@@ -45,7 +45,7 @@ func CreateServer(
 
 	// Request ID middleware (must be before logger)
 	app.Use(middleware.RequestIDMiddleware())
-	
+
 	// Logger middleware
 	app.Use(middleware.LoggerMiddleware())
 
