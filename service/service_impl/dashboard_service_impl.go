@@ -22,9 +22,9 @@ func NewDashboardService(db *gorm.DB) *DashboardServiceImpl {
 
 func (service *DashboardServiceImpl) GetSummary(currentUserId uint, fromDate, toDate time.Time) response.Dashboard {
 
+	var totalSales float64
 	var totalOrder int64
 	var totalPendingOrder int64
-	var totalSales float64
 	var totalActiveProduct int64
 
 	stockAlert := []response.StockAlert{}
@@ -33,17 +33,17 @@ func (service *DashboardServiceImpl) GetSummary(currentUserId uint, fromDate, to
 	// total sales
 	service.db.Model(&entity.Order{}).
 		Select("COALESCE(SUM(total_paid), 0)").
-		Where("is_paid = true AND total_paid IS NOT NULL AND deleted_at IS NULL AND status = ? AND created_at >= ? AND created_at <= ?", enum.OrderStatusCompleted, fromDate, toDate).
+		Where("is_paid = true AND total_paid IS NOT NULL AND deleted_at IS NULL AND status = ? AND created_by_customer_at >= ? AND created_by_customer_at <= ?", enum.OrderStatusCompleted, fromDate, toDate).
 		Scan(&totalSales)
 
 	// total order
 	service.db.Model(&entity.Order{}).
-		Where("deleted_at IS NULL and status != ? AND created_at >= ? AND created_at <= ?", enum.OrderStatusCancelled, fromDate, toDate).
+		Where("deleted_at IS NULL and status != ? AND created_by_customer_at >= ? AND created_by_customer_at <= ?", enum.OrderStatusCancelled, fromDate, toDate).
 		Count(&totalOrder)
 
 	// pending order
 	service.db.Model(&entity.Order{}).
-		Where("deleted_at IS NULL and status not in ? AND created_at >= ? AND created_at <= ?", []enum.EOrderStatus{enum.OrderStatusCompleted, enum.OrderStatusCancelled}, fromDate, toDate).
+		Where("deleted_at IS NULL and status not in ? AND created_by_customer_at >= ? AND created_by_customer_at <= ?", []enum.EOrderStatus{enum.OrderStatusCompleted, enum.OrderStatusCancelled}, fromDate, toDate).
 		Count(&totalPendingOrder)
 
 	// active product

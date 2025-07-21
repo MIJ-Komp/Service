@@ -20,8 +20,7 @@ import (
 
 type ProductServiceImpl struct {
 	ProductRepository repository.ProductRepository
-
-	db *gorm.DB
+	db                *gorm.DB
 }
 
 func NewProductService(userRepostitory repository.ProductRepository, db *gorm.DB) *ProductServiceImpl {
@@ -113,7 +112,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 
 	if payload.ProductType == enum.ProductTypeGroup {
 		if len(productGroupItems) > 0 {
-			err := service.ProductRepository.SaveProductGroupItems(tx, productGroupItems)
+			err = service.ProductRepository.SaveProductGroupItems(tx, productGroupItems)
 			exception.PanicIfNeeded(err)
 		} else {
 			panic(exception.NewValidationError("Bundle item tidak boleh kosong"))
@@ -225,92 +224,90 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 			productSkus[i].Stock = payload.ProductSkus[payloadIdx].Stock
 			productSkus[i].StockAlert = payload.ProductSkus[payloadIdx].StockAlert
 			productSkus[i].IsActive = payload.ProductSkus[payloadIdx].IsActive
-		} else {
-			productSkuToBeDeleted = append(productSkuToBeDeleted, productSku)
-		}
 
-		productSkuSpecs := productSku.ComponentSpecs
+			productSkuSpecs := productSku.ComponentSpecs
 
-		// update exsisting productSkuSpec
-		for i, componentSpec := range productSkuSpecs {
-			componentSpecIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ComponentSpecs, func(model request.ComponentSpec) bool {
-				return model.Id == componentSpec.Id
-			})
-
-			if componentSpecIdx != -1 {
-				componentSpecPayload := payload.ProductSkus[payloadIdx].ComponentSpecs[componentSpecIdx]
-				productSkuSpecs[i].SpecKey = componentSpecPayload.SpecKey
-				productSkuSpecs[i].SpecValue = componentSpecPayload.SpecValue
-
-			} else {
-				componentSpecsToBeDeleted = append(componentSpecsToBeDeleted, componentSpec)
-			}
-		}
-
-		// add new component spec
-		for _, productSkuSpec := range payload.ProductSkus[payloadIdx].ComponentSpecs {
-
-			savedIdx := slices.IndexFunc(productSkuSpecs, func(model entity.ComponentSpec) bool {
-				fmt.Println(model.Id)
-				fmt.Println(productSkuSpec.Id)
-				return model.Id == productSkuSpec.Id
-			})
-
-			if savedIdx == -1 {
-				productSkuSpecs = append(productSkuSpecs, entity.ComponentSpec{
-					Id:           productSkuSpec.Id,
-					ProductSkuId: productSku.Id,
-					SpecKey:      productSkuSpec.SpecKey,
-					SpecValue:    productSkuSpec.SpecValue,
-					Sequence:     productSkuSpecs[len(productSkuSpecs)-1].Sequence + 1,
-				})
-			}
-		}
-
-		componentSpecs = productSkuSpecs
-
-		// Product Bundle items (Update, Delete, Add New)
-		if product.ProductType == enum.ProductTypeGroup {
-			if len(payload.ProductSkus[payloadIdx].ProductGroupItems) == 0 {
-				panic(exception.NewValidationError("Group detail tidak boleh kosong"))
-			}
-
-			productSkuGroupItems := productSku.ProductGroupItems
-			for i, groupItem := range productSkuGroupItems {
-				groupItemIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ProductGroupItems, func(model request.ProductGroupItemPayload) bool {
-					return model.Id == groupItem.Id
+			// update exsisting componentSpec
+			for i, componentSpec := range productSkuSpecs {
+				componentSpecIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ComponentSpecs, func(model request.ComponentSpec) bool {
+					return model.Id == componentSpec.Id
 				})
 
-				if groupItemIdx != -1 {
-					productGroupPayload := payload.ProductSkus[payloadIdx].ProductGroupItems[groupItemIdx]
+				if componentSpecIdx != -1 {
+					componentSpecPayload := payload.ProductSkus[payloadIdx].ComponentSpecs[componentSpecIdx]
+					productSkuSpecs[i].SpecKey = componentSpecPayload.SpecKey
+					productSkuSpecs[i].SpecValue = componentSpecPayload.SpecValue
 
-					productSkuGroupItems[i].ProductId = productGroupPayload.ProductId
-					productSkuGroupItems[i].ProductSkuId = productGroupPayload.ProductSkuId
-					productSkuGroupItems[i].Qty = productGroupPayload.Qty
 				} else {
-					productGroupItemsToBeDeleted = append(productGroupItemsToBeDeleted, groupItem)
+					componentSpecsToBeDeleted = append(componentSpecsToBeDeleted, componentSpec)
 				}
 			}
 
-			// Add new
-			for _, groupItem := range payload.ProductSkus[payloadIdx].ProductGroupItems {
-				savedIdx := slices.IndexFunc(productSku.ProductGroupItems, func(model entity.ProductGroupItem) bool {
-					return model.Id == groupItem.Id
+			// add new component spec
+			for _, productSkuSpec := range payload.ProductSkus[payloadIdx].ComponentSpecs {
+
+				savedIdx := slices.IndexFunc(productSkuSpecs, func(model entity.ComponentSpec) bool {
+					return model.Id == productSkuSpec.Id
 				})
 
 				if savedIdx == -1 {
-					productSkuGroupItems = append(productSkuGroupItems, entity.ProductGroupItem{
-						Id:           groupItem.Id,
-						ParentId:     productSku.Id,
-						ProductId:    groupItem.ProductId,
-						ProductSkuId: groupItem.ProductSkuId,
-						Qty:          groupItem.Qty,
-						Sequence:     productSkuGroupItems[len(productSkuGroupItems)-1].Sequence + 1,
+					productSkuSpecs = append(productSkuSpecs, entity.ComponentSpec{
+						Id:           productSkuSpec.Id,
+						ProductSkuId: productSku.Id,
+						SpecKey:      productSkuSpec.SpecKey,
+						SpecValue:    productSkuSpec.SpecValue,
+						Sequence:     productSkuSpecs[len(productSkuSpecs)-1].Sequence + 1,
 					})
 				}
 			}
 
-			productGroupItems = productSkuGroupItems
+			componentSpecs = append(componentSpecs, productSkuSpecs...)
+
+			// Product Bundle items (Update, Delete, Add New)
+			if product.ProductType == enum.ProductTypeGroup {
+				if len(payload.ProductSkus[payloadIdx].ProductGroupItems) == 0 {
+					panic(exception.NewValidationError("Group detail tidak boleh kosong"))
+				}
+
+				productSkuGroupItems := productSku.ProductGroupItems
+				for i, groupItem := range productSkuGroupItems {
+					groupItemIdx := slices.IndexFunc(payload.ProductSkus[payloadIdx].ProductGroupItems, func(model request.ProductGroupItemPayload) bool {
+						return model.Id == groupItem.Id
+					})
+
+					if groupItemIdx != -1 {
+						productGroupPayload := payload.ProductSkus[payloadIdx].ProductGroupItems[groupItemIdx]
+
+						productSkuGroupItems[i].ProductId = productGroupPayload.ProductId
+						productSkuGroupItems[i].ProductSkuId = productGroupPayload.ProductSkuId
+						productSkuGroupItems[i].Qty = productGroupPayload.Qty
+					} else {
+						productGroupItemsToBeDeleted = append(productGroupItemsToBeDeleted, groupItem)
+					}
+				}
+
+				// Add new
+				for _, groupItem := range payload.ProductSkus[payloadIdx].ProductGroupItems {
+					savedIdx := slices.IndexFunc(productSku.ProductGroupItems, func(model entity.ProductGroupItem) bool {
+						return model.Id == groupItem.Id
+					})
+
+					if savedIdx == -1 {
+						productSkuGroupItems = append(productSkuGroupItems, entity.ProductGroupItem{
+							Id:           groupItem.Id,
+							ParentId:     productSku.Id,
+							ProductId:    groupItem.ProductId,
+							ProductSkuId: groupItem.ProductSkuId,
+							Qty:          groupItem.Qty,
+							Sequence:     productSkuGroupItems[len(productSkuGroupItems)-1].Sequence + 1,
+						})
+					}
+				}
+
+				productGroupItems = append(productGroupItems, productSkuGroupItems...)
+			}
+		} else {
+			productSkuToBeDeleted = append(productSkuToBeDeleted, productSku)
 		}
 	}
 
@@ -332,39 +329,44 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				Sequence:   productSkus[len(productSkus)-1].Sequence + 1,
 			})
 
+			// Product Spec
+			for _, componentSpec := range productSku.ComponentSpecs {
+				newSequence := 1
+				if len(componentSpecs) > 0 {
+					newSequence = componentSpecs[len(componentSpecs)-1].Sequence + 1
+				}
+				componentSpecs = append(componentSpecs, entity.ComponentSpec{
+					Id:           componentSpec.Id,
+					ProductSkuId: productSku.Id,
+					SpecKey:      componentSpec.SpecKey,
+					SpecValue:    componentSpec.SpecValue,
+					Sequence:     newSequence,
+				})
+			}
+
 			// Product Group
 			for _, groupItem := range productSku.ProductGroupItems {
-
+				newSequence := 1
+				if len(productGroupItems) > 0 {
+					newSequence = productGroupItems[len(productGroupItems)-1].Sequence + 1
+				}
 				productGroupItems = append(productGroupItems, entity.ProductGroupItem{
 					Id:           groupItem.Id,
 					ParentId:     productSku.Id,
 					ProductId:    groupItem.ProductId,
 					ProductSkuId: groupItem.ProductSkuId,
 					Qty:          groupItem.Qty,
-					Sequence:     productGroupItems[len(productGroupItems)-1].Sequence + 1,
+					Sequence:     newSequence,
 				})
-
-				// Product Spec
-				for _, componentSpec := range productSku.ComponentSpecs {
-
-					componentSpecs = append(componentSpecs, entity.ComponentSpec{
-						Id:           componentSpec.Id,
-						ProductSkuId: productSku.Id,
-						SpecKey:      componentSpec.SpecKey,
-						SpecValue:    componentSpec.SpecValue,
-						Sequence:     componentSpecs[len(componentSpecs)-1].Sequence + 1,
-					})
-				}
 			}
-
 		}
 
 	}
 
-	err = service.ProductRepository.SaveComponentSpecs(tx, componentSpecs)
+	err = service.ProductRepository.SaveProductSkus(tx, productSkus)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.DeleteComponentSpecs(tx, componentSpecsToBeDeleted)
+	err = service.ProductRepository.DeleteProductSkus(tx, product.Id, productSkuToBeDeleted)
 	exception.PanicIfNeeded(err)
 
 	err = service.ProductRepository.SaveProductGroupItems(tx, productGroupItems)
@@ -373,10 +375,10 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	err = service.ProductRepository.DeleteProductGroupItems(tx, productGroupItemsToBeDeleted)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.SaveProductSkus(tx, productSkus)
+	err = service.ProductRepository.SaveComponentSpecs(tx, componentSpecs)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.DeleteProductSkus(tx, product.Id, productSkuToBeDeleted)
+	err = service.ProductRepository.DeleteComponentSpecs(tx, componentSpecsToBeDeleted)
 	exception.PanicIfNeeded(err)
 
 	// Product Variant
@@ -405,11 +407,15 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 		})
 
 		if savedIdx == -1 {
+			newSequence := 1
+			if len(productVariantOptions) > 0 {
+				newSequence = productVariantOptions[len(productVariantOptions)-1].Sequence + 1
+			}
 			productVariantOptions = append(productVariantOptions, entity.ProductVariantOption{
 				Id:        variantOption.Id,
 				ProductId: product.Id,
 				Name:      variantOption.Name,
-				Sequence:  productVariantOptions[len(productVariantOptions)-1].Sequence + 1,
+				Sequence:  newSequence,
 			})
 		}
 	}
@@ -445,12 +451,16 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 		})
 
 		if savedIdx == -1 {
+			newSequence := 1
+			if len(productVariantOptionValues) > 0 {
+				newSequence = productVariantOptionValues[len(productVariantOptionValues)-1].Sequence + 1
+			}
 			productVariantOptionValues = append(productVariantOptionValues, entity.ProductVariantOptionValue{
 				Id:                     variantOptionValue.Id,
 				ProductId:              product.Id,
 				ProductVariantOptionId: variantOptionValue.ProductVariantOptionId,
 				Name:                   variantOptionValue.Name,
-				Sequence:               productVariantOptionValues[len(productVariantOptionValues)-1].Sequence + 1,
+				Sequence:               newSequence,
 			})
 		}
 	}
@@ -486,13 +496,17 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 		})
 
 		if savedIdx == -1 {
+			newSequence := 1
+			if len(productVariantOptionValues) > 0 {
+				newSequence = productVariantOptionValues[len(productVariantOptionValues)-1].Sequence + 1
+			}
 			productSkuVariants = append(productSkuVariants, entity.ProductSkuVariant{
 				Id:                          skuVariant.Id,
 				ProductId:                   product.Id,
 				ProductSkuId:                skuVariant.ProductSkuId,
 				ProductVariantOptionId:      skuVariant.ProductVariantOptionId,
 				ProductVariantOptionValueId: skuVariant.ProductVariantOptionValueId,
-				Sequence:                    productVariantOptionValues[len(productVariantOptionValues)-1].Sequence + 1,
+				Sequence:                    newSequence,
 			})
 		}
 	}

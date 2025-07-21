@@ -37,6 +37,8 @@ func (repository *OrderRepositoryImpl) Search(db *gorm.DB, query *string, status
 
 	queries := db.Model(&orders).
 		Preload("OrderItems", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
+		Preload("OrderItems.Product").
+		Preload("OrderItems.Product.ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("CustomerInfo").
 		Preload("ShippingInfo").
 		Preload("Payment")
