@@ -43,16 +43,18 @@ type Product struct {
 }
 
 type ProductSku struct {
-	Id                uuid.UUID          `gorm:"primaryKey; type:uuid;"`
-	ProductId         uuid.UUID          `gorm:"foreignKey; type:uuid; not null;"`
-	SKU               string             `gorm:"type:varchar(256); not null;"`
-	Name              string             `gorm:"type: varchar(128); null"`
-	Price             float64            `gorm:"type:decimal(17,5); not null;"`
-	ImageId           *uuid.UUID         `gorm:"type:uuid; null;"`
-	Stock             *int               `gorm:"type:integer; null"`
-	StockAlert        *int               `gorm:"type:integer; null"`
-	IsActive          bool               `gorm:"not null;"`
-	Sequence          int                `gorm:"type:int; not null"`
+	Id         uuid.UUID      `gorm:"primaryKey; type:uuid;"`
+	ProductId  uuid.UUID      `gorm:"foreignKey; type:uuid; not null;"`
+	SKU        string         `gorm:"type:varchar(256); not null;"`
+	Name       string         `gorm:"type: varchar(128); null"`
+	Price      float64        `gorm:"type:decimal(17,5); not null;"`
+	ImageId    *uuid.UUID     `gorm:"type:uuid; null;"`
+	Stock      *int           `gorm:"type:integer; null"`
+	StockAlert *int           `gorm:"type:integer; null"`
+	IsActive   bool           `gorm:"not null;"`
+	Sequence   int            `gorm:"type:int; not null"`
+	DeletedAt  gorm.DeletedAt `gorm:"index"`
+
 	ComponentSpecs    []ComponentSpec    `gorm:"foreignKey:ProductSkuId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ProductGroupItems []ProductGroupItem `gorm:"foreignKey:ParentId; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

@@ -62,13 +62,13 @@ func (repository *ProductRepositoryImpl) Search(
 	queries := db.Model(&entity.Product{})
 	if isAdmin {
 		queries.Preload("ProductSkus", func(db *gorm.DB) *gorm.DB {
-			return db.Order("sequence")
+			return db.Where("product_skus.deleted_at is null").Order("sequence")
 		})
 	} else {
 		queries.Joins("JOIN product_skus ON product_skus.product_id = products.id AND product_skus.is_active = TRUE").
 			Group("products.id").
 			Preload("ProductSkus", func(db *gorm.DB) *gorm.DB {
-				return db.Where("product_skus.is_active = TRUE").Order("sequence")
+				return db.Where("product_skus.is_active = TRUE AND product_skus.deleted_at is null").Order("sequence")
 			})
 	}
 
@@ -218,7 +218,7 @@ func (repository *ProductRepositoryImpl) BrowseProductSku(db *gorm.DB, query *st
 	baseQuery := `
 		FROM products p
 		INNER JOIN product_skus ps ON p.id = ps.product_id
-		WHERE p.is_active = true AND ps.is_active = true
+		WHERE p.is_active = true AND ps.is_active = true AND ps.deleted_at is null
 	`
 	var filters []string
 	var params []interface{}

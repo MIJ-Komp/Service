@@ -21,8 +21,8 @@ func main() {
 	config.New(".env")
 	server := InitializedServer()
 
-	// err := server.Listen(":5000")
-	err := server.Listen("127.0.0.1:5000")
+	err := server.Listen(":5000")
+	// err := server.Listen("127.0.0.1:5000")
 	exception.PanicIfNeeded(err)
 	// openBrowser("http://localhost:3000")
 

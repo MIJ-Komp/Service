@@ -19,7 +19,13 @@ func NewOrderRepository() *OrderRepositoryImpl {
 
 // Order
 func (repository *OrderRepositoryImpl) Save(db *gorm.DB, order entity.Order) (entity.Order, error) {
-	var omitFields = []string{}
+	var omitFields = []string{
+		"OrderItems",
+		"CustomerInfo",
+		"ShippingInfo",
+		"Payment",
+		"ModifiedByAdmin",
+	}
 	err := db.Omit(omitFields...).Save(&order).Error
 	return order, err
 }
@@ -41,7 +47,8 @@ func (repository *OrderRepositoryImpl) Search(db *gorm.DB, query *string, status
 		Preload("OrderItems.Product.ProductSkus", func(db *gorm.DB) *gorm.DB { return db.Order("sequence") }).
 		Preload("CustomerInfo").
 		Preload("ShippingInfo").
-		Preload("Payment")
+		Preload("Payment").
+		Preload("ModifiedByAdmin")
 
 	if query != nil {
 		queries.Where("name like ?", "%"+*query+"%")
@@ -77,7 +84,8 @@ func (repository *OrderRepositoryImpl) GetById(db *gorm.DB, orderId *uuid.UUID, 
 		Preload("OrderItems.Product.ProductSkus").
 		Preload("CustomerInfo").
 		Preload("ShippingInfo").
-		Preload("Payment")
+		Preload("Payment").
+		Preload("ModifiedByAdmin")
 
 	if orderId != nil {
 		queries.Where("id = ?", orderId)
@@ -99,6 +107,7 @@ func (repository *OrderRepositoryImpl) GetByPaymentId(db *gorm.DB, paymentId uui
 		Preload("OrderItems.Product.ProductSkus").
 		Preload("CustomerInfo").
 		Preload("ShippingInfo").
+		Preload("ModifiedByAdmin").
 		First(&order, "payment_id = ?", paymentId).Error
 	return order, err
 }

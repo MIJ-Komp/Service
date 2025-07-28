@@ -205,7 +205,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 
 	// Product SKU (Update, Delete, Add New)
 	productSkus := product.ProductSkus
-	productSkuToBeDeleted := []entity.ProductSku{}
+	// productSkuToBeDeleted := []entity.ProductSku{}
 	productGroupItems := []entity.ProductGroupItem{}
 	productGroupItemsToBeDeleted := []entity.ProductGroupItem{}
 	componentSpecs := []entity.ComponentSpec{}
@@ -307,7 +307,10 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				productGroupItems = append(productGroupItems, productSkuGroupItems...)
 			}
 		} else {
-			productSkuToBeDeleted = append(productSkuToBeDeleted, productSku)
+			productSku.DeletedAt = gorm.DeletedAt{
+				Time:  time.Now(),
+				Valid: true,
+			}
 		}
 	}
 
@@ -366,8 +369,8 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 	err = service.ProductRepository.SaveProductSkus(tx, productSkus)
 	exception.PanicIfNeeded(err)
 
-	err = service.ProductRepository.DeleteProductSkus(tx, product.Id, productSkuToBeDeleted)
-	exception.PanicIfNeeded(err)
+	// err = service.ProductRepository.DeleteProductSkus(tx, product.Id, productSkuToBeDeleted)
+	// exception.PanicIfNeeded(err)
 
 	err = service.ProductRepository.SaveProductGroupItems(tx, productGroupItems)
 	exception.PanicIfNeeded(err)

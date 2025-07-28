@@ -247,14 +247,25 @@ func (service *OrderServiceImpl) UpdateStatus(currentUserId uint, orderId uuid.U
 	order, err := service.OrderRepository.GetById(service.db, &orderId, nil)
 	exception.PanicIfNeeded(err)
 
-	order.Status = payload.NewStatus
-	order.ModifiedByAdminId = &currentUserId
-	timeNow := time.Now()
-	order.ModifiedByAdminAt = &timeNow
+	if order.Status != payload.NewStatus {
+		order.Status = payload.NewStatus
+		order.ModifiedByAdminId = &currentUserId
+		timeNow := time.Now()
+		order.ModifiedByAdminAt = &timeNow
 
-	_, err = service.OrderRepository.Save(tx, order)
-	exception.PanicIfNeeded(err)
+		if payload.NewStatus == enum.OrderStatusPaid {
+			var totalPrice float64 = 0
+			for _, orderItem := range order.OrderItems {
+				totalPrice += orderItem.Price * float64(orderItem.Quantity)
+			}
+			order.TotalPaid = &totalPrice
+			order.PaidAt = &timeNow
+			order.IsPaid = true
+		}
 
+		_, err = service.OrderRepository.Save(tx, order)
+		exception.PanicIfNeeded(err)
+	}
 	// return new result
 	res, err := service.OrderRepository.GetById(tx, &orderId, nil)
 	exception.PanicIfNeeded(err)
@@ -345,9 +356,9 @@ func (service *OrderServiceImpl) mapOrder(order entity.Order) response.Order {
 			Code: string(order.Status),
 			Name: order.Status.DisplayString(),
 		},
-		PaidAt:     order.Payment.PaidAt,
+		PaidAt:     order.PaidAt,
 		IsPaid:     order.IsPaid,
-		TotalPaid:  order.Payment.TotalPaid,
+		TotalPaid:  order.TotalPaid,
 		PaymentUrl: order.Payment.InvoiceUrl,
 		Notes:      order.Notes,
 
@@ -366,7 +377,6 @@ func (service *OrderServiceImpl) mapOrder(order entity.Order) response.Order {
 }
 
 // Map Order Items
-
 func (service *OrderServiceImpl) mapOrderItems(orderItems []entity.OrderItem) []response.OrderItem {
 	res := []response.OrderItem{}
 
