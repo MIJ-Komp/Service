@@ -43,6 +43,7 @@ type ProductSkuPayload struct {
 	SKU               string                    `json:"sku"`
 	Name              string                    `json:"name"`
 	Price             float64                   `json:"price"`
+	Weight            *int                      `json:"weight"`
 	Stock             *int                      `json:"stock"`
 	StockAlert        *int                      `json:"stockAlert"`
 	IsActive          bool                      `json:"isActive"`

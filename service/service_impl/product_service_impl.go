@@ -72,6 +72,7 @@ func (service *ProductServiceImpl) Create(currentUserId uint, productId uuid.UUI
 			Name:       productSku.Name,
 			SKU:        productSku.SKU,
 			Price:      productSku.Price,
+			Weight:     productSku.Weight,
 			Stock:      productSku.Stock,
 			StockAlert: productSku.StockAlert,
 			Sequence:   i + 1,
@@ -221,6 +222,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 			productSkus[i].SKU = payload.ProductSkus[payloadIdx].SKU
 			productSkus[i].Name = payload.ProductSkus[payloadIdx].Name
 			productSkus[i].Price = payload.ProductSkus[payloadIdx].Price
+			productSkus[i].Weight = payload.ProductSkus[payloadIdx].Weight
 			productSkus[i].Stock = payload.ProductSkus[payloadIdx].Stock
 			productSkus[i].StockAlert = payload.ProductSkus[payloadIdx].StockAlert
 			productSkus[i].IsActive = payload.ProductSkus[payloadIdx].IsActive
@@ -326,6 +328,7 @@ func (service *ProductServiceImpl) Update(currentUserId uint, productId uuid.UUI
 				ProductId:  product.Id,
 				SKU:        productSku.SKU,
 				Price:      productSku.Price,
+				Weight:     productSku.Weight,
 				Stock:      productSku.Stock,
 				StockAlert: productSku.StockAlert,
 				IsActive:   productSku.IsActive,
@@ -703,6 +706,7 @@ func (service *ProductServiceImpl) MapProduct(product entity.Product, isAdmin bo
 			SKU:               productSku.SKU,
 			Name:              productSku.Name,
 			Price:             productSku.Price,
+			Weight:            productSku.Weight,
 			Stock:             productSku.Stock,
 			StockAlert:        productSku.StockAlert,
 			IsActive:          productSku.IsActive,

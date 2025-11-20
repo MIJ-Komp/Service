@@ -47,6 +47,7 @@ type ProductSku struct {
 	ProductId  uuid.UUID      `gorm:"foreignKey; type:uuid; not null;"`
 	SKU        string         `gorm:"type:varchar(256); not null;"`
 	Name       string         `gorm:"type: varchar(128); null"`
+	Weight     *int           `gorm:"type:integer"`
 	Price      float64        `gorm:"type:decimal(17,5); not null;"`
 	ImageId    *uuid.UUID     `gorm:"type:uuid; null;"`
 	Stock      *int           `gorm:"type:integer; null"`
