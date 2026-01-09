@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"runtime"
 
@@ -21,7 +22,8 @@ func main() {
 	config.New(".env")
 	server := InitializedServer()
 
-	err := server.Listen(":5000")
+	port := os.Getenv("PORT")
+	err := server.Listen(":" + port)
 	// err := server.Listen("127.0.0.1:5000")
 	exception.PanicIfNeeded(err)
 	// openBrowser("http://localhost:3000")
